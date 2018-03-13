@@ -28,3 +28,7 @@ nnoremap <Down> gj
 " Colors
 " ------
 colorscheme badwolf
+
+" Functionality
+" -------------
+syntax enable
