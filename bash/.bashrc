@@ -14,8 +14,10 @@ fi
 
 if [ $(uname) = "Darwin" ]; then
     # Mac OS
+    uname > /dev/null   # dummy line to make bash stop complaining
 elif [ $(uname) = "Linux" ]; then
     # Linux
+    uname > /dev/null   # dummy line to make bash stop complaining
 fi
 
 
