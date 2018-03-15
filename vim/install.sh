@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get directory where this script lives, because that's where the files will also be
-DIR=$(dirname $0)
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Back up existing files
 if [ -w ~/.vimrc ]; then
