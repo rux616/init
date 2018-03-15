@@ -7,12 +7,12 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$DIR/../.common_functions.sh"
 
 # Back up existing user bash files
-back_up_file "~/.bash_profile"
-back_up_file " ~/.bashrc"
-back_up_file " ~/.bash_aliases"
+back_up_file "$HOME/.bash_profile"
+back_up_file "$HOME/.bashrc"
+back_up_file "$HOME/.bash_aliases"
 
 # Symlink bash files into their appropriate places
-ln -s "$DIR/.bash_profile" "~/.bash_profile"
-ln -s "$DIR/.bashrc" "~/.bashrc"
-ln -s "$DIR/.bash_aliases" "~/.bash_aliases"
+ln -s "$DIR/.bash_profile" "$HOME/.bash_profile"
+ln -s "$DIR/.bashrc" "$HOME/.bashrc"
+ln -s "$DIR/.bash_aliases" "$HOME/.bash_aliases"
 

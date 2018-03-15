@@ -7,11 +7,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$DIR/../.common_functions.sh"
 
 # Back up existing files
-back_up_file "~/.vimrc"
-back_up_file "~/.vim/colors/badwolf.vim"
+back_up_file "$HOME/.vimrc"
+back_up_file "$HOME/.vim/colors/badwolf.vim"
 
 # Attempt to create .vim/colors/
-mkdir -p "~/.vim/colors" 2>/dev/null
+mkdir -p "$HOME/.vim/colors" 2>/dev/null
 
 # Update or init badwolf submodule
 if [ -n $(ls "$DIR/badwolf/") ]; then
@@ -21,6 +21,6 @@ else
 fi
 
 # Symlink files into their appropriate places
-ln -s "$DIR/.vimrc" "~/.vimrc"
-ln -s "$DIR/badwolf/colors/badwolf.vim" "~/.vim/colors/badwolf.vim"
+ln -s "$DIR/.vimrc" "$HOME/.vimrc"
+ln -s "$DIR/badwolf/colors/badwolf.vim" "$HOME/.vim/colors/badwolf.vim"
 
