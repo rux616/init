@@ -1,3 +1,5 @@
+# .bash_profile
+
 # -------------------- #
 # OS-specific Settings #
 # -------------------- #
@@ -9,6 +11,15 @@ elif [ $(uname) = "Linux" ]; then
     # Linux
     uname > /dev/null   # dummy line to make bash stop complaining
 fi
+
+
+
+# ------------- #
+# PATH Settings #
+# ------------- #
+
+PATH=$PATH:$HOME/.local/bin:$HOME/bin
+export PATH
 
 
 
