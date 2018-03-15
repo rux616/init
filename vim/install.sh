@@ -14,7 +14,7 @@ back_up_file "$HOME/.vim/colors/badwolf.vim"
 mkdir -p "$HOME/.vim/colors" 2>/dev/null
 
 # Update or init badwolf submodule
-if [ -n $(ls "$DIR/badwolf/") ]; then
+if [ -e "$DIR/badwolf/.git" ]; then
     git submodule update --remote
 else
     git submodule update --init
