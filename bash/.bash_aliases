@@ -1,3 +1,5 @@
+# .bash_aliases
+
 # ------------------- #
 # OS-specific Aliases #
 # ------------------- #
