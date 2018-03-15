@@ -14,8 +14,12 @@ fi
 # Attempt to create .vim/colors/
 mkdir -p ~/.vim/colors 2>/dev/null
 
-# Update badwolf submodule
-git submodule update
+# Update or init badwolf submodule
+if [ -n $(ls $DIR/vim/badwolf/) ]; then
+    git submodule update --remote
+else
+    git submodule update --init
+fi
 
 # Symlink files into their appropriate places
 ln -s $DIR/.vimrc ~/.vimrc
