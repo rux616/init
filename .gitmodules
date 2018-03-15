@@ -1,0 +1,3 @@
+[submodule "badwolf"]
+	path = vim/badwolf
+	url = https://github.com/sjl/badwolf.git
