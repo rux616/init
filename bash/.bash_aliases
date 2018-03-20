@@ -28,3 +28,16 @@ fi
 
 alias ll='ls -al'
 alias vi='vim'
+
+
+
+# --------- #
+# Functions #
+# --------- #
+
+# enable live grepping; useful for grepping things like "tail -f /var/log/messages"
+# usage: just pipe into it
+# example: tail -f /var/log/messages | livegrep -i " <server_name> "
+livegrep() {
+    grep --line-buffered $* | cat
+}
