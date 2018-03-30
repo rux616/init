@@ -32,3 +32,16 @@ colorscheme badwolf
 " Functionality
 " -------------
 syntax enable
+
+" Keymaps
+" -------
+" Adds some GUI-centric keymaps for moving to next/previous word
+nnoremap <C-Left> b
+vnoremap <C-S-Left> b
+nnoremap <C-S-Left> gh<C-O>b
+inoremap <C-S-Left> <C-\><C-O>gh<C-O>b
+nnoremap <C-Right> w
+vnoremap <C-S-Right> w
+nnoremap <C-S-Right> gh<C-O>w
+inoremap <C-S-Right> <C-\><C-O>gh<C-O>w
+
