@@ -6,7 +6,7 @@ back_up_file()
 
     if [ -L $FILENAME ]; then
         rm $FILENAME
-    else
+    elif [ -e $FILENAME ]; then
         mv $FILENAME $FILENAME"_old"
     fi
 }
