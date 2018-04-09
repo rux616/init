@@ -14,18 +14,18 @@ fi
 
 
 
-# ------------- #
-# PATH Settings #
-# ------------- #
-
-PATH=$PATH:$HOME/.local/bin:$HOME/bin
-export PATH
-
-
-
 # ------------ #
 # Load BASH RC #
 # ------------ #
 if [ -r ~/.bashrc ]; then
     source ~/.bashrc
 fi
+
+
+
+# ------------- #
+# PATH Settings #
+# ------------- #
+
+PATH=$PATH:$HOME/.local/bin:$HOME/bin
+export PATH
