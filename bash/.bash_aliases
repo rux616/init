@@ -26,7 +26,9 @@ fi
 # General Aliases #
 # --------------- #
 
-alias ll='ls -al'
+alias l1='ls -1'
+alias la='ls -al'
+alias ll='ls -l'
 alias vi='vim'
 
 
