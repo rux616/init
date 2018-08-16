@@ -1,6 +1,6 @@
 #!/bin/bash
 
-back_up_file()
+function back_up_file()
 {
     FILENAME=$1
 
