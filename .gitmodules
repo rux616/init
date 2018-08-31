@@ -2,3 +2,14 @@
     path = vim/badwolf
     url = https://github.com/sjl/badwolf.git
     branch = master
+
+[submodule "vim/airline"]
+    path = vim/airline
+    url = https://github.com/vim-airline/vim-airline.git
+    branch = master
+
+[submodile "vim/airline-themes"]
+    path = vim/airline-themes
+    url = https://github.com/vim-airline/vim-airline-themes.git
+    branch = master
+
