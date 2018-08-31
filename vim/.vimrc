@@ -1,7 +1,23 @@
+" Functions
+" ---------
+function! GitBranch()
+    return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! StatuslineGit()
+    let l:branchname = GitBranch()
+    return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+endfunction
+
+" General
+" -------
+set nocompatible                    " Turn off compatible mode
+
 " Spaces and Tabs
 " ---------------
 set tabstop=4                       " Number of visual spaces per <tab>
 set softtabstop=4                   " Number of spaces in <tab> when editing
+set shiftwidth=4                    " Number of spaces to use for each step of indenting
 set expandtab                       " Turns <tab> into <space>s
 set autoindent                      " Autoindents when you create a new line.
 
@@ -9,6 +25,22 @@ set autoindent                      " Autoindents when you create a new line.
 " ----------------
 set number                          " show line numbers
 set cursorline                      " highlight current line
+set laststatus=2                    " Force statusline to show
+" Build a statusline
+set statusline=
+set statusline+=%#PmenuSel#
+"set statusline+=%{StatuslineGit()}
+set statusline+=%#LineNr#
+set statusline+=\ %F
+set statusline+=%m\ 
+set statusline+=%=
+"set statusline+=%#CursorColumn#
+set statusline+=\ %y
+set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+set statusline+=\[%{&fileformat}\]
+set statusline+=\ %p%%
+set statusline+=\ %l:%c
+set statusline+=\ 
 
 " Folding
 " -------
