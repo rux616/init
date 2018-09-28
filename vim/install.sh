@@ -6,20 +6,17 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Get common functions
 source "$DIR/../.common_functions.sh"
 
+# Update or init submodules
+cd $DIR/..
+git submodule update --init
+git submodule update --remote
+
 # Back up existing files
 back_up_file "$HOME/.vimrc"
 back_up_file "$HOME/.vim/colors/badwolf.vim"
 
 # Attempt to create .vim/colors/
 mkdir -p "$HOME/.vim/colors" 2>/dev/null
-
-# Update or init badwolf submodule
-cd $DIR/..
-if [ -e "$DIR/badwolf/.git" ]; then
-    git submodule update --remote
-else
-    git submodule update --init
-fi
 
 # Symlink files into their appropriate places
 ln -s "$DIR/.vimrc" "$HOME/.vimrc"
