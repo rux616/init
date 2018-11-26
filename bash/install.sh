@@ -10,9 +10,10 @@ source "$DIR/../.common_functions.sh"
 back_up_file "$HOME/.bash_profile"
 back_up_file "$HOME/.bashrc"
 back_up_file "$HOME/.bash_aliases"
+back_up_file "$HOME/.inputrc"
 
 # Symlink bash files into their appropriate places
 ln -s "$DIR/.bash_profile" "$HOME/.bash_profile"
 ln -s "$DIR/.bashrc" "$HOME/.bashrc"
 ln -s "$DIR/.bash_aliases" "$HOME/.bash_aliases"
-
+ln -s "$DIR/.inputrc" "$HOME/.inputrc"

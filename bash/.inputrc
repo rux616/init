@@ -1,0 +1,44 @@
+# .inputrc
+
+
+
+# -------------------- #
+# Load Global Settings #
+# -------------------- #
+
+if [ -f /etc/inputrc]; then
+    $include /etc/inputrc
+fi
+
+
+
+# -------------------- #
+# OS-specific Settings #
+# -------------------- #
+
+if [ $(uname) = "Darwin" ]; then
+    # Mac OS
+    uname > /dev/null   # dummy line to make bash stop complaining
+elif [ $(uname) = "Linux" ]; then
+    # Linux
+    uname > /dev/null   # dummy line to make bash stop complaining
+fi
+
+
+
+# -------- #
+# Settings #
+# -------- #
+
+"\C-h": backward-kill-word
+
+
+
+# ------------------------- #
+# Load Local Input Settings #
+# ------------------------- #
+
+if [ -r ~/.inputrc_local ]; then
+    $include ~/.inputrc_local
+fi
+
