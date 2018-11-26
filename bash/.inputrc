@@ -6,9 +6,7 @@
 # Load Global Settings #
 # -------------------- #
 
-if [ -f /etc/inputrc]; then
-    $include /etc/inputrc
-fi
+$include /etc/inputrc
 
 
 
@@ -16,13 +14,7 @@ fi
 # OS-specific Settings #
 # -------------------- #
 
-if [ $(uname) = "Darwin" ]; then
-    # Mac OS
-    uname > /dev/null   # dummy line to make bash stop complaining
-elif [ $(uname) = "Linux" ]; then
-    # Linux
-    uname > /dev/null   # dummy line to make bash stop complaining
-fi
+# Nothing here yet
 
 
 
@@ -39,7 +31,5 @@ fi
 # Load Local Input Settings #
 # ------------------------- #
 
-if [ -r ~/.inputrc_local ]; then
-    $include ~/.inputrc_local
-fi
+$include ~/.inputrc_local
 
