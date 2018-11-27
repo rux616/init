@@ -26,6 +26,7 @@ fi
 # General Aliases #
 # --------------- #
 
+alias ls='ls --color=auto --time-style=long-iso'
 alias l1='ls -1'
 alias la='ls -al'
 alias ll='ls -l'
