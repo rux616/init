@@ -16,10 +16,12 @@ fi
 
 if [ $(uname) = "Darwin" ]; then
     # Mac OS
-    uname > /dev/null   # dummy line to make bash stop complaining
+    #uname > /dev/null   # dummy line to make bash stop complaining
+    git_prompt_sh_location='/usr/local/etc/bash_completion.d/git-prompt.sh'
 elif [ $(uname) = "Linux" ]; then
     # Linux
-    uname > /dev/null   # dummy line to make bash stop complaining
+    #uname > /dev/null   # dummy line to make bash stop complaining
+    git_prompt_sh_location='/usr/share/git-core/contrib/completion/git-prompt.sh'
 fi
 
 
@@ -29,6 +31,31 @@ fi
 # ------ #
 
 
+
+
+
+# -------------- #
+# Command Prompt #
+# -------------- #
+
+if [ -r $git_prompt_sh_location ]; then
+    # Declare different variables that control what the git-prompt shows
+    GIT_PS1_SHOWDIRTYSTATE=true
+    GIT_PS1_SHOWSTASHSTATE=true
+    GIT_PS1_SHOWUNTRACKEDFILES=true
+    GIT_PS1_SHOWUPSTREAM="auto"
+    GIT_PS1_HIDE_IF_PWD_IGNORED=true
+    GIT_PS1_SHOWCOLORHINTS=true
+
+    # Source the git-prompt helper script
+    source $git_prompt_sh_location
+
+    # Ensure the git prompt is defined
+    git_prompt='$(__git_ps1 '\''(%s)'\'')'
+fi
+
+
+    
 
 
 
