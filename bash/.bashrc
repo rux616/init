@@ -26,18 +26,14 @@ fi
 
 
 
-# ------ #
-# Colors #
-# ------ #
-
-
-
-
-
 # -------------- #
 # Command Prompt #
 # -------------- #
 
+# Source the terminal control file to make things easier.
+source ~/.terminal-control
+
+# Prepare to include the git prompt.
 if [ -r $git_prompt_sh_location ]; then
     # Declare different variables that control what the git-prompt shows
     GIT_PS1_SHOWDIRTYSTATE=true
@@ -55,7 +51,7 @@ if [ -r $git_prompt_sh_location ]; then
 fi
 
 
-    
+
 
 
 
