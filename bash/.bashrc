@@ -28,6 +28,9 @@ fi
 # History Settings #
 # ---------------- #
 
+# Set timestamp format
+export HISTTIMEFORMAT="%F %T  "
+
 # Avoid duplicates
 export HISTCONTROL=ignoredups:erasedups
 
