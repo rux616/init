@@ -54,7 +54,7 @@ if [ -r $git_prompt_sh_location ]; then
     export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}__git_ps1 \"${RESET_LINE}${IYellow}[$(date +"%F %T UTC%:::z")]${Rst} ${Bold}${Green}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\n\$ \""
 else
     # If the git prompt is not found for whatever reason, go with the basic command prompt.
-	export PS1="${RESET_LINE}${IYellow}[\d \t]${Rst} ${Bold}${Green}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
+	export PS1="${RESET_LINE}${IYellow}[$(date +"%F %T UTC%:::z")]${Rst} ${Bold}${Green}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
 fi
 
 
