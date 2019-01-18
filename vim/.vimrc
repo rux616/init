@@ -15,9 +15,9 @@ set nocompatible                    " Turn off compatible mode
 
 " Spaces and Tabs
 " ---------------
-set tabstop=4                       " Number of visual spaces per <tab>
-set softtabstop=4                   " Number of spaces in <tab> when editing
-set shiftwidth=4                    " Number of spaces to use for each step of indenting
+set tabstop=2                       " Number of visual spaces per <tab>
+set softtabstop=2                   " Number of spaces in <tab> when editing
+set shiftwidth=2                    " Number of spaces to use for each step of indenting
 set expandtab                       " Turns <tab> into <space>s
 set autoindent                      " Autoindents when you create a new line.
 
