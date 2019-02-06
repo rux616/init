@@ -1,6 +1,6 @@
-[submodule "vim/badwolf"]
-    path = vim/badwolf
-    url = https://github.com/sjl/badwolf.git
+[submodule "tmux/tpm"]
+    path = tmux/tpm
+    url = https://github.com/tmux-plugins/tpm
     branch = master
 [submodule "vim/airline"]
     path = vim/airline
@@ -9,4 +9,8 @@
 [submodule "vim/airline-themes"]
     path = vim/airline-themes
     url = https://github.com/vim-airline/vim-airline-themes.git
+    branch = master
+[submodule "vim/badwolf"]
+    path = vim/badwolf
+    url = https://github.com/sjl/badwolf.git
     branch = master
