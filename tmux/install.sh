@@ -13,6 +13,7 @@ git submodule update --remote -- .
 
 # Back up existing files
 back_up_file "$HOME/.tmux.conf"
+back_up_file "$HOME/.tmux/plugins/tpm"
 
 # Attempt to create .tmux/plugins/
 mkdir -p "$HOME/.tmux/plugins" 2>/dev/null
