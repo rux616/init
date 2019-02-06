@@ -2,12 +2,12 @@
 
 function back_up_file()
 {
-    FILENAME=$1
+    FILENAME="$1"
 
-    if [ -L $FILENAME ]; then
-        rm $FILENAME
-    elif [ -e $FILENAME ]; then
-        mv $FILENAME $FILENAME"_old"
+    if [ -L "${FILENAME}" ]; then
+        rm "${FILENAME}"
+    elif [ -e "${FILENAME}" ]; then
+        mv "${FILENAME}" "${FILENAME}_old"
     fi
 }
 
