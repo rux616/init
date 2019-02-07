@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ $(which xclip &>/dev/null; echo $?) -eq 1 ]]; then
+    echo "Please make sure that 'xclip' is installed before installing."
+    exit 1
+fi
+
 # Get directory where this script lives, because that's where the files will also be
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
