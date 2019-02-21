@@ -51,10 +51,10 @@ if [ -r $git_prompt_sh_location ]; then
     source $git_prompt_sh_location
     
     # Set the command prompt to execute __git_ps1 with it taking the custom command prompt strings as arguments. 
-    export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}__git_ps1 \"${RESET_LINE}${IYellow}[$(date +"%F %T UTC%:::z")]${Rst} ${Bold}${Green}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\n\$ \""
+    export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}__git_ps1 \"${RESET_LINE}${IYellow}["'$(date +"%F %T UTC%:::z")'"]${Rst} ${Bold}${Green}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\n\$ \""
 else
     # If the git prompt is not found for whatever reason, go with the basic command prompt.
-	export PS1="${RESET_LINE}${IYellow}[$(date +"%F %T UTC%:::z")]${Rst} ${Bold}${Green}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
+	export PS1="${RESET_LINE}${IYellow}["'$(date +"%F %T UTC%:::z")'"]${Rst} ${Bold}${Green}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
 fi
 
 
