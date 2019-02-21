@@ -1,7 +1,18 @@
 #!/bin/bash
 
-if [[ $(which xclip &>/dev/null; echo $?) -eq 1 ]]; then
-    echo "Please make sure that 'xclip' is installed before installing."
+local -a to_install
+if [[ $(which xclip &>/dev/null; echo $?) -ne 0 ]]; then
+    to_install+=('xclip')
+fi
+if [[ $(which iostat &>/dev/null; echo $?) -ne 0 ]]; then
+    to_install+=('iostat')
+fi
+if [[ $(which sar &>/dev/null; echo $?) -ne 0 ]]; then
+    to_install+=('sar')
+fi
+if [[ ${#to_install[@]} -ne 0 ]]; then
+    echo 'Please make sure that the following are installed prior to using this script:'
+    echo "    ${to_install[@]}"
     exit 1
 fi
 
