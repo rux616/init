@@ -65,7 +65,9 @@ colorscheme badwolf
 " -------------
 syntax enable                       " enable syntax highlighting
 set backspace=indent,eol,start      " enable backspace to backspace over things in insert mode
-set exrc                            " enable project-specific .vimrc files
+if filereadable(".vimrc.local")     " enable project-specific .vimrc files
+    source .vimrc.local
+endif
 
 " Keymaps
 " -------
@@ -78,7 +80,3 @@ nnoremap <C-Right> w
 vnoremap <C-S-Right> w
 nnoremap <C-S-Right> gh<C-O>w
 inoremap <C-S-Right> <C-\><C-O>gh<C-O>w
-
-" Security
-" --------
-set secure                          " disables unsafe commands in project-specific .vimrc files
