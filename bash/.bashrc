@@ -81,6 +81,15 @@ export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; histor
 
 
 
+# ------------------ #
+# Set Default Editor #
+# ------------------ #
+
+export VISUAL=vim
+export EDITOR=$VISUAL
+
+
+
 # ------------------------ #
 # Load Local BASH Settings #
 # ------------------------ #
