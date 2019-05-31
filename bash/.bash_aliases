@@ -32,6 +32,8 @@ alias la='ls -al'
 alias ll='ls -l'
 alias vi='vim'
 alias :q='exit'
+alias yolo='sudo'
+alias l='ll'
 
 
 
