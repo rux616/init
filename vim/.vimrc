@@ -69,6 +69,12 @@ if filereadable(".vimrc.local")     " enable project-specific .vimrc files
     source .vimrc.local
 endif
 
+" Security
+" --------
+if v:version < 801 || !has("patch-8.1.1365")    " check if vim is < v8.1.1365
+    set nomodeline                              " disable modeline capability for security purposes
+endif                                           " see https://github.com/numirias/security/blob/master/doc/2019-06-04_ace-vim-neovim.md for more info
+
 " Keymaps
 " -------
 " Adds some GUI-centric keymaps for moving to next/previous word
