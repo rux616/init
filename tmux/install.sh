@@ -1,6 +1,6 @@
 #!/bin/bash
 
-local -a to_install
+declare -a to_install
 if [[ $(which xclip &>/dev/null; echo $?) -ne 0 ]]; then
     to_install+=('xclip')
 fi
