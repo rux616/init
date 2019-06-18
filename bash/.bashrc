@@ -69,15 +69,18 @@ fi
 # History Settings #
 # ---------------- #
 
+# Set history file to be different than default to avoid accidental overwrites
+export HISTFILE="$HOME/.bash_eternal_history"
+
 # Set timestamp format
 export HISTTIMEFORMAT="%F %T  "
 
 # Avoid duplicates
 export HISTCONTROL=ignoredups:erasedups
 
-# Big history
-export HISTSIZE=100000
-export HISTFILESIZE=100000
+# Gargantuan history
+export HISTSIZE=1000000
+export HISTFILESIZE=1000000
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
