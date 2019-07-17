@@ -4,5 +4,9 @@
     branch = master
 [submodule "vim/badwolf"]
     path = vim/badwolf
-    url = https://github.com/sjl/badwolf.git
+    url = https://github.com/sjl/badwolf
+    branch = master
+[submodule "vim/black"]
+    path = vim/black
+    url = https://github.com/python/black
     branch = master
