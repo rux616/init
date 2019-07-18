@@ -1,0 +1,11 @@
+backup ${home_dir}/.bash_profile
+backup ${home_dir}/.bashrc
+backup ${home_dir}/.bash_aliases
+backup ${home_dir}/.inputrc
+backup ${home_dir}/.terminal-control
+
+link ${config_dir}/.bash_profile ${home_dir}/.bash_profile
+link ${config_dir}/.bashrc ${home_dir}/.bashrc
+link ${config_dir}/.bash_aliases ${home_dir}/.bash_aliases
+link ${config_dir}/.inputrc ${home_dir}/.inputrc
+link ${config_dir}/.terminal-control ${home_dir}/.terminal-control

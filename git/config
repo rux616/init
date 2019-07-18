@@ -1,0 +1,3 @@
+backup ${home_dir}/.gitconfig
+
+link ${config_dir}/.gitconfig ${home_dir}/.gitconfig

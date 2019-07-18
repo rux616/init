@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# get directory where this script lives
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# source common functions
+source "${DIR}/.helper_functions.sh"
+
+# set the config file name
+config_file="config"
+
+# declare some arrays
+declare -A action_execs variables
+
+# define actions that can be taken          # define command each action executes
+actions=()
+action="prereq"; actions+=(${action});      action_execs[${action}]="check_prereqs"
+action="backup"; actions+=(${action});      action_execs[${action}]="back_up_files"
+action="submodule"; actions+=(${action});   action_execs[${action}]="git submodule update --init --remote --force --"
+action="directory"; actions+=(${action});   action_execs[${action}]="mkdir -p"
+action="link"; actions+=(${action});        action_execs[${action}]="ln -s"
+
+# define variables that can be used
+variables["base_dir"]="${DIR}"
+variables["home_dir"]="${HOME}"
+variables["config_dir"]=""
+
+# run through the list of configs
+for config_subdir in $@; do
+    # check to make sure the config exists, is readable, and isn't empty
+    if [[ -d "${config_subdir}" && -r "${config_subdir}/${config_file}" && -s "${config_subdir}/${config_file}" ]]; then
+        echo "configuring \"${config_subdir}\"..."
+
+        # make sure that the correct config subdir is being used
+        variables[config_dir]="${DIR}/${config_subdir}"
+
+        # run through all the actions
+        for action in ${actions[@]}; do
+            echo "    action: ${action}"
+            # get the options for the current action
+            options="$(parse_config_action ${config_subdir}/${config_file} ${action} $(tuplify variables))"
+
+            # only execute the action if there are options
+            if [[ ! -z "$options" ]]; then
+                $(${action_execs[${action}]} ${options})
+            fi
+        done
+    fi
+done
