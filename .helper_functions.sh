@@ -86,6 +86,10 @@ function create_links()
 # syntax: parse_config_option <config_file> <option_type> [(<var_name_1> <var_value_1>) ... (<var_name_n> <var_value_n>)]
 function parse_config_option()
 {
+    # set the variable marker prefix and suffix
+    local var_prefix='${'
+    local var_suffix='}'
+
     # get the config file and which option type is being parsed for
     local config_file="${1:?}"
     local option_type="${2:?}"
@@ -102,14 +106,14 @@ function parse_config_option()
 
     # go through options and search and replace variables
     for variable in ${!variables[@]}; do
-        options=($(sed 's|{{'${variable}'}}|'${variables[${variable}]}'|g' <<< ${options[@]}))
+        options=($(sed 's|'${var_prefix}${variable}${var_suffix}'|'${variables[${variable}]}'|g' <<< ${options[@]}))
     done
 
     # return the options, show any unknown variables, and set return code based on that
     echo ${options[@]}
-    if grep -P '({{|}})' <<< ${options[@]} &>/dev/null; then
+    if grep -P '('${var_prefix}'|'${var_suffix}')' <<< ${options[@]} &>/dev/null; then
         declare -A unknown_vars
-        for unknown_var in $(grep -Po '(?<={{)\w+(?=}})' <<< ${options[@]}); do
+        for unknown_var in $(grep -Po '(?<='${var_prefix}')\w+(?='${var_suffix}')' <<< ${options[@]}); do
             unknown_vars[${unknown_var}]=1
         done
         >&2 echo "unrecognized variable(s): ${!unknown_vars[@]}"
