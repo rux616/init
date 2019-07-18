@@ -68,6 +68,8 @@ set backspace=indent,eol,start      " enable backspace to backspace over things 
 if filereadable(".vimrc.local")     " enable project-specific .vimrc files
     source .vimrc.local
 endif
+runtime bundle/black.vim
+autocmd BufWritePre *.py execute ':Black'
 
 " Security
 " --------
