@@ -7,7 +7,7 @@ function back_up_files()
 {
     # process list of files
     for file in $@; do
-        if [ -e "${file}" ]; then
+        if [ -r "${file}" ]; then
             # if file exists, move it
             mv "${file}" "${file}.$(date +%Y%m%dT%H%M%S).bak"
         fi
@@ -81,36 +81,35 @@ function create_links()
     done
 }
 
-# parses a config file and substitutes variables for a given option type
+# parses a config file and substitutes variables for a given action type
 #
-# syntax: parse_config_option <config_file> <option_type> [(<var_name_1> <var_value_1>) ... (<var_name_n> <var_value_n>)]
-function parse_config_option()
+# syntax: parse_config_action <config_file> <action_type> [(<var_name_1> <var_value_1>) ... (<var_name_n> <var_value_n>)]
+function parse_config_action()
 {
     # set the variable marker prefix and suffix
-    local var_prefix='${'
+    local var_prefix='\${'
     local var_suffix='}'
 
-    # get the config file and which option type is being parsed for
+    # get the config file and which action type is being parsed for
     local config_file="${1:?}"
-    local option_type="${2:?}"
+    local action_type="${2:?}"
 
     # read the variables that are going to be used
-    declare -A variables
+    local -A variables
     while [[ "${3}" != "" && "${4}" != "" ]]; do
         variables[${3}]=${4}
         shift 2
     done
 
-    # get all options of the specified option type and escape '|' as necessary
-    options=($(grep '^'${option_type} ${config_file} | cut -d ' ' -f '2-' | sed 's/|/\|/g'))
+    # get all options of the specified action type and escape '|' as necessary
+    options=($(grep '^'${action_type} ${config_file} | cut -d ' ' -f '2-' | sed 's/|/\|/g'))
 
     # go through options and search and replace variables
     for variable in ${!variables[@]}; do
         options=($(sed 's|'${var_prefix}${variable}${var_suffix}'|'${variables[${variable}]}'|g' <<< ${options[@]}))
     done
 
-    # return the options, show any unknown variables, and set return code based on that
-    echo ${options[@]}
+    # check for any unknown variables and exit if any are found
     if grep -P '('${var_prefix}'|'${var_suffix}')' <<< ${options[@]} &>/dev/null; then
         declare -A unknown_vars
         for unknown_var in $(grep -Po '(?<='${var_prefix}')\w+(?='${var_suffix}')' <<< ${options[@]}); do
@@ -118,9 +117,32 @@ function parse_config_option()
         done
         >&2 echo "unrecognized variable(s): ${!unknown_vars[@]}"
         >&2 echo "config_file: ${config_file}"
-        >&2 echo "option_type: ${option_type}"
+        >&2 echo "action_type: ${action_type}"
         return 1
-    else
-        return 0
     fi
+
+    # return options
+    echo ${options[@]}
+}
+
+# tuple-ify an associative array
+#
+# syntax: tuplify <array_name>
+function tuplify() {
+    # note that this uses features found ONLY in bash versions > 4.3
+
+    # get a namedref to associative array
+    local -n array_name=$1
+
+    # set up variable to keep track of tuplified portions of the array
+    local tuplified=()
+
+    # run through the array
+    for index in ${!array_name[@]}; do
+        tuplified+=(${index})
+        tuplified+=(${array_name[${index}]})
+    done
+
+    # return tuplified version of the array
+    echo ${tuplified[@]}
 }
