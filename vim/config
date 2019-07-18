@@ -6,7 +6,7 @@ backup ${home_dir}/.vim/colors/badwolf.vim
 backup ${home_dir}/.vim/bundle/black.vim
 
 submodule ${config_dir}/badwolf
-submodule $(config_dir}/black
+submodule ${config_dir}/black
 
 directory ${home_dir}/.vim/colors
 directory ${home_dir}/.vim/bundle
