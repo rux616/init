@@ -1,24 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Get directory where this script lives, because that's where the files will also be
+# get directory where this script lives
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Get common functions
-source "$DIR/../.common_functions.sh"
+# source common functions
+source "${DIR}/../.common_functions.sh"
 
-# Update or init submodules
-cd $DIR/..
-git submodule update --init
-git submodule update --remote
+# check prereqs
+prereqs=()
+prereqs+=('python3')
+prereqs+=('pip3')
+check_prereqs ${prereqs[@]} || exit 1
 
-# Back up existing files
-back_up_file "$HOME/.vimrc"
-back_up_file "$HOME/.vim/colors/badwolf.vim"
+# init/update submodules
+git submodule update --init --remote --force -- ${DIR}
 
-# Attempt to create .vim/colors/
-mkdir -p "$HOME/.vim/colors" 2>/dev/null
+# back up existing files
+files=()
+files+=("${HOME}/.vimrc")
+files+=("${HOME}/.vim/colors/badwolf.vim")
+files+=("${HOME}/.vim/bundle/black.vim")
+back_up_files ${files[@]}
 
-# Symlink files into their appropriate places
-ln -s "$DIR/.vimrc" "$HOME/.vimrc"
-ln -s "$DIR/badwolf/colors/badwolf.vim" "$HOME/.vim/colors/badwolf.vim"
+# attempt to create required directories
+directories=()
+directories+=("${HOME}/.vim/colors")
+directories+=("${HOME}/.vim/bundle")
+mkdir -p ${directories[@]} 2>/dev/null
 
+# symlink files into their appropriate places
+links=()
+links+=("${DIR}/.vimrc" "${HOME}/.vimrc")
+links+=("${DIR}/badwolf/colors/badwolf.vim" "${HOME}/.vim/colors/badwolf.vim")
+links+=("${DIR}/black/plugin/black.vim" "${HOME}/.vim/bundle/black.vim")
+create_links ${links[@]}

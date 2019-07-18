@@ -1,21 +1,25 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Get directory where this script lives, because that's where the bash files will also be
+# get directory where this script lives
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Get common functions
-source "$DIR/../.common_functions.sh"
+# source common functions
+source "${DIR}/../.common_functions.sh"
 
-# Back up existing user bash files
-back_up_file "$HOME/.bash_profile"
-back_up_file "$HOME/.bashrc"
-back_up_file "$HOME/.bash_aliases"
-back_up_file "$HOME/.inputrc"
-back_up_file "$HOME/.terminal-control"
+# back up existing files
+files=()
+files+=("${HOME}/.bash_profile")
+files+=("${HOME}/.bashrc")
+files+=("${HOME}/.bash_aliases")
+files+=("${HOME}/.inputrc")
+files+=("${HOME}/.terminal-control")
+back_up_files ${files[@]}
 
-# Symlink bash files into their appropriate places
-ln -s "$DIR/.bash_profile" "$HOME/.bash_profile"
-ln -s "$DIR/.bashrc" "$HOME/.bashrc"
-ln -s "$DIR/.bash_aliases" "$HOME/.bash_aliases"
-ln -s "$DIR/.inputrc" "$HOME/.inputrc"
-ln -s "$DIR/.terminal-control" "$HOME/.terminal-control"
+# symlink files into their appropriate places
+links=()
+links+=("${DIR}/.bash_profile" "${HOME}/.bash_profile")
+links+=("${DIR}/.bashrc" "${HOME}/.bashrc")
+links+=("${DIR}/.bash_aliases" "${HOME}/.bash_aliases")
+links+=("${DIR}/.inputrc" "${HOME}/.inputrc")
+links+=("${DIR}/.terminal-control" "${HOME}/.terminal-control")
+create_links ${links[@]}

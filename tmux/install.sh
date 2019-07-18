@@ -1,40 +1,34 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-declare -a to_install
-if [[ $(which xclip &>/dev/null; echo $?) -ne 0 ]]; then
-    to_install+=('xclip')
-fi
-if [[ $(which iostat &>/dev/null; echo $?) -ne 0 ]]; then
-    to_install+=('iostat')
-fi
-if [[ $(which sar &>/dev/null; echo $?) -ne 0 ]]; then
-    to_install+=('sar')
-fi
-if [[ ${#to_install[@]} -ne 0 ]]; then
-    echo 'Please make sure that the following are installed prior to using this script:'
-    echo "    ${to_install[@]}"
-    exit 1
-fi
-
-# Get directory where this script lives, because that's where the files will also be
+# get directory where this script lives
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Get common functions
-source "$DIR/../.common_functions.sh"
+# source common functions
+source "${DIR}/../.common_functions.sh"
 
-# Update or init submodules
-cd $DIR
-git submodule update --init -- .
-git submodule update --remote -- .
+# check prerequisites
+prereqs=()
+prereqs+=('xclip')
+prepres+=('iostat')
+prereqs+=('sar')
+check_prereqs ${prereqs[@]} || exit 1
 
-# Back up existing files
-back_up_file "$HOME/.tmux.conf"
-back_up_file "$HOME/.tmux/plugins/tpm"
+# update or init submodules
+git submodule update --init --remote --force -- ${DIR}
 
-# Attempt to create .tmux/plugins/
-mkdir -p "$HOME/.tmux/plugins" 2>/dev/null
+# back up existing files
+files+=()
+files+=("${HOME}/.tmux.conf")
+files+=("${HOME}/.tmux/plugins/tpm")
+back_up_files ${files[@]}
 
-# Symlink files into their appropriate places
-ln -s "$DIR/.tmux.conf" "$HOME/.tmux.conf"
-ln -s "$DIR/tpm" "$HOME/.tmux/plugins/tpm"
+# attempt to create required directories
+directories=()
+directories+=("${HOME}/.tmux/plugins")
+mkdir -p ${directories[@]} 2>/dev/null
 
+# symlink files into their appropriate places
+links=()
+links+=("${DIR}/.tmux.conf" "${HOME}/.tmux.conf")
+links+=("${DIR}/tpm" "${HOME}/.tmux/plugins/tpm")
+create_links ${links[@]}
