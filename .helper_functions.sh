@@ -146,3 +146,11 @@ function tuplify() {
     # return tuplified version of the array
     echo ${tuplified[@]}
 }
+
+# run an arbitrary command
+#
+# syntax run_command [param_1] ... [param_n]
+function run_command() {
+    # run the command
+    $@
+}

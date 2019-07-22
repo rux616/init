@@ -16,9 +16,11 @@ declare -A action_execs variables
 actions=()
 action="prereq"; actions+=(${action});      action_execs[${action}]="check_prereqs"
 action="backup"; actions+=(${action});      action_execs[${action}]="back_up_files"
+action="init"; actions+=(${action});        action_execs[${action}]="run_command"
 action="submodule"; actions+=(${action});   action_execs[${action}]="git submodule update --init --remote --force --"
 action="directory"; actions+=(${action});   action_execs[${action}]="mkdir -p"
 action="link"; actions+=(${action});        action_execs[${action}]="create_links"
+action="postinit"; actions+=(${action});    action_execs[${action}]="run_command"
 
 # define variables that can be used
 variables["base_dir"]="${DIR}"
@@ -41,6 +43,7 @@ for config_subdir in $@; do
             options="$(parse_config_action ${config_subdir}/${config_file} ${action} $(tuplify variables))"
             # only execute the action if there are options
             if [[ ! -z "$options" ]]; then
+                echo "      └ executing: ${action_execs[${action}]} ${options}"
                 ${action_execs[${action}]} ${options}
             fi
         done
