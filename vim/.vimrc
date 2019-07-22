@@ -16,6 +16,8 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'python/black'
 Plugin 'sjl/badwolf'
 Plugin 'tpope/vim-fugitive'
+Plugin 'hashivim/vim-terraform'
+Plugin 'hashivim/vim-packer'
 
 " vim-scripts.org plugins
 Plugin 'L9'
