@@ -2,14 +2,6 @@
     path = tmux/tpm
     url = https://github.com/tmux-plugins/tpm
     branch = master
-[submodule "vim/badwolf"]
-    path = vim/badwolf
-    url = https://github.com/sjl/badwolf
-    branch = master
-[submodule "vim/black"]
-    path = vim/black
-    url = https://github.com/python/black
-    branch = master
 [submodule "vim/vundle"]
     path = vim/vundle
     url = https://github.com/VundleVim/Vundle.vim
