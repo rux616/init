@@ -112,10 +112,11 @@ silent! colorscheme badwolf
 " -------------
 syntax enable                       " enable syntax highlighting
 set backspace=indent,eol,start      " enable backspace to backspace over things in insert mode
-if filereadable(".vimrc.local")     " enable project-specific .vimrc files
-    source .vimrc.local
-endif
+" automatically black-format python files on save
 autocmd BufWritePre *.py execute ':Black'
+if !exists("g:terraform_fmt_on_save")
+    let g:terraform_fmt_on_save = 1
+endif
 
 " Security
 " --------
@@ -134,3 +135,9 @@ nnoremap <C-Right> w
 vnoremap <C-S-Right> w
 nnoremap <C-S-Right> gh<C-O>w
 inoremap <C-S-Right> <C-\><C-O>gh<C-O>w
+
+" Local Files
+" -----------
+if filereadable(".vimrc.local")     " enable project-specific .vimrc files
+    source .vimrc.local
+endif
