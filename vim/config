@@ -1,16 +1,15 @@
 prereq python3
 prereq pip3
+prereq curl
 
 backup ${home_dir}/.vimrc
-backup ${home_dir}/.vim/colors/badwolf.vim
-backup ${home_dir}/.vim/bundle/black.vim
+backup ${home_dir}/.vim/bundle/Vundle.vim
 
-submodule ${config_dir}/badwolf
-submodule ${config_dir}/black
+submodule ${config_dir}/vundle
 
-directory ${home_dir}/.vim/colors
 directory ${home_dir}/.vim/bundle
 
 link ${config_dir}/.vimrc ${home_dir}/.vimrc
-link ${config_dir}/badwolf/colors/badwolf.vim ${home_dir}/.vim/colors/badwolf.vim
-link ${config_dir}/black/plugin/black.vim ${home_dir}/.vim/bundle/black.vim
+link ${config_dir}/vundle/ ${home_dir}/.vim/bundle/Vundle.vim
+
+postinit vim +PluginInstall +qall
