@@ -154,7 +154,7 @@ function tuplify_variables() {
     local tuplified=()
 
     # run through the array
-    for index in ${variables[@]}; do
+    for index in ${!variables[@]}; do
         tuplified+=(${index})
         tuplified+=(${variables[${index}]})
     done
