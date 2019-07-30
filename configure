@@ -10,17 +10,18 @@ source "${DIR}/.helper_functions.sh"
 config_file="config"
 
 # declare some arrays
-declare -A action_execs variables
+declare -A action_execs error_is_fatal variables
 
-# define actions that can be taken          # define command each action executes
+# define actions that can be taken
+# note that these must be in order from first to last
 actions=()
-action="prereq"; actions+=(${action});      action_execs[${action}]="check_prereqs"
-action="backup"; actions+=(${action});      action_execs[${action}]="back_up_files"
-action="init"; actions+=(${action});        action_execs[${action}]="run_command"
-action="submodule"; actions+=(${action});   action_execs[${action}]="git submodule update --init --remote --force --"
-action="directory"; actions+=(${action});   action_execs[${action}]="mkdir -p"
-action="link"; actions+=(${action});        action_execs[${action}]="create_links"
-action="postinit"; actions+=(${action});    action_execs[${action}]="run_command"
+define_action "prereq"      "check_prereqs"                                     "true"
+define_action "backup"      "back_up_files"                                     "false"
+define_action "precmd"      "run_command"                                       "false"
+define_action "submodule"   "git submodule update --init --remote --force --"   "false"
+define_action "directory"   "mkdir -p"                                          "false"
+define_action "link"        "create_links"                                      "false"
+define_action "postcmd"     "run_command"                                       "false"
 
 # define variables that can be used
 variables["base_dir"]="${DIR}"
@@ -40,11 +41,15 @@ for config_subdir in $@; do
         for action in ${actions[@]}; do
             echo "    action: ${action}"
             # get the options for the current action
-            options="$(parse_config_action ${config_subdir}/${config_file} ${action} $(tuplify variables))"
+            options="$(parse_config_action ${config_subdir}/${config_file} ${action} $(tuplify_variables))"
             # only execute the action if there are options
             if [[ ! -z "$options" ]]; then
                 echo "      └ executing: ${action_execs[${action}]} ${options}"
                 ${action_execs[${action}]} ${options}
+                if [[ $? -ne 0 && ${error_is_fatal[${action}]} == 'true' ]]; then
+                    echo "      └ error: fatal"
+                    exit 1
+                fi
             fi
         done
     fi

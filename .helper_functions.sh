@@ -60,8 +60,7 @@ function check_prereqs()
 
     if [[ ${#to_install[@]} -ne 0 ]]; then
         # things need to be installed
-        echo "Please make sure that the following are installed:"
-        echo "    ${to_install[@]}"
+        echo "      └ needs to be installed: ${to_install[@]}"
         return 1
     else
         # things don't need to be installed
@@ -129,7 +128,7 @@ function parse_config_action()
 #
 # syntax: tuplify <array_name>
 function tuplify() {
-    # note that this uses features found ONLY in bash versions > 4.3
+    # note that this uses features found ONLY in bash versions >= 4.3
 
     # get a namedref to associative array
     local -n array_name=$1
@@ -147,10 +146,61 @@ function tuplify() {
     echo ${tuplified[@]}
 }
 
+# tuple-ify the 'variables' associative array
+#
+# syntax: tuplify_variables
+function tuplify_variables() {
+    # set up variable to keep track of tuplified portions of the array
+    local tuplified=()
+
+    # run through the array
+    for index in ${variables[@]}; do
+        tuplified+=(${index})
+        tuplified+=(${variables[${index}]})
+    done
+
+    # return tuplified version of the array
+    echo ${tuplified[@]}
+}
+
 # run an arbitrary command
 #
-# syntax run_command [param_1] ... [param_n]
+# syntax: run_command [param_1] ... [param_n]
 function run_command() {
     # run the command
     $@
+}
+
+# checks whether the minimum bash version is met
+#
+# syntax: minimum_bash_version <minimum_version_in_X.Y_form>
+function minimum_bash_version() {
+    # declare local variables
+    local minimum_version=()
+    local current_version=()
+
+    # read minimum version and current version
+    readarray -d '.' -n 2 -t minimum_version <<< "$@"
+    readarray -d '.' -n 2 -t current_version <<< "${BASH_VERSION}"
+
+    # compare and return based on result
+    if [[ ${current_version[0]} -gt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -ge ${minimum_version[1]} ) ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# define actions to be taken
+#
+# syntax: define_action <action_name> <action_to_be_taken> <true|false>
+function define_action() {
+    # define the action name
+    actions+=($1)
+
+    # define the action to be executed
+    action_execs[$1]="$2"
+
+    # define whether an error in this action is fatal
+    error_is_fatal[$1]="$3"
 }

@@ -12,4 +12,4 @@ directory ${home_dir}/.vim/bundle
 link ${config_dir}/.vimrc ${home_dir}/.vimrc
 link ${config_dir}/vundle/ ${home_dir}/.vim/bundle/Vundle.vim
 
-postinit vim +PluginInstall +qall
+postcmd vim +PluginInstall +qall
