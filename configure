@@ -16,8 +16,8 @@ declare -A action_execs error_is_fatal variables
 # note that these must be in order from first to last
 actions=()
 define_action "prereq"      "check_prereqs"                                     "true"
+define_action "precmd"      "run_command"                                       "true"
 define_action "backup"      "back_up_files"                                     "false"
-define_action "precmd"      "run_command"                                       "false"
 define_action "submodule"   "git submodule update --init --remote --force --"   "false"
 define_action "directory"   "mkdir -p"                                          "false"
 define_action "link"        "create_links"                                      "false"
@@ -48,7 +48,7 @@ for config_subdir in $@; do
                 ${action_execs[${action}]} ${options}
                 if [[ $? -ne 0 && ${error_is_fatal[${action}]} == 'true' ]]; then
                     echo "      └ error: fatal"
-                    exit 1
+                    break
                 fi
             fi
         done

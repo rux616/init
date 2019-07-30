@@ -169,6 +169,7 @@ function tuplify_variables() {
 function run_command() {
     # run the command
     $@
+    return $?
 }
 
 # checks whether the minimum bash version is met
