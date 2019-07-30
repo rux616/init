@@ -1,6 +1,9 @@
+prereq vim
 prereq python3
 prereq pip3
 prereq curl
+
+precmd vim --version | grep '+python3'
 
 backup ${home_dir}/.vimrc
 backup ${home_dir}/.vim/bundle/Vundle.vim
