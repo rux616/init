@@ -70,22 +70,25 @@ fi
 # ---------------- #
 
 # Set history file to be different than default to avoid accidental overwrites
+# http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
 export HISTFILE="$HOME/.bash_eternal_history"
 
 # Set timestamp format
-export HISTTIMEFORMAT="%F %T  "
+export HISTTIMEFORMAT="[%F %T]  "
 
 # Avoid duplicates
 export HISTCONTROL=ignoredups:erasedups
 
-# Gargantuan history
-export HISTSIZE=1000000
-export HISTFILESIZE=1000000
+# Unlimited history
+# http://stackoverflow.com/questions/9457233/unlimited-bash-history
+export HISTSIZE=
+export HISTFILESIZE=
 
 # When the shell exits, append to the history file instead of overwriting it
 shopt -s histappend
 
 # After each command, append to the history file and reread it
+# http://superuser.com/questions/20900/bash-history-loss
 export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
 
 
