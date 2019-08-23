@@ -136,6 +136,11 @@ vnoremap <C-S-Right> w
 nnoremap <C-S-Right> gh<C-O>w
 inoremap <C-S-Right> <C-\><C-O>gh<C-O>w
 
+" Filetype-specifics
+" ------------------
+autocmd FileType sh setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+autocmd FileType python setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+
 " Local Files
 " -----------
 if filereadable(".vimrc.local")     " enable project-specific .vimrc files
