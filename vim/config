@@ -2,6 +2,7 @@ prereq vim
 prereq python3
 prereq pip3
 prereq curl
+prereq pyenv
 
 precmd vim --version 2>&1 | grep '+python3' &>/dev/null
 
