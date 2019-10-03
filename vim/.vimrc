@@ -13,7 +13,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 " github plugins
-Plugin 'python/black'
+Plugin 'psf/black'
 Plugin 'sjl/badwolf'
 Plugin 'tpope/vim-fugitive'
 Plugin 'hashivim/vim-terraform'
