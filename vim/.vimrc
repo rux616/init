@@ -117,6 +117,12 @@ autocmd BufWritePre *.py execute ':Black'
 if !exists("g:terraform_fmt_on_save")
     let g:terraform_fmt_on_save = 1
 endif
+function FormatJson()
+    %!jq '.'
+endfunction
+function SortJson()
+    %!jq -S 'walk(if type=="array" then sort elif type == "object" then to_entries | sort | from_entries else . end)'
+endfunction
 
 " Security
 " --------
