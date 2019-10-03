@@ -1,5 +1,5 @@
 prereq vim
-prereq python3.7
+prereq python3
 prereq pip3
 prereq curl
 
