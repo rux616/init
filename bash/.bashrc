@@ -63,6 +63,9 @@ else
 	export PS1="${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T UTC%:::z")'"]${Rst} ${Bold}${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
 fi
 
+# activate command completion for the AWS CLI if the completer command is installed
+aws_completer_command=$(command -v aws_completer) && complete -C "${aws_completer_command}" aws
+
 
 
 # ---------------- #
