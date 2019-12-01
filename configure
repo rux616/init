@@ -15,6 +15,7 @@ declare -A action_execs error_is_fatal variables
 # define actions that can be taken
 # note that these must be in order from first to last
 actions=()
+#             action_name   action_execs                                        error_is_fatal
 define_action "prereq"      "check_prereqs"                                     "true"
 define_action "precmd"      "run_command"                                       "true"
 define_action "backup"      "back_up_files"                                     "false"
