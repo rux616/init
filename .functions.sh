@@ -86,8 +86,8 @@ function create_links()
 function parse_config_action()
 {
     # set the variable marker prefix and suffix
-    local var_prefix='\${'
-    local var_suffix='}'
+    local var_prefix='{{'
+    local var_suffix='}}'
 
     # get the config file and which action type is being parsed for
     local config_file="${1:?}"

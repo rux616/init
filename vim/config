@@ -4,16 +4,17 @@ prereq pip3
 prereq curl
 prereq pyvenv
 
-precmd vim --version 2>&1 | grep '+python3' &>/dev/null
+precmd vim --version | grep '+python3' &>/dev/null
+precmd python3 --version | egrep 'Python 3\.([6-9]|[1-9][0-9]+)'
 
-backup ${home_dir}/.vimrc
-backup ${home_dir}/.vim/bundle/Vundle.vim
+backup {{home_dir}}/.vimrc
+backup {{home_dir}}/.vim/bundle/Vundle.vim
 
-submodule ${config_dir}/vundle
+submodule {{config_dir}}/vundle
 
-directory ${home_dir}/.vim/bundle
+directory {{home_dir}}/.vim/bundle
 
-link ${config_dir}/.vimrc ${home_dir}/.vimrc
-link ${config_dir}/vundle/ ${home_dir}/.vim/bundle/Vundle.vim
+link {{config_dir}}/.vimrc {{home_dir}}/.vimrc
+link {{config_dir}}/vundle/ {{home_dir}}/.vim/bundle/Vundle.vim
 
 postcmd vim +PluginInstall +qall

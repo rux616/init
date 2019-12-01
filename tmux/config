@@ -2,12 +2,12 @@ prereq xclip
 prereq iostat
 prereq sar
 
-backup ${home_dir}/.tmux.conf
-backup ${home_dir}/.tmux/plugins/tpm
+backup {{home_dir}}/.tmux.conf
+backup {{home_dir}}/.tmux/plugins/tpm
 
-submodule ${config_dir}/tpm
+submodule {{config_dir}}/tpm
 
-directory ${home_dir}/.tmux/plugins
+directory {{home_dir}}/.tmux/plugins
 
-link ${config_dir}/.tmux.conf ${home_dir}/.tmux.conf
-link ${config_dir}/tpm ${home_dir}/.tmux/plugins/tpm
+link {{config_dir}}/.tmux.conf {{home_dir}}/.tmux.conf
+link {{config_dir}}/tpm {{home_dir}}/.tmux/plugins/tpm
