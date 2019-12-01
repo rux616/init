@@ -168,7 +168,7 @@ function tuplify_variables() {
 # syntax: run_command [param_1] ... [param_n]
 function run_command() {
     # run the command
-    $@
+    eval "$@"
     return $?
 }
 
