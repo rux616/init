@@ -172,23 +172,99 @@ function run_command() {
     return $?
 }
 
-# checks whether the minimum bash version is met
+# checks whether the minimum version is met
 #
-# syntax: minimum_bash_version <minimum_version_in_X.Y_form>
-function minimum_bash_version() {
+# syntax: check_minimum_version <version_command_to_run> <minimum_version> <version_string_type>
+function check_minimum_version() {
+    set -x
     # declare local variables
     local minimum_version=()
     local current_version=()
+    local version_string_type=""
 
-    # read minimum version and current version
-    readarray -d '.' -n 2 -t minimum_version <<< "$@"
-    readarray -d '.' -n 2 -t current_version <<< "${BASH_VERSION}"
+    # declare local array to keep track of what commands don't meet version reqs
+    local minimum_version_not_met=()
 
-    # compare and return based on result
-    if [[ ${current_version[0]} -gt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -ge ${minimum_version[1]} ) ]]; then
-        return 0
-    else
+    # loop through and check what's there and what's not
+    while [[ -n "$@" ]]; do
+        # reinitialize version variables
+        minimum_version=()
+        current_version=()
+
+        # get version string type
+        #   type1: x.y
+        #       x: number
+        #       y: number
+        #   type2: x.y.z
+        #       x: number
+        #       y: number
+        #       z: number
+        #   type3: x.ya
+        #       x: number
+        #       y: number
+        #       a: letter
+        version_string_type=$3
+
+        # get minimum version
+        case ${version_string_type} in
+            type1|type2)
+                readarray -d '.' -t minimum_version <<< "$2"
+                ;;
+            type3)
+                readarray -d '.' -t minimum_version <<< "$(echo "$2" | awk '{print tolower($1)}' | sed -r 's/([0-9]+)([a-zA-Z])/\1.\2/')"
+                ;;
+            *)
+                echo "      └ error: unknown version string type '${version_string_type}'"
+                ;;
+        esac
+
+        # get current version
+        case ${version_string_type} in
+            type1)
+                readarray -d '.' -t current_version <<< $(eval "$1" | egrep -o -m 1 '[0-9]+\.[0-9]+')
+                ;;
+            type2)
+                readarray -d '.' -t current_version <<< $(eval "$1" | egrep -o -m 1 '[0-9]+\.[0-9]+\.[0-9]+')
+                ;;
+            type3)
+                readarray -d '.' -t current_version <<< $(eval "$1" | egrep -o -m 1 '[0-9]+\.[0-9]+[a-zA-Z]' | awk '{print tolower($1)}' | sed -r 's|([0-9]+)([a-zA-Z])|\1.\2|')
+            *)
+                ;;
+        esac
+
+        # compare versions
+        case ${version_string_type} in
+            type1)
+                if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) ]]; then
+                    minimum_version_not_met+=( "$1" )
+                fi
+                ;;
+            type2)
+                if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -eq ${minimum_version[1]} && ${current_version[2]} -lt ${minimum_version[2]} ) ]]; then
+                    minimum_version_not_met+=( "$1" )
+                fi
+                ;;
+            type3)
+                if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -eq ${minimum_version[1]} && $(ord ${current_version[2]}) -lt $(ord ${minimum_version[2]}) ) ]]; then
+                    minimum_version_not_met+=( "$1" )
+                fi
+                ;;
+            *)
+                ;;
+        esac
+
+        shift 3
+    done
+
+    if [[ ${#minimum_version_not_met[@]} -ne 0 ]]; then
+        # minimum versions not met
+        echo "      └ minimum versions not met: ${minimum_version_not_met[@]}"
+        set +x
         return 1
+    else
+        # minimum versions met
+        set +x
+        return 0
     fi
 }
 
