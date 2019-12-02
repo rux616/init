@@ -243,13 +243,13 @@ function check_minimum_version() {
         current_version_string="$(${program_to_check} ${version_argument})"
         case ${version_string_type} in
             type1)
-                readarray -t current_version < <(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+' | sed 's/\./\n/g')
+                readarray -t current_version < <(echo "${current_version_string}" | egrep -o '[0-9]+\.[0-9]+' | head -n 1 | sed 's/\./\n/g')
                 ;;
             type2)
-                readarray -t current_version < <(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+\.[0-9]+' | sed 's/\./\n/g')
+                readarray -t current_version < <(echo "${current_version_string}" | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed 's/\./\n/g')
                 ;;
             type3)
-                readarray -t current_version < <(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+[a-zA-Z]' | awk '{print tolower($1)}' | sed -r 's|([0-9]+)([a-zA-Z])|\1.\2|' | sed 's/\./\n/\g')
+                readarray -t current_version < <(echo "${current_version_string}" | egrep -o '[0-9]+\.[0-9]+[a-zA-Z]' | head -n 1 | awk '{print tolower($1)}' | sed -r 's|([0-9]+)([a-zA-Z])|\1.\2|' | sed 's/\./\n/\g')
                 ;;
             *)
                 ;;
