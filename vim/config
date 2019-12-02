@@ -4,8 +4,7 @@ prereq pip3
 prereq curl
 prereq pyvenv
 
-precmd vim --version | grep '+python3' &>/dev/null
-precmd python3 --version | egrep 'Python 3\.([6-9]|[1-9][0-9]+)'
+minver 'python3 --version' 3.6.0 type2
 
 backup {{home_dir}}/.vimrc
 backup {{home_dir}}/.vim/bundle/Vundle.vim
