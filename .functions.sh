@@ -176,7 +176,6 @@ function run_command() {
 #
 # syntax: check_minimum_version <program_to_check> <version_argument> <minimum_version> <version_string_type>
 function check_minimum_version() {
-    set -x
     # declare local variables
     local program_to_check=""
     local version_argument=""
@@ -186,10 +185,10 @@ function check_minimum_version() {
     local current_version_string=""
     local current_version=()
 
-    # declare local array to keep track of what commands don't meet version reqs
+    # declare local array to keep track of what commands don't meet minimum version reqs
     local minimum_version_not_met=()
 
-    # loop through and check what's there and what's not
+    # loop through and check versions
     while [[ -n "$@" ]]; do
         # reinitialize version variables
         minimum_version=()
@@ -268,11 +267,9 @@ function check_minimum_version() {
     if [[ ${#minimum_version_not_met[@]} -ne 0 ]]; then
         # minimum versions not met
         echo "      └ minimum versions not met: ${minimum_version_not_met[@]}"
-        set +x
         return 1
     else
         # minimum versions met
-        set +x
         return 0
     fi
 }
