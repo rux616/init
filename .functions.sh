@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+# get character from character code
+#
+# syntax: chr <character_code>
+function chr() {
+    [[ $1 -ge 0 && $1 -le 255 ]] || return 1
+    printf "\\$(printf '%03o' "$1")"
+}
+
+# get character code from character
+#
+# syntax: ord <character>
+function ord() {
+    LC_TYPE=C printf '%d' "'$1"
+}
+
 # back up a list of files
 #
 # syntax: back_up_files [file_1] ... [file_n]
