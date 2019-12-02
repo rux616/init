@@ -259,17 +259,17 @@ function check_minimum_version() {
         case ${version_string_type} in
             type1)
                 if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) ]]; then
-                    minimum_version_not_met+=( "${program_to_check}" )
+                    minimum_version_not_met+=( "${program_to_check}(${current_version[@]}<${minimum_version[@]})" )
                 fi
                 ;;
             type2)
                 if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -eq ${minimum_version[1]} && ${current_version[2]} -lt ${minimum_version[2]} ) ]]; then
-                    minimum_version_not_met+=( "${program_to_check}" )
+                    minimum_version_not_met+=( "${program_to_check}(${current_version[@]}<${minimum_version[@]})" )
                 fi
                 ;;
             type3)
                 if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -eq ${minimum_version[1]} && $(ord ${current_version[2]}) -lt $(ord ${minimum_version[2]}) ) ]]; then
-                    minimum_version_not_met+=( "${program_to_check}" )
+                    minimum_version_not_met+=( "${program_to_check}(${current_version[@]}<${minimum_version[@]})" )
                 fi
                 ;;
             *)
