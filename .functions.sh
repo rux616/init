@@ -228,6 +228,7 @@ function check_minimum_version() {
                 ;;
             type3)
                 readarray -d '.' -t current_version <<< $(eval "$1" | egrep -o -m 1 '[0-9]+\.[0-9]+[a-zA-Z]' | awk '{print tolower($1)}' | sed -r 's|([0-9]+)([a-zA-Z])|\1.\2|')
+                ;;
             *)
                 ;;
         esac
