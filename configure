@@ -34,7 +34,7 @@ variables["config_dir"]=""
 for config_subdir in $@; do
     # check to make sure the config exists, is readable, and isn't empty
     if [[ -d "${config_subdir}" && -r "${config_subdir}/${config_file}" && -s "${config_subdir}/${config_file}" ]]; then
-        echo "configuring \"${config_subdir}\"..."
+        echo "configuring ${config_subdir}..."
 
         # make sure that the correct config subdir is being used
         variables[config_dir]="${DIR}/${config_subdir}"
