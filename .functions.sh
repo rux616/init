@@ -197,6 +197,7 @@ function check_minimum_version() {
     local version_string_type=""
     local minimum_version_string=""
     local minimum_version=()
+    local current_version_string_raw=""
     local current_version_string=""
     local current_version=()
 
@@ -240,16 +241,19 @@ function check_minimum_version() {
         # get current version
         program_to_check="$1"
         version_argument="$2"
-        current_version_string="$(${program_to_check} ${version_argument})"
+        current_version_string_raw="$(${program_to_check} ${version_argument})"
         case ${version_string_type} in
             type1)
-                readarray -t current_version < <(echo "${current_version_string}" | egrep -o '[0-9]+\.[0-9]+' | head -n 1 | sed 's/\./\n/g')
+                current_version_string="$(echo "${current_version_string_raw}" | egrep -o '[0-9]+\.[0-9]+' | head -n 1)"
+                readarray -t current_version < <(echo "${current_version_string}" | sed 's/\./\n/g')
                 ;;
             type2)
-                readarray -t current_version < <(echo "${current_version_string}" | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed 's/\./\n/g')
+                current_version_string="$(echo "${current_version_string_raw}" | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)"
+                readarray -t current_version < <(echo "${current_version_string}" | sed 's/\./\n/g')
                 ;;
             type3)
-                readarray -t current_version < <(echo "${current_version_string}" | egrep -o '[0-9]+\.[0-9]+[a-zA-Z]' | head -n 1 | awk '{print tolower($1)}' | sed -r 's|([0-9]+)([a-zA-Z])|\1.\2|' | sed 's/\./\n/\g')
+                current_version_string="$(echo "${current_version_string_raw}" | egrep -o '[0-9]+\.[0-9]+[a-zA-Z]' | head -n 1)"
+                readarray -t current_version < <(echo "${current_version_string}" | awk '{print tolower($1)}' | sed -r 's|([0-9]+)([a-zA-Z])|\1.\2|' | sed 's/\./\n/\g')
                 ;;
             *)
                 ;;
@@ -259,17 +263,17 @@ function check_minimum_version() {
         case ${version_string_type} in
             type1)
                 if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) ]]; then
-                    minimum_version_not_met+=( "${program_to_check}<${minimum_version_string}" )
+                    minimum_version_not_met+=( "${program_to_check}=${current_version_string}<${minimum_version_string}" )
                 fi
                 ;;
             type2)
                 if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -eq ${minimum_version[1]} && ${current_version[2]} -lt ${minimum_version[2]} ) ]]; then
-                    minimum_version_not_met+=( "${program_to_check}<${minimum_version_string}" )
+                    minimum_version_not_met+=( "${program_to_check}=${current_version_string}<${minimum_version_string}" )
                 fi
                 ;;
             type3)
                 if [[ ${current_version[0]} -lt ${minimum_version[0]} || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -lt ${minimum_version[1]} ) || ( ${current_version[0]} -eq ${minimum_version[0]} && ${current_version[1]} -eq ${minimum_version[1]} && $(ord ${current_version[2]}) -lt $(ord ${minimum_version[2]}) ) ]]; then
-                    minimum_version_not_met+=( "${program_to_check}<${minimum_version_string}" )
+                    minimum_version_not_met+=( "${program_to_check}=${current_version_string}<${minimum_version_string}" )
                 fi
                 ;;
             *)
