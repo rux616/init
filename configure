@@ -41,11 +41,11 @@ for config_subdir in $@; do
 
         # run through all the actions
         for action in ${actions[@]}; do
-            echo "    action: ${action}"
             # get the options for the current action
             options="$(parse_config_action ${config_subdir}/${config_file} ${action} $(tuplify_variables))"
             # only execute the action if there are options
             if [[ -n "$options" ]]; then
+                echo "    action: ${action}"
                 echo "      └ executing: ${action_execs[${action}]} ${options}"
                 ${action_execs[${action}]} ${options}
                 if [[ $? -ne 0 && ${error_is_fatal[${action}]} == 'true' ]]; then
