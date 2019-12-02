@@ -213,10 +213,10 @@ function check_minimum_version() {
         minimum_version_string="$3"
         case ${version_string_type} in
             type1|type2)
-                readarray -d '.' -t minimum_version <<< "${minimum_version_string}"
+                readarray -t minimum_version < <(echo "${minimum_version_string}" | sed 's/\./\n/g')
                 ;;
             type3)
-                readarray -d '.' -t minimum_version <<< "$(echo "${minimum_version_string}" | awk '{print tolower($1)}' | sed -r 's/([0-9]+)([a-zA-Z])/\1.\2/')"
+                readarray -t minimum_version < <(echo "${minimum_version_string}" | awk '{print tolower($1)}' | sed -r 's/([0-9]+)([a-zA-Z])/\1.\2/' | sed 's/\./\n/g')
                 ;;
             *)
                 echo "      └ error: unknown version string type '${version_string_type}'"
@@ -229,13 +229,13 @@ function check_minimum_version() {
         current_version_string="$(${program_to_check} ${version_argument})"
         case ${version_string_type} in
             type1)
-                readarray -d '.' -t current_version <<< $(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+')
+                readarray -t current_version < <(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+' | sed 's/\./\n/g')
                 ;;
             type2)
-                readarray -d '.' -t current_version <<< $(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+\.[0-9]+')
+                readarray -t current_version < <(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+\.[0-9]+' | sed 's/\./\n/g')
                 ;;
             type3)
-                readarray -d '.' -t current_version <<< $(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+[a-zA-Z]' | awk '{print tolower($1)}' | sed -r 's|([0-9]+)([a-zA-Z])|\1.\2|')
+                readarray -t current_version < <(echo "${current_version_string}" | egrep -o -m 1 '[0-9]+\.[0-9]+[a-zA-Z]' | awk '{print tolower($1)}' | sed -r 's|([0-9]+)([a-zA-Z])|\1.\2|' | sed 's/\./\n/\g')
                 ;;
             *)
                 ;;
