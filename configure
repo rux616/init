@@ -17,6 +17,7 @@ declare -A action_execs error_is_fatal variables
 actions=()
 #             action_name   action_execs                                        error_is_fatal
 define_action "prereq"      "check_prereqs"                                     "true"
+define_action "minver"      "check_minimum_version"                             "true"
 define_action "precmd"      "run_command"                                       "true"
 define_action "backup"      "back_up_files"                                     "false"
 define_action "submodule"   "git submodule update --init --remote --force --"   "false"
@@ -44,7 +45,7 @@ for config_subdir in $@; do
             # get the options for the current action
             options="$(parse_config_action ${config_subdir}/${config_file} ${action} $(tuplify_variables))"
             # only execute the action if there are options
-            if [[ ! -z "$options" ]]; then
+            if [[ -n "$options" ]]; then
                 echo "      └ executing: ${action_execs[${action}]} ${options}"
                 ${action_execs[${action}]} ${options}
                 if [[ $? -ne 0 && ${error_is_fatal[${action}]} == 'true' ]]; then
