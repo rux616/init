@@ -2,7 +2,6 @@ prereq vim
 prereq python3
 prereq pip3
 prereq curl
-prereq pyvenv
 
 minver python3 --version 3.6.0 type2
 
