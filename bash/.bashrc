@@ -16,12 +16,16 @@ fi
 
 if [ $(uname) = "Darwin" ]; then
     # Mac OS
-    #uname > /dev/null   # dummy line to make bash stop complaining
+    # uname >/dev/null   # dummy line to make bash stop complaining
     git_prompt_sh_location='/usr/local/etc/bash_completion.d/git-prompt.sh'
 elif [ $(uname) = "Linux" ]; then
     # Linux
-    #uname > /dev/null   # dummy line to make bash stop complaining
+    # uname >/dev/null   # dummy line to make bash stop complaining
     git_prompt_sh_location='/usr/share/git-core/contrib/completion/git-prompt.sh'
+elif [ $(uname) = "FreeBSD" ]; then
+    # FreeBSD
+    # uname >/dev/null   # dummy line to make bash stop complaining
+    git_prompt_sh_location='/usr/local/share/git-core/contrib/completion/git-prompt.sh'
 fi
 
 
