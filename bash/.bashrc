@@ -4,7 +4,7 @@
 # Load Global Settings #
 # -------------------- #
 
-if [ -f /etc/bashrc ]; then
+if [[ -f /etc/bashrc ]]; then
     source /etc/bashrc
 fi
 
@@ -14,15 +14,26 @@ fi
 # OS-specific Settings #
 # -------------------- #
 
-if [ $(uname) = "Darwin" ]; then
+if [[ $(uname) = "Darwin" ]]; then
     # Mac OS
     # uname >/dev/null   # dummy line to make bash stop complaining
     git_prompt_sh_location='/usr/local/etc/bash_completion.d/git-prompt.sh'
-elif [ $(uname) = "Linux" ]; then
+elif [[ $(uname) = "Linux" ]]; then
     # Linux
     # uname >/dev/null   # dummy line to make bash stop complaining
-    git_prompt_sh_location='/usr/share/git-core/contrib/completion/git-prompt.sh'
-elif [ $(uname) = "FreeBSD" ]; then
+
+    # Determine what flavor of Linux is installed
+    if [[ -e /etc/redhat_release ]]; then
+        # RHEL/CentOS/Fedora
+        git_prompt_sh_location='/usr/share/git-core/contrib/completion/git-prompt.sh'
+    elif [[ -e /etc/lsb-release ]]; then
+        # Debian/Ubuntu
+        git_prompt_sh_location='/usr/lib/git-core/git-sh-prompt'
+    else
+        # Unknown
+        git_prompt_sh_location='/dev/null/git-prompt.sh'
+    fi
+elif [[ $(uname) = "FreeBSD" ]]; then
     # FreeBSD
     # uname >/dev/null   # dummy line to make bash stop complaining
     git_prompt_sh_location='/usr/local/share/git-core/contrib/completion/git-prompt.sh'
@@ -33,6 +44,16 @@ fi
 # Global Functions #
 # ---------------- #
 
+tz_trimmed() {
+    # Trim the basic date "%z" timezone string because FreeBSD doesn't have the "%:::z" format string
+    tz=$(date +%z)
+    if [[ ${tz:3} = '00' ]]; then
+        echo ${tz:0:3}
+    else
+        echo ${tz}
+    fi
+}
+
 
 
 # -------------- #
@@ -40,11 +61,11 @@ fi
 # -------------- #
 
 # Source the terminal control file to make things easier in terms of colors.
-source ~/.terminal-control
+source ${HOME}/.terminal-control
 
 # Set color of the \u@\h section of the prompt command based on whether the system is local or not - must be set manually by running 'touch ~/.localsystem'
 SYSTEM_COLOR="${Red}"
-if [ -e $HOME/.localsystem ]; then
+if [[ -e ${HOME}/.localsystem ]]; then
     SYSTEM_COLOR="${Green}"
 fi
 
@@ -53,7 +74,7 @@ custom_prompt_part1='${RESET_LINE}${Rst}${IYellow}[$(date +%Y-%m-%d) \t]${Rst} $
 custom_prompt_part2='\n\$ '
 
 # Prepare to include the git prompt.
-if [ -r $git_prompt_sh_location ]; then
+if [[ -r ${git_prompt_sh_location} ]]; then
     # Declare different variables that control what the git-prompt shows
     GIT_PS1_SHOWDIRTYSTATE=true
     GIT_PS1_SHOWSTASHSTATE=true
@@ -63,13 +84,13 @@ if [ -r $git_prompt_sh_location ]; then
     GIT_PS1_SHOWCOLORHINTS=true
 
     # Source the git-prompt helper script
-    source $git_prompt_sh_location
+    source ${git_prompt_sh_location}
     
     # Set the command prompt to execute __git_ps1 with it taking the custom command prompt strings as arguments. 
-    export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}__git_ps1 \"${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T UTC%:::z")'"]${Rst} ${Bold}${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\n\$ \""
+    export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}__git_ps1 \"${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${Bold}${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\n\$ \""
 else
     # If the git prompt is not found for whatever reason, go with the basic command prompt.
-	export PS1="${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T UTC%:::z")'"]${Rst} ${Bold}${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
+    export PS1="${RESET_LINE}${Rst}${IYellow}["'foo $(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${Bold}${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
 fi
 
 # activate command completion for the AWS CLI if the completer command is installed
@@ -83,7 +104,7 @@ aws_completer_command=$(command -v aws_completer) && complete -C "${aws_complete
 
 # Set history file to be different than default to avoid accidental overwrites
 # http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
-export HISTFILE="$HOME/.bash_eternal_history"
+export HISTFILE="${HOME}/.bash_eternal_history"
 
 # Set timestamp format
 export HISTTIMEFORMAT="[%F %T]  "
@@ -118,8 +139,8 @@ export EDITOR=$VISUAL
 # Load Local BASH Settings #
 # ------------------------ #
 
-if [ -r ~/.bash_local ]; then
-    source ~/.bash_local
+if [[ -r ${HOME}/.bash_local ]]; then
+    source ${HOME}/.bash_local
 fi
 
 
@@ -128,7 +149,7 @@ fi
 # Load BASH Aliases #
 # ----------------- #
 
-if [ -r ~/.bash_aliases ]; then
-    source ~/.bash_aliases
+if [[ -r ${HOME}/.bash_aliases ]]; then
+    source ${HOME}/.bash_aliases
 fi
 
