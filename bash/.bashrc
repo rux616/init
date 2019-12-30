@@ -90,7 +90,7 @@ if [[ -r ${git_prompt_sh_location} ]]; then
     export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}__git_ps1 \"${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${Bold}${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\n\$ \""
 else
     # If the git prompt is not found for whatever reason, go with the basic command prompt.
-    export PS1="${RESET_LINE}${Rst}${IYellow}["'foo $(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${Bold}${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
+    export PS1="${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${Bold}${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\n\$ "
 fi
 
 # activate command completion for the AWS CLI if the completer command is installed
