@@ -7,6 +7,6 @@
   url = https://github.com/VundleVim/Vundle.vim
   branch = master
 [submodule "vim-lite/vundle"]
-	path = vim-lite/vundle
-	url = https://github.com/VundleVim/Vundle.vim
-	branch = master
+  path = vim-lite/vundle
+  url = https://github.com/VundleVim/Vundle.vim
+  branch = master
