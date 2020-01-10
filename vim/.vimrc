@@ -13,11 +13,8 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 " github plugins
-Plugin 'psf/black'
 Plugin 'sjl/badwolf'
 Plugin 'tpope/vim-fugitive'
-Plugin 'hashivim/vim-terraform'
-Plugin 'hashivim/vim-packer'
 
 " vim-scripts.org plugins
 Plugin 'L9'
@@ -112,11 +109,6 @@ silent! colorscheme badwolf
 " -------------
 syntax enable                       " enable syntax highlighting
 set backspace=indent,eol,start      " enable backspace to backspace over things in insert mode
-" automatically black-format python files on save
-autocmd BufWritePre *.py execute ':Black'
-if !exists("g:terraform_fmt_on_save")
-    let g:terraform_fmt_on_save = 1
-endif
 function FormatJson()
     %!jq '.'
 endfunction
