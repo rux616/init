@@ -26,7 +26,7 @@ define_action "link"        "create_links"                                      
 define_action "postcmd"     "run_command"                                       "false"
 
 # define variables that can be used
-variables["base_dir"]="${DIR}"
+variables["base_dir"]="${PWD}"
 variables["home_dir"]="${HOME}"
 variables["config_dir"]=""
 
@@ -37,7 +37,7 @@ for config_subdir in $@; do
         echo "configuring ${config_subdir}..."
 
         # make sure that the correct config subdir is being used
-        variables[config_dir]="${DIR}/${config_subdir}"
+        variables[config_dir]="${PWD}/${config_subdir}"
 
         # run through all the actions
         for action in ${actions[@]}; do
