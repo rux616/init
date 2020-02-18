@@ -23,7 +23,7 @@ elif [[ $(uname) = "Linux" ]]; then
     # uname >/dev/null   # dummy line to make bash stop complaining
 
     # Determine what flavor of Linux is installed
-    if [[ -e /etc/redhat-release -o -e /etc/system-release ]]; then
+    if [[ -e /etc/redhat-release || -e /etc/system-release ]]; then
         # RHEL/CentOS/Fedora/Amazon
         git_prompt_sh_location='/usr/share/git-core/contrib/completion/git-prompt.sh'
     elif [[ -e /etc/lsb-release ]]; then
