@@ -54,6 +54,22 @@ tz_trimmed() {
     fi
 }
 
+tf_enable() {
+    # Remove ".disabled" suffix from passed terraform files (*.tf, *.tfvars)
+    for file in $@; do
+        [[ "${file}" =~ ^.*\.tf.disabled$ || "${file}" =~ ^.*\.tfvars.disabled$ ]] || continue
+        mv -i "${file}" "${file/%.disabled/}"
+    done
+}
+
+tf_disable() {
+    # Add ".disabled" suffix to passed terraform files (*.tf, *.tfvars)
+    for file in $@; do
+        [[ "${file}" =~ ^.*\.tf$ || "${file}" =~ ^.*\.tfvars$ ]] || continue
+        mv -i "${file}" "${file}.disabled"
+    done
+}
+
 
 
 # -------------- #
