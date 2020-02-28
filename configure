@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # get directory where this script lives
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( [[ -h "${BASH_SOURCE[0]}" ]] && dirname "$(readlink "${BASH_SOURCE[0]}")" || dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # source common functions
 source "${DIR}/.functions.sh"
