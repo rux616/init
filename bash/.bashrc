@@ -114,6 +114,13 @@ fi
 # activate command completion for the AWS CLI if the completer command is installed
 aws_completer_command=$(command -v aws_completer) && complete -C "${aws_completer_command}" aws
 
+# turn on bash completion
+if [[ -f /usr/share/bash-completion/bash-completion ]]; then
+    . /usr/share/bash-completion/bash-completion
+elif [[ -f /etc/bash-completion ]]; then
+    . /etc/bash-completion
+fi
+
 
 
 # ---------------- #
