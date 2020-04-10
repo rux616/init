@@ -51,7 +51,7 @@ fi
 if nslookup metadata.google.internal &>/dev/null; then
     # GCP
     # Get the ID of the current instance, and the previous (or same) one if there.
-    current_id="$(curl -s https://metadata.google.internal/computeMetadata/v1/instance/id)"
+    current_id="$(curl -s 'https://metadata.google.internal/computeMetadata/v1/instance/id' -H 'Metadata-Flavor: Google')"
     stored_id="$(cat "${HOME}/.gce_id" 2>/dev/null)"
 
     # If the IDs are different, perform any of the one-time steps.
