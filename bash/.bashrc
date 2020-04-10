@@ -136,9 +136,9 @@ aws_completer_command=$(command -v aws_completer) && complete -C "${aws_complete
 
 # enable system-level bash-completion
 if [[ -f /usr/share/bash-completion/bash-completion ]]; then
-    . /usr/share/bash-completion/bash-completion
+    . /usr/share/bash-completion/bash_completion
 elif [[ -f /etc/bash-completion ]]; then
-    . /etc/bash-completion
+    . /etc/bash_completion
 fi
 
 
