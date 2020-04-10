@@ -42,6 +42,26 @@ elif [[ $(uname) = "FreeBSD" ]]; then
 fi
 
 
+
+# ----------------------- #
+# Cloud-specific Settings #
+# ----------------------- #
+
+# Check to see if this is running on any cloud instances. If it is, there may be some one-time initializations to perform.
+if nslookup metadata.google.internal &>/dev/null; then
+    # GCP
+    # Get the ID of the current instance, and the previous (or same) one if there.
+    current_id="$(curl -s https://metadata.google.internal/computeMetadata/v1/instance/id)"
+    stored_id="$(cat "${HOME}/.gce_id" 2>/dev/null)"
+
+    # If the IDs are different, perform any of the one-time steps.
+    if [[ "${current_id}" != "${stored_id}" ]]; then
+        echo "${current_id}" > "${HOME}/.gce_id"
+    fi
+fi
+
+
+
 # ---------------- #
 # Global Functions #
 # ---------------- #
