@@ -32,4 +32,4 @@ fi
 # PATH Settings #
 # ------------- #
 
-export PATH="/usr/local/sbin:${PATH}:${HOME}/.local/bin:${HOME}/bin"
+export PATH="${HOME}/.local/bin:${HOME}/bin:/usr/local/sbin:${PATH}"
