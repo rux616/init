@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+
+pkgs_common=( git vim curl wget tmux python3 python3-pip unzip sysstat pkg-config apt-file python3-venv htop )
+pkgs_work=()
+pkgs_home=()
+
+install_subdir="${HOME}/.local"
+bin_subdir="${install_subdir}/bin"
+lib_subdir="${install_subdir}/lib"
+share_subdir="${install_subdir}/share"
+completions_subdir="${share_subdir}/bash-completion/completions"
+
+if command -v apt-get &>/dev/null; then
+    family="deb"
+    pkg_mgr="apt-get"
+elif command -v dnf &>/dev/null; then
+    family="rpm"
+    pkg_mgr="dnf"
+else
+    echo "unknown linux family"
+	exit 1
+fi
+
+# make temp directory
+temp_dir="$(mktemp -d)"
+cd "${temp_dir}"
+
+for profile in $@; do
+    case ${profile} in
+        all | home | work | packages )
+            # install packages
+            echo "installing packages..."
+            case ${family} in
+                deb) sudo ${pkg_mgr} update ;;
+                rpm) sudo ${pkg_mgr} makecache ;;
+            esac
+            packages_common=( git vim curl wget tmux python3 python3-pip unzip sysstat pkg-config htop bash-completion )
+            packages_deb=( apt-file python3-venv )
+            packages_rpm=()
+            packages=( ${packages_common[@]} )
+            case ${family} in
+                deb) packages+=( ${packages_deb[@]} ) ;;
+                rpm) packages+=( ${packages_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${packages[@]}
+            ;;&
+        all | work | gcloud )
+            # install gcloud
+            echo "installing gcloud..."
+            uname >/dev/null
+            ;;&
+        all | work | kubectl )
+            # install kubectl
+            echo "installing kubectl..."
+            curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+            chmod ugo+x kubectl
+            mv -f kubectl ${bin_subdir}/kubectl #overwrite any existing binaries
+            ${bin_subdir}/kubectl completions bash >${completions_subdir}/kubectl
+            ;;&
+        all | work | terraform )
+            # install terraform
+            echo "installing terraform..."
+            # first delete old versions
+            rm ${bin_subdir}/terraform*
+            # put version to be referred to as 'terraform' last
+            versions=( "0.11.14" "0.12.12" )
+            for version in "${versions[@]}"; do
+                curl -s -O "https://releases.hashicorp.com/terraform/${version}/terraform_${version}_linux_amd64.zip"
+                unzip *
+                rm "terraform_${version}_linux_amd64.zip"
+                mv terraform "${bin_subdir}/terraform-${version}"
+            done
+            ln -s "${bin_subdir}/terraform-${version}" "${bin_subdir}/terraform"
+            ;;&
+        all | home | work | packer )
+            # install packer
+            echo "installing packer..."
+            # first delete old versions
+            rm ${bin_subdir}/packer*
+            # put version to be referred to as 'packer' last
+            versions=( "1.5.5" )
+            for tf_version in "${versions[@]}"; do
+                curl -s -O "https://releases.hashicorp.com/packer/${version}/packer_${version}_linux_amd64.zip"
+                unzip *
+                rm "packer_${version}_linux_amd64.zip"
+                mv terraform "${bin_subdir}/packer-${version}"
+            done
+            ln -s "${bin_subdir}/packer-${version}" "${bin_subdir}/packer"
+            ;;&
+        all | home | work | keybase )
+            # install keybase
+            echo "installing keybase..."
+            if ! command -v keybase &>/dev/null; then
+            	case ${family} in
+            		deb) keybase_file="keybase_amd64.deb" ;;
+            		rpm) keybase_file="keybase_amd64.rpm" ;;
+            	esac
+            	curl -s https://prerelease.keybase.io/${keybase_file} -o "${tmpdir}/${keybase_file}"
+            	sudo ${pkg_mgr} install -y "${tmpdir}/${keybase_file}"
+            	run_keybase -g
+            fi
+            ;;&
+        all | home | work | pre-commit )
+            # install pre-commit
+            echo "installing pre-commit..."
+            python3 -m pip install --user pre-commit
+            ;;&
+        all | home | work | ssh-config )
+            # install basic ssh-config
+            echo "installing basic ssh config..."
+            if [[ ! -f "${HOME}/.ssh/config" ]]; then
+                "${HOME}/.ssh/config" << EOL
+Host *
+    CanonicalizeHostname yes
+    PreferredAuthentications publickey
+    ServerAliveInterval 60
+
+Host github.com
+    IdentityFile ~/.ssh/${HOSTNAME}-to-github
+    User rux616
+EOL
+            fi
+            ;;&
+        all | home | work | ssh-keys )
+            # create some basic ssh keys
+            echo "creating basic ssh keys..."
+            names=( "${HOSTNAME}-to-github" )
+            types=( "ed25519" )
+            for ((i=0; i<${#names[@]}; i++)); do
+                if [[ ! -f "${HOME}/.ssh/${names[$i]}" ]]; then
+                    ssh-keygen -q -t ${types[$i]} -C "${USER}@${names[$i]}" -N "" -f "${HOME}/.ssh/${names[$i]}"
+                fi
+            done
+            ;;&
+        all | home | work | util-linux-column )
+            # install util-linux column
+            echo "installing util-linux-column..."
+            prereqs_common=( autoconf bison libtool automake )
+            prereqs_deb=( autopoint )
+            prereqs_rpm=( gettext-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tag="$(curl -s 'https://api.github.com/repos/karelzak/util-linux/tags' | grep -Pom 1 '"name": "\K.*?(?=")')"
+            git clone https://github.com/karelzak/util-linux.git && \
+                cd util-linux && \
+                git checkout tags/${latest_tag} && \
+                ./autogen.sh && \
+                ./configure && \
+                ./make column &&
+                mv -f column ${bin_subdir}/column
+            ;;&
+    esac
+done
+
+# cleanup
+rm -rf "${temp_dir}"
