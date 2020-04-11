@@ -150,7 +150,7 @@ EOL
                 git checkout tags/${latest_tag} && \
                 ./autogen.sh && \
                 ./configure && \
-                ./make column &&
+                make column &&
                 mv -f column ${bin_subdir}/column
             ;;&
     esac
