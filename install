@@ -28,10 +28,6 @@ cd "${dir[temp]}"
 
 for profile in $@; do
     case ${profile} in
-        debug )
-            # debug
-            echo "debug"
-            ;;&
         all | home | work | packages )
             # install packages
             echo "installing packages..."
