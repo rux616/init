@@ -71,7 +71,7 @@ for profile in $@; do
             curl -sLO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod ugo+x kubectl
             mv -f kubectl ${dir[bin]}/kubectl #overwrite any existing binaries
-            ${dir[bin]}/kubectl completions bash >${dir[completions]}/kubectl
+            ${dir[bin]}/kubectl completion bash >${dir[completions]}/kubectl
             cd "${dir[temp]}"
             ;;&
         all | work | terraform )
