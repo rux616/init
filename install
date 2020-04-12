@@ -128,7 +128,7 @@ for profile in $@; do
             echo "installing basic ssh config..."
             mkdir "ssh-config" && cd "ssh-config"
             if [[ ! -f "${HOME}/.ssh/config" ]]; then
-                "${HOME}/.ssh/config" << EOL
+                cat >"${HOME}/.ssh/config" << EOL
 Host *
     CanonicalizeHostname yes
     PreferredAuthentications publickey
