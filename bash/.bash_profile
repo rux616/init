@@ -28,8 +28,9 @@ fi
 
 
 
-# ------------- #
-# PATH Settings #
-# ------------- #
+# -------------- #
+# *PATH Settings #
+# -------------- #
 
-export PATH="${HOME}/.local/bin:${HOME}/bin:/usr/local/sbin:${PATH}"
+export MANPATH="${HOME}/.local/share/man${MANPATH:+":${MANPATH}"}"
+export PATH="${HOME}/.local/sbin:${HOME}/.local/bin${PATH:+":${PATH}"}"
