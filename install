@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
-
-pkgs_common=( git vim curl wget tmux python3 python3-pip unzip sysstat pkg-config apt-file python3-venv htop )
-pkgs_work=()
-pkgs_home=()
+set -ex
 
 install_subdir="${HOME}/.local"
 bin_subdir="${install_subdir}/bin"
 lib_subdir="${install_subdir}/lib"
+opt_subdir="${install_subdir}/opt"
 share_subdir="${install_subdir}/share"
 completions_subdir="${share_subdir}/bash-completion/completions"
 
@@ -18,7 +16,7 @@ elif command -v dnf &>/dev/null; then
     pkg_mgr="sudo dnf"
 else
     echo "unknown linux family"
-	exit 1
+    exit 1
 fi
 
 # make temp directory
@@ -47,7 +45,13 @@ for profile in $@; do
         all | work | gcloud )
             # install gcloud
             echo "installing gcloud..."
-            uname >/dev/null
+            curl -sLo "gcloud_install.sh" "https://sdk.cloud.google.com/"
+            ./gcloud_install.sh --disable-prompts --install-dir="${opt_subdir}"
+            ${opt_subdir}/google-cloud-sdk/bin/gcloud -q components install alpha beta cloud_sql_proxy kubectl
+            ln -sf "${opt_subdir}/google-cloud-sdk/bin/gcloud" "${bin_subdir}/gcloud"
+            ln -sf "${opt_subdir}/google-cloud-sdk/bin/gsutil" "${bin_subdir}/gsutil"
+            ln -sf "${opt_subdir}/google-cloud-sdk/bin/cloud_sql_proxy" "${bin_subdir}/cloud_sql_proxy"
+            ln -sf "${opt_subdir}/google-cloud-sdk/completions.bash.inc" "${completions_subdir}/gcloud_bq_gsutil"
             ;;&
         all | work | kubectl )
             # install kubectl
@@ -91,13 +95,13 @@ for profile in $@; do
             # install keybase
             echo "installing keybase..."
             if ! command -v keybase &>/dev/null; then
-            	case ${family} in
-            		deb) keybase_file="keybase_amd64.deb" ;;
-            		rpm) keybase_file="keybase_amd64.rpm" ;;
-            	esac
-            	curl -s https://prerelease.keybase.io/${keybase_file} -o "${tmpdir}/${keybase_file}"
-            	${pkg_mgr} install -y "${tmpdir}/${keybase_file}"
-            	run_keybase -g
+                case ${family} in
+                    deb) keybase_file="keybase_amd64.deb" ;;
+                    rpm) keybase_file="keybase_amd64.rpm" ;;
+                esac
+                curl -so "${tmpdir}/${keybase_file}" "https://prerelease.keybase.io/${keybase_file}"
+                ${pkg_mgr} install -y "${tmpdir}/${keybase_file}"
+                run_keybase -g
             fi
             ;;&
         all | home | work | pre-commit )
@@ -132,26 +136,25 @@ EOL
                 fi
             done
             ;;&
-        all | home | work | util-linux-column )
-            # install util-linux column
-            echo "installing util-linux-column..."
+        all | home | work | util-linux )
+            # install the *full* util-linux, which some distros don't seem to have
+            echo "installing util-linux..."
             prereqs_common=( autoconf bison libtool automake )
-            prereqs_deb=( autopoint )
-            prereqs_rpm=( gettext-devel )
+            prereqs_deb=( autopoint libncurses-dev )
+            prereqs_rpm=( gettext-devel ncurses-devel )
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
                 rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
-            latest_tag="$(curl -s 'https://api.github.com/repos/karelzak/util-linux/tags' | grep -Pom 1 '"name": "\K.*?(?=")')"
-            git clone https://github.com/karelzak/util-linux.git && \
-                cd util-linux && \
-                git checkout tags/${latest_tag} && \
+            latest_tarball="$(curl -sN "https://api.github.com/repos/karelzak/util-linux/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "util-linux.tar.gz" "${latest_tarball}" && \
+                tar -xf "util-linux.tar.gz" --strip 1 && \
                 ./autogen.sh && \
-                ./configure && \
-                make column &&
-                mv -f column ${bin_subdir}/column
+                ./configure --prefix="${install_subdir}" && \
+                make && \
+                sudo make install
             ;;&
     esac
 done
