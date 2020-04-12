@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 set -ex
 
-install_subdir="${HOME}/.local"
-bin_subdir="${install_subdir}/bin"
-lib_subdir="${install_subdir}/lib"
-opt_subdir="${install_subdir}/opt"
-share_subdir="${install_subdir}/share"
-completions_subdir="${share_subdir}/bash-completion/completions"
+declare -A dirlist
+dir[base]="${HOME}/.local"
+dir[bin]="${dir[base]}/bin"
+dir[lib]="${dir[base]}/lib"
+dir[opt]="${dir[base]}/opt"
+dir[share]="${dir[base]}/share"
+dir[completions]="${dir[share]}/bash-completion/completions"
+
+for key in "${!dir[@]}"; do
+    mkdir -p "${dir[${key}]}"
+done
 
 if command -v apt-get &>/dev/null; then
     family="deb"
@@ -20,8 +25,8 @@ else
 fi
 
 # make temp directory
-temp_dir="$(mktemp -d)"
-cd "${temp_dir}"
+dir[temp]="$(mktemp -d)"
+cd "${dir[temp]}"
 
 for profile in $@; do
     case ${profile} in
@@ -42,20 +47,20 @@ for profile in $@; do
                 rpm) packages+=( ${packages_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${packages[@]}
-            cd "${temp_dir}"
+            cd "${dir[temp]}"
             ;;&
         all | work | gcloud )
             # install gcloud
             echo "installing gcloud..."
             mkdir "gcloud" && cd "gcloud"
             curl -sLo "gcloud_install.sh" "https://sdk.cloud.google.com/"
-            ./gcloud_install.sh --disable-prompts --install-dir="${opt_subdir}"
-            ${opt_subdir}/google-cloud-sdk/bin/gcloud -q components install alpha beta cloud_sql_proxy kubectl
-            ln -sf "${opt_subdir}/google-cloud-sdk/bin/gcloud" "${bin_subdir}/gcloud"
-            ln -sf "${opt_subdir}/google-cloud-sdk/bin/gsutil" "${bin_subdir}/gsutil"
-            ln -sf "${opt_subdir}/google-cloud-sdk/bin/cloud_sql_proxy" "${bin_subdir}/cloud_sql_proxy"
-            ln -sf "${opt_subdir}/google-cloud-sdk/completions.bash.inc" "${completions_subdir}/gcloud_bq_gsutil"
-            cd "${temp_dir}"
+            ./gcloud_install.sh --disable-prompts --install-dir="${dir[opt]}"
+            ${dir[opt]}/google-cloud-sdk/bin/gcloud -q components install alpha beta cloud_sql_proxy kubectl
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gcloud" "${dir[bin]}/gcloud"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/cloud_sql_proxy" "${dir[bin]}/cloud_sql_proxy"
+            ln -sf "${dir[opt]}/google-cloud-sdk/completions.bash.inc" "${dir[completions]}/gcloud_bq_gsutil"
+            cd "${dir[temp]}"
             ;;&
         all | work | kubectl )
             # install kubectl
@@ -63,43 +68,43 @@ for profile in $@; do
             mkdir "kubectl" && cd "kubectl"
             curl -sLO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod ugo+x kubectl
-            mv -f kubectl ${bin_subdir}/kubectl #overwrite any existing binaries
-            ${bin_subdir}/kubectl completions bash >${completions_subdir}/kubectl
-            cd "${temp_dir}"
+            mv -f kubectl ${dir[bin]}/kubectl #overwrite any existing binaries
+            ${dir[bin]}/kubectl completions bash >${dir[completions]}/kubectl
+            cd "${dir[temp]}"
             ;;&
         all | work | terraform )
             # install terraform
             echo "installing terraform..."
             mkdir "terraform" && cd "terraform"
             # first delete old versions
-            rm ${bin_subdir}/terraform*
+            rm ${dir[bin]}/terraform*
             # put version to be referred to as 'terraform' last
             versions=( "0.11.14" "0.12.12" )
             for version in "${versions[@]}"; do
                 curl -s -O "https://releases.hashicorp.com/terraform/${version}/terraform_${version}_linux_amd64.zip"
                 unzip *
                 rm "terraform_${version}_linux_amd64.zip"
-                mv terraform "${bin_subdir}/terraform-${version}"
+                mv terraform "${dir[bin]}/terraform-${version}"
             done
-            ln -s "${bin_subdir}/terraform-${version}" "${bin_subdir}/terraform"
-            cd "${temp_dir}"
+            ln -s "${dir[bin]}/terraform-${version}" "${dir[bin]}/terraform"
+            cd "${dir[temp]}"
             ;;&
         all | home | work | packer )
             # install packer
             echo "installing packer..."
             mkdir "packer" && cd "packer"
             # first delete old versions
-            rm ${bin_subdir}/packer*
+            rm ${dir[bin]}/packer*
             # put version to be referred to as 'packer' last
             versions=( "1.5.5" )
             for tf_version in "${versions[@]}"; do
                 curl -s -O "https://releases.hashicorp.com/packer/${version}/packer_${version}_linux_amd64.zip"
                 unzip *
                 rm "packer_${version}_linux_amd64.zip"
-                mv terraform "${bin_subdir}/packer-${version}"
+                mv terraform "${dir[bin]}/packer-${version}"
             done
-            ln -s "${bin_subdir}/packer-${version}" "${bin_subdir}/packer"
-            cd "${temp_dir}"
+            ln -s "${dir[bin]}/packer-${version}" "${dir[bin]}/packer"
+            cd "${dir[temp]}"
             ;;&
         all | home | work | keybase )
             # install keybase
@@ -114,14 +119,14 @@ for profile in $@; do
                 ${pkg_mgr} install -y "${tmpdir}/${keybase_file}"
                 run_keybase -g
             fi
-            cd "${temp_dir}"
+            cd "${dir[temp]}"
             ;;&
         all | home | work | pre-commit )
             # install pre-commit
             echo "installing pre-commit..."
             mkdir "pre-commit" && cd "pre-commit"
             python3 -m pip install --user pre-commit
-            cd "${temp_dir}"
+            cd "${dir[temp]}"
             ;;&
         all | home | work | ssh-config )
             # install basic ssh-config
@@ -138,8 +143,9 @@ Host github.com
     IdentityFile ~/.ssh/${HOSTNAME}-to-github
     User rux616
 EOL
-            cd "${temp_dir}"
+                chmod 644 "${HOME}/.ssh/config"
             fi
+            cd "${dir[temp]}"
             ;;&
         all | home | work | ssh-keys )
             # create some basic ssh keys
@@ -152,7 +158,7 @@ EOL
                     ssh-keygen -q -t ${types[$i]} -C "${USER}@${names[$i]}" -N "" -f "${HOME}/.ssh/${names[$i]}"
                 fi
             done
-            cd "${temp_dir}"
+            cd "${dir[temp]}"
             ;;&
         all | home | work | util-linux )
             # install the *full* util-linux, which some distros don't seem to have
@@ -172,11 +178,11 @@ EOL
             curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
                 tar -xf "${section}.tar.gz" --strip 1 && \
                 ./autogen.sh && \
-                ./configure --prefix="${install_subdir}" && \
+                ./configure --prefix="${dir[base]}" && \
                 make && \
                 sudo make install && \
-                sudo chown -R ${USER}:${USER} "${install_subdir}"
-            cd "${temp_dir}"
+                sudo chown -R ${USER}:${USER} "${dir[base]}"
+            cd "${dir[temp]}"
             ;;&
         all | home | work | tmux )
             # install tmux
@@ -196,13 +202,14 @@ EOL
             curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
                 tar -xf "${section}.tar.gz" --strip 1 && \
                 ./autogen.sh && \
-                ./configure --prefix="${install_subdir}" && \
+                ./configure --prefix="${dir[base]}" && \
                 make && \
                 make install
-            cd "${temp_dir}"
+            cd "${dir[temp]}"
             ;;&
     esac
 done
 
 # cleanup
-rm -rf "${temp_dir}"
+rm -rf "${dir[temp]}"
+unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball
