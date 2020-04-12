@@ -168,8 +168,8 @@ EOL
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             prereqs_common=( autoconf bison libtool automake )
-            prereqs_deb=( autopoint libncurses-dev libpam0g-dev )
-            prereqs_rpm=( gettext-devel ncurses-devel pam-devel )
+            prereqs_deb=( autopoint libncurses-dev libpam0g-dev libcap-ng-dev )
+            prereqs_rpm=( gettext-devel ncurses-devel pam-devel libcap-ng-devel )
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
