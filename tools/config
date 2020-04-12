@@ -1,6 +1,10 @@
-prereq gcloud
-prereq keybase
-prereq kubectl
+backup {{home_dir}}/.local/bin/kubectx
+backup {{home_dir}}/.local/bin/kubens
+backup {{home_dir}}/.local/share/bash-completion/completions/kubectx
+backup {{home_dir}}/.local/share/bash-completion/completions/kubens
+backup {{home_dir}}/.local/share/bash-completion/completions/tmux
+backup {{home_dir}}/.local/share/bash-completion/completions/packer
+backup {{home_dir}}/.local/share/bash-completion/completions/terraform
 
 submodule {{config_dir}}/kubectx
 submodule {{config_dir}}/tmux-bash-completion
