@@ -24,6 +24,7 @@ fi
 
 # make temp directory
 dir[temp]="$(mktemp -d)"
+chmod ugo+rx "${dir[temp]}"
 cd "${dir[temp]}"
 
 for profile in $@; do
@@ -114,9 +115,8 @@ for profile in $@; do
                 esac
                 curl -sO "https://prerelease.keybase.io/${keybase_file}"
                 ${pkg_mgr} install -y "./${keybase_file}"
-            else
-                run_keybase -g
             fi
+            run_keybase -g
             cd "${dir[temp]}"
             ;;&
         all | home | work | pre-commit )
