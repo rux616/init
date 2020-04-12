@@ -114,6 +114,7 @@ for profile in $@; do
                 esac
                 curl -sO "https://prerelease.keybase.io/${keybase_file}"
                 ${pkg_mgr} install -y "$(pwd)/${keybase_file}"
+            else
                 run_keybase -g
             fi
             cd "${dir[temp]}"
