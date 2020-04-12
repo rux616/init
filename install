@@ -116,7 +116,7 @@ for profile in $@; do
                     rpm) keybase_file="keybase_amd64.rpm" ;;
                 esac
                 curl -sO "https://prerelease.keybase.io/${keybase_file}"
-                ${pkg_mgr} install -y "${keybase_file}"
+                ${pkg_mgr} install -y "$(pwd)/${keybase_file}"
                 run_keybase -g
             fi
             cd "${dir[temp]}"
@@ -212,4 +212,4 @@ done
 
 # cleanup
 rm -rf "${dir[temp]}"
-unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball
+unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file
