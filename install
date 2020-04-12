@@ -113,7 +113,7 @@ for profile in $@; do
                     rpm) keybase_file="keybase_amd64.rpm" ;;
                 esac
                 curl -sO "https://prerelease.keybase.io/${keybase_file}"
-                ${pkg_mgr} install -y "$(pwd)/${keybase_file}"
+                ${pkg_mgr} install -y "./${keybase_file}"
             else
                 run_keybase -g
             fi
