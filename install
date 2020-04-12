@@ -28,6 +28,7 @@ for profile in $@; do
         all | home | work | packages )
             # install packages
             echo "installing packages..."
+            mkdir "packages" && cd "packages"
             case ${family} in
                 deb) ${pkg_mgr} update ;;
                 rpm) ${pkg_mgr} makecache ;;
@@ -41,10 +42,12 @@ for profile in $@; do
                 rpm) packages+=( ${packages_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${packages[@]}
+            cd "${temp_dir}"
             ;;&
         all | work | gcloud )
             # install gcloud
             echo "installing gcloud..."
+            mkdir "gcloud" && cd "gcloud"
             curl -sLo "gcloud_install.sh" "https://sdk.cloud.google.com/"
             ./gcloud_install.sh --disable-prompts --install-dir="${opt_subdir}"
             ${opt_subdir}/google-cloud-sdk/bin/gcloud -q components install alpha beta cloud_sql_proxy kubectl
@@ -52,18 +55,22 @@ for profile in $@; do
             ln -sf "${opt_subdir}/google-cloud-sdk/bin/gsutil" "${bin_subdir}/gsutil"
             ln -sf "${opt_subdir}/google-cloud-sdk/bin/cloud_sql_proxy" "${bin_subdir}/cloud_sql_proxy"
             ln -sf "${opt_subdir}/google-cloud-sdk/completions.bash.inc" "${completions_subdir}/gcloud_bq_gsutil"
+            cd "${temp_dir}"
             ;;&
         all | work | kubectl )
             # install kubectl
             echo "installing kubectl..."
-            curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+            mkdir "kubectl" && cd "kubectl"
+            curl -sLO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
             chmod ugo+x kubectl
             mv -f kubectl ${bin_subdir}/kubectl #overwrite any existing binaries
             ${bin_subdir}/kubectl completions bash >${completions_subdir}/kubectl
+            cd "${temp_dir}"
             ;;&
         all | work | terraform )
             # install terraform
             echo "installing terraform..."
+            mkdir "terraform" && cd "terraform"
             # first delete old versions
             rm ${bin_subdir}/terraform*
             # put version to be referred to as 'terraform' last
@@ -75,10 +82,12 @@ for profile in $@; do
                 mv terraform "${bin_subdir}/terraform-${version}"
             done
             ln -s "${bin_subdir}/terraform-${version}" "${bin_subdir}/terraform"
+            cd "${temp_dir}"
             ;;&
         all | home | work | packer )
             # install packer
             echo "installing packer..."
+            mkdir "packer" && cd "packer"
             # first delete old versions
             rm ${bin_subdir}/packer*
             # put version to be referred to as 'packer' last
@@ -90,10 +99,12 @@ for profile in $@; do
                 mv terraform "${bin_subdir}/packer-${version}"
             done
             ln -s "${bin_subdir}/packer-${version}" "${bin_subdir}/packer"
+            cd "${temp_dir}"
             ;;&
         all | home | work | keybase )
             # install keybase
             echo "installing keybase..."
+            mkdir "keybase" && cd "keybase"
             if ! command -v keybase &>/dev/null; then
                 case ${family} in
                     deb) keybase_file="keybase_amd64.deb" ;;
@@ -103,15 +114,19 @@ for profile in $@; do
                 ${pkg_mgr} install -y "${tmpdir}/${keybase_file}"
                 run_keybase -g
             fi
+            cd "${temp_dir}"
             ;;&
         all | home | work | pre-commit )
             # install pre-commit
             echo "installing pre-commit..."
+            mkdir "pre-commit" && cd "pre-commit"
             python3 -m pip install --user pre-commit
+            cd "${temp_dir}"
             ;;&
         all | home | work | ssh-config )
             # install basic ssh-config
             echo "installing basic ssh config..."
+            mkdir "ssh-config" && cd "ssh-config"
             if [[ ! -f "${HOME}/.ssh/config" ]]; then
                 "${HOME}/.ssh/config" << EOL
 Host *
@@ -123,11 +138,13 @@ Host github.com
     IdentityFile ~/.ssh/${HOSTNAME}-to-github
     User rux616
 EOL
+            cd "${temp_dir}"
             fi
             ;;&
         all | home | work | ssh-keys )
             # create some basic ssh keys
             echo "creating basic ssh keys..."
+            mkdir "ssh-keys" && cd "ssh-keys"
             names=( "${HOSTNAME}-to-github" )
             types=( "ed25519" )
             for ((i=0; i<${#names[@]}; i++)); do
@@ -135,10 +152,13 @@ EOL
                     ssh-keygen -q -t ${types[$i]} -C "${USER}@${names[$i]}" -N "" -f "${HOME}/.ssh/${names[$i]}"
                 fi
             done
+            cd "${temp_dir}"
             ;;&
         all | home | work | util-linux )
             # install the *full* util-linux, which some distros don't seem to have
-            echo "installing util-linux..."
+            section="util-linux"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
             prereqs_common=( autoconf bison libtool automake )
             prereqs_deb=( autopoint libncurses-dev )
             prereqs_rpm=( gettext-devel ncurses-devel )
@@ -149,12 +169,37 @@ EOL
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
             latest_tarball="$(curl -sN "https://api.github.com/repos/karelzak/util-linux/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
-            curl -sLo "util-linux.tar.gz" "${latest_tarball}" && \
-                tar -xf "util-linux.tar.gz" --strip 1 && \
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
                 ./autogen.sh && \
                 ./configure --prefix="${install_subdir}" && \
                 make && \
-                sudo make install
+                sudo make install && \
+                sudo chown -R ${USER}:${USER} "${install_subdir}"
+            cd "${temp_dir}"
+            ;;&
+        all | home | work | tmux )
+            # install tmux
+            section="tmux"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( autoconf bison libtool automake )
+            prereqs_deb=( autopoint libncurses-dev libevent-dev )
+            prereqs_rpm=( gettext-devel ncurses-devel libevent-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/tmux/tmux/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                ./autogen.sh && \
+                ./configure --prefix="${install_subdir}" && \
+                make && \
+                make install
+            cd "${temp_dir}"
             ;;&
     esac
 done
