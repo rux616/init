@@ -7,6 +7,7 @@ dir[bin]="${dir[base]}/bin"
 dir[lib]="${dir[base]}/lib"
 dir[opt]="${dir[base]}/opt"
 dir[share]="${dir[base]}/share"
+dir[man1]="${dir[share]}/man/man1"
 dir[completions]="${dir[share]}/bash-completion/completions"
 
 for key in "${!dir[@]}"; do mkdir -p "${dir[${key}]}"; done
@@ -27,6 +28,10 @@ dir[temp]="$(mktemp -d)"
 chmod ugo+rx "${dir[temp]}"
 cd "${dir[temp]}"
 
+# valid profiles:
+#   packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux
+# valid meta-profiles:
+#   all home work
 for profile in $@; do
     case ${profile} in
         all | home | work | packages )
@@ -205,9 +210,38 @@ EOL
                 make install
             cd "${dir[temp]}"
             ;;&
+        alacritty )
+            # install alacritty
+            section="alacritty"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            curl -sSfo "rust_install.sh" "https://sh.rustup.rs"
+            chmod u+x "rust_install.sh"
+            export CARGO_HOME="$(pwd)/rust/.cargo"
+            export RUSTUP_HOME="$(pwd)/rust/.rustup"
+            ./rust_install.sh -q -y --no-modify-path --default-toolchain stable --profile minimal
+            prereqs_common=( cmake python3 )
+            prereqs_deb=( pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev )
+            prereqs_rpm=( freetype-devel fontconfig-devel libxcb-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/alacritty/alacritty/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                "$(pwd)/rust/.cargo/bin/cargo" build --release && \
+                mv -f "target/release/${section}" "${dir[bin]}/${section}" && \
+                mv -f "extras/alacritty.man" "${dir[man1]}/alacritty" && \
+                mv -f "extras/completions/alacritty.bash" "${dir[completions]}/alacritty" && \
+                tic -xe alacritty,alacritty-direct "extras/alacritty.info"
+            cd "${dir[temp]}"
+            ;;&
     esac
 done
 
 # cleanup
 rm -rf "${dir[temp]}"
-unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file
+unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file CARGO_HOME RUSTUP_HOME
