@@ -80,7 +80,7 @@ for profile in $@; do
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             # first delete old versions
-            rm ${dir[bin]}/${section}*
+            rm -f ${dir[bin]}/${section}*
             # put version to be referred to as naked name last
             versions=( "0.11.14" "0.12.12" )
             for version in "${versions[@]}"; do
@@ -96,9 +96,9 @@ for profile in $@; do
             # install packer
             section="packer"
             echo "installing ${section}..."
-            mkdir "${packer}" && cd "${packer}"
+            mkdir "${section}" && cd "${section}"
             # first delete old versions
-            rm ${dir[bin]}/${section}* || echo "nothing to delete"
+            rm -f ${dir[bin]}/${section}*
             # put version to be referred to as naked name last
             versions=( "1.5.5" )
             for version in "${versions[@]}"; do
