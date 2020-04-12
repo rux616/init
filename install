@@ -115,8 +115,8 @@ for profile in $@; do
                     deb) keybase_file="keybase_amd64.deb" ;;
                     rpm) keybase_file="keybase_amd64.rpm" ;;
                 esac
-                curl -so "${tmpdir}/${keybase_file}" "https://prerelease.keybase.io/${keybase_file}"
-                ${pkg_mgr} install -y "${tmpdir}/${keybase_file}"
+                curl -sO "https://prerelease.keybase.io/${keybase_file}"
+                ${pkg_mgr} install -y "${keybase_file}"
                 run_keybase -g
             fi
             cd "${dir[temp]}"
