@@ -84,7 +84,7 @@ for profile in $@; do
             # put version to be referred to as naked name last
             versions=( "0.11.14" "0.12.12" )
             for version in "${versions[@]}"; do
-                curl -s -O "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
+                curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
                 rm "${section}_${version}_linux_amd64.zip"
                 mv ${section} "${dir[bin]}/${section}-${version}"
@@ -102,7 +102,7 @@ for profile in $@; do
             # put version to be referred to as naked name last
             versions=( "1.5.5" )
             for version in "${versions[@]}"; do
-                curl -s -O "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
+                curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
                 rm "${section}_${version}_linux_amd64.zip"
                 mv ${section} "${dir[bin]}/${section}-${version}"
