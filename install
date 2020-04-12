@@ -76,36 +76,38 @@ for profile in $@; do
             ;;&
         all | work | terraform )
             # install terraform
-            echo "installing terraform..."
-            mkdir "terraform" && cd "terraform"
+            section="terraform"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
             # first delete old versions
-            rm ${dir[bin]}/terraform*
-            # put version to be referred to as 'terraform' last
+            rm ${dir[bin]}/${section}*
+            # put version to be referred to as naked name last
             versions=( "0.11.14" "0.12.12" )
             for version in "${versions[@]}"; do
-                curl -s -O "https://releases.hashicorp.com/terraform/${version}/terraform_${version}_linux_amd64.zip"
+                curl -s -O "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
-                rm "terraform_${version}_linux_amd64.zip"
-                mv terraform "${dir[bin]}/terraform-${version}"
+                rm "${section}_${version}_linux_amd64.zip"
+                mv ${section} "${dir[bin]}/${section}-${version}"
             done
-            ln -s "${dir[bin]}/terraform-${version}" "${dir[bin]}/terraform"
+            ln -s "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
         all | home | work | packer )
             # install packer
-            echo "installing packer..."
-            mkdir "packer" && cd "packer"
+            section="packer"
+            echo "installing ${section}..."
+            mkdir "${packer}" && cd "${packer}"
             # first delete old versions
-            rm ${dir[bin]}/packer*
-            # put version to be referred to as 'packer' last
+            rm ${dir[bin]}/${section}* || echo "nothing to delete"
+            # put version to be referred to as naked name last
             versions=( "1.5.5" )
-            for tf_version in "${versions[@]}"; do
-                curl -s -O "https://releases.hashicorp.com/packer/${version}/packer_${version}_linux_amd64.zip"
+            for version in "${versions[@]}"; do
+                curl -s -O "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
-                rm "packer_${version}_linux_amd64.zip"
-                mv terraform "${dir[bin]}/packer-${version}"
+                rm "${section}_${version}_linux_amd64.zip"
+                mv ${section} "${dir[bin]}/${section}-${version}"
             done
-            ln -s "${dir[bin]}/packer-${version}" "${dir[bin]}/packer"
+            ln -s "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
         all | home | work | keybase )
@@ -168,7 +170,7 @@ EOL
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             prereqs_common=( autoconf bison libtool automake )
-            prereqs_deb=( autopoint libncurses-dev libpam0g-dev libcap-ng-dev )
+            prereqs_deb=( autopoint gettext libncurses-dev libpam0g-dev libcap-ng-dev )
             prereqs_rpm=( gettext-devel ncurses-devel pam-devel libcap-ng-devel )
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
