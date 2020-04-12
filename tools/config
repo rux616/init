@@ -13,5 +13,5 @@ link {{config_dir}}/kubectx/kubens {{home_dir}}/.local/bin/kubens
 link {{config_dir}}/kubectx/completions/kubectx.bash {{home_dir}}/.local/share/bash-completion/completions/kubectx
 link {{config_dir}}/kubectx/completions/kubens.bash {{home_dir}}/.local/share/bash-completion/completions/kubens
 link {{config_dir}}/tmux-bash-completion/completions/tmux {{home_dir}}/.local/share/bash-completion/completions/tmux
-link {{config_dir}}/completions/packer {{home_dir}}/.local/bash-completion/completions/packer
-link {{config_dir}}/completions/terraform {{home_dir}}/.local/bash-completion/completions/terraform
+link {{config_dir}}/completions/packer {{home_dir}}/.local/share/bash-completion/completions/packer
+link {{config_dir}}/completions/terraform {{home_dir}}/.local/share/bash-completion/completions/terraform
