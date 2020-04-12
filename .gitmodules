@@ -10,3 +10,11 @@
   path = vim-heavy/vundle
   url = https://github.com/VundleVim/Vundle.vim
   branch = master
+[submodule "tools/kubectx"]
+  path = tools/kubectx
+  url = https://github.com/ahmetb/kubectx.git
+  branch = master
+[submodule "tools/tmux-bash-completion"]
+  path = tools/tmux-bash-completion
+  url = https://github.com/imomaliev/tmux-bash-completion.git
+  branch = master
