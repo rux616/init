@@ -1,0 +1,8 @@
+[user]
+	name = Dan Cassidy
+	email = 5643061+rux616@users.noreply.github.com
+	signkey = 5643061+rux616@users.noreply.github.com
+[color]
+	ui = true
+[commit]
+	gpgsign = true

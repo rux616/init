@@ -1,3 +1,5 @@
-backup {{home_dir}}/.gitconfig
+backup {{xdg_config_home}}/git/gitconfig
 
-link {{config_dir}}/.gitconfig {{home_dir}}/.gitconfig
+directory {{xdg_config_home}}/git
+
+link {{config_dir}}/gitconfig {{xdg_config_home}}/git/gitconfig
