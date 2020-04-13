@@ -28,13 +28,9 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 #readline
 export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
 #tmux
-if command -v tmux &>/dev/null; then
-    [[ -n "${XDG_RUNTIME_DIR}" ]] && export TMUX_TEMPDIR="${XDG_RUNTIME_DIR}"
-fi
+[[ -n "${XDG_RUNTIME_DIR}" ]] && export TMUX_TEMPDIR="${XDG_RUNTIME_DIR}"
 #wget
-if command -v wget &>/dev/null; then
-    export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
-fi
+export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
 #ncurses
 export TERMINFO="${XDG_DATA_HOME}/terminfo"
 export TERMINFO_DIRS="${XDG_DATA_HOME}/terminfo:/usr/share/terminfo"
@@ -45,17 +41,11 @@ if command -v less &>/dev/null; then
     export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
 fi
 #gnupg
-if command -v gpg &>/dev/null; then
-    export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
-fi
+export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
 #docker
-if command -v docker &>/dev/null; then
-    export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
-fi
+export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
 #vim
-if command -v vim &>/dev/null && [[ -f "${XDG_CONFIG_HOME}/vim/vimrc" ]]; then
-    export VIMINIT=":source \"${XDG_CONFIG_HOME}/vim/vimrc\""
-fi
+export VIMINIT=":source \"${XDG_CONFIG_HOME}/vim/vimrc\""
 
 
 
