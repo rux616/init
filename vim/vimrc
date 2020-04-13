@@ -1,11 +1,11 @@
 " Set up XDG spec compatibility
 " -----------------------------
-set undodir=$XDG_DATA_HOME/vim/undo
-set directory=$XDG_DATA_HOME/vim/swap
 set backupdir=$XDG_DATA_HOME/vim/backup
+set directory=$XDG_DATA_HOME/vim/swap
+set undodir=$XDG_DATA_HOME/vim/undo
 set viewdir=$XDG_DATA_HOME/vim/view
 set viminfo+='1000,n$XDG_DATA_HOME/vim/viminfo
-set runtimepath=$XDG_CONFIG_HOME/vim,$VIMRUNTIME,$XDG_CONFIG_HOME/vim/after
+set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
 
 " Set up Vundle
 " -------------
@@ -14,7 +14,7 @@ filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
 set rtp+=$XDG_CONFIG_HOME/vim/bundle/Vundle.vim
-call vundle#begin()
+call vundle#begin('$XDG_CONFIG_HOME/vim/bundle')
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
 
