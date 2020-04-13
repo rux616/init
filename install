@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+
+section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux )
+meta_profiles=( all home work local remote )
+
+if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+    printf "section profiles:\n"
+    printf "    %s\n" "${section_profiles[@]}" | sort | column
+    printf "meta profiles:\n"
+    printf "    %s\n" "${meta_profiles[@]}" | sort | column
+    exit 2
+fi
+
 set -ex
 
 declare -A dir
@@ -28,10 +40,6 @@ dir[temp]="$(mktemp -d)"
 chmod ugo+rx "${dir[temp]}"
 cd "${dir[temp]}"
 
-# valid profiles:
-#   packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux
-# valid meta-profiles:
-#   all home work
 for profile in $@; do
     case ${profile} in
         all | home | work | packages )
