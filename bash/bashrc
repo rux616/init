@@ -29,7 +29,10 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
 #tmux
 if command -v tmux &>/dev/null; then
-    [[ -n "${XDG_RUNTIME_DIR}" ]] && export TMUX_TEMPDIR="${XDG_RUNTIME_DIR}"
+    if [[ -n "${XDG_RUNTIME_DIR}" ]]; then
+        mkdir "${XDG_RUNTIME_DIR}/tmux"
+        export TMUX_TEMPDIR="${XDG_RUNTIME_DIR}/tmux"
+    fi
 fi
 #wget
 if command -v wget &>/dev/null; then
