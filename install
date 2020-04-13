@@ -225,8 +225,8 @@ EOL
             mkdir "${section}" && cd "${section}"
             curl -sSfo "rust_install.sh" "https://sh.rustup.rs"
             chmod u+x "rust_install.sh"
-            export CARGO_HOME="$(pwd)/rust/.cargo"
-            export RUSTUP_HOME="$(pwd)/rust/.rustup"
+            export CARGO_HOME="${PWD}/rust/.cargo"
+            export RUSTUP_HOME="${PWD}/rust/.rustup"
             ./rust_install.sh -q -y --no-modify-path --default-toolchain stable --profile minimal
             prereqs_common=( cmake python3 )
             prereqs_deb=( pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev )
@@ -240,7 +240,7 @@ EOL
             latest_tarball="$(curl -sN "https://api.github.com/repos/alacritty/alacritty/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
             curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
                 tar -xf "${section}.tar.gz" --strip 1 && \
-                "$(pwd)/rust/.cargo/bin/cargo" build --release && \
+                "${PWD}/rust/.cargo/bin/cargo" build --release && \
                 mv -f "target/release/${section}" "${dir[bin]}/${section}" && \
                 mv -f "extras/alacritty.man" "${dir[man1]}/alacritty" && \
                 mv -f "extras/completions/alacritty.bash" "${dir[completions]}/alacritty" && \
