@@ -2,13 +2,9 @@
   path = tmux/tpm
   url = https://github.com/tmux-plugins/tpm
   branch = master
-[submodule "vim/vundle"]
-  path = vim/vundle
-  url = https://github.com/VundleVim/Vundle.vim
-  branch = master
-[submodule "vim-heavy/vundle"]
-  path = vim-heavy/vundle
-  url = https://github.com/VundleVim/Vundle.vim
+[submodule "tmux/yank"]
+  path = tmux/yank
+  url = https://github.com/sunaku/home.git
   branch = master
 [submodule "tools/kubectx"]
   path = tools/kubectx
@@ -17,4 +13,12 @@
 [submodule "tools/tmux-bash-completion"]
   path = tools/tmux-bash-completion
   url = https://github.com/imomaliev/tmux-bash-completion.git
+  branch = master
+[submodule "vim/vundle"]
+  path = vim/vundle
+  url = https://github.com/VundleVim/Vundle.vim
+  branch = master
+[submodule "vim-heavy/vundle"]
+  path = vim-heavy/vundle
+  url = https://github.com/VundleVim/Vundle.vim
   branch = master
