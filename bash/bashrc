@@ -102,7 +102,7 @@ fi
 # Check to see if this is running on any cloud instances. If it is, there may be some one-time initializations to perform.
 if nslookup metadata.google.internal &>/dev/null; then
     # GCP
-    gce_id="${XDG_CACHE_HOME:-"${HOME}/.cache"}/bash/gce_id"
+    gce_id="${XDG_CACHE_HOME}/bash/gce_id"
     # Get the ID of the current instance, and the previous (or same) one if there.
     current_id="$(curl -s 'https://metadata.google.internal/computeMetadata/v1/instance/id' -H 'Metadata-Flavor: Google')"
     stored_id="$(cat "${gce_id}" 2>/dev/null)"
@@ -152,11 +152,11 @@ tf_disable() {
 # -------------- #
 
 # Source the terminal control file to make things easier in terms of colors.
-source "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/terminal-control"
+source "${XDG_CONFIG_HOME}/bash/terminal-control"
 
 # Set color of the \u@\h section of the prompt command based on whether the system is local or not - must be set manually by running 'touch ~/.localsystem'
 SYSTEM_COLOR="${Red}"
-if [[ -e "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/localsystem" ]]; then
+if [[ -e "${XDG_CONFIG_HOME}/bash/localsystem" ]]; then
     SYSTEM_COLOR="${Green}"
 fi
 
@@ -198,7 +198,7 @@ fi
 
 # Set history file to be different than default to avoid accidental overwrites
 # http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
-export HISTFILE="${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/history"
+export HISTFILE="${XDG_CONFIG_HOME}/bash/history"
 
 # Set timestamp format
 export HISTTIMEFORMAT="[%F %T]  "
@@ -241,8 +241,8 @@ export PATH="${HOME}/.local/sbin:${HOME}/.local/bin${PATH:+":${PATH}"}"
 # Load Local BASH Settings #
 # ------------------------ #
 
-if [[ -r "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/local" ]]; then
-    source "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/local"
+if [[ -r "${XDG_CONFIG_HOME}/bash/local" ]]; then
+    source "${XDG_CONFIG_HOME}/bash/local"
 fi
 
 
@@ -251,7 +251,7 @@ fi
 # Load BASH Aliases #
 # ----------------- #
 
-if [[ -r "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/aliases" ]]; then
-    source "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/aliases"
+if [[ -r "${XDG_CONFIG_HOME}/bash/aliases" ]]; then
+    source "${XDG_CONFIG_HOME}/bash/aliases"
 fi
 
