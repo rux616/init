@@ -1,11 +1,18 @@
-backup {{home_dir}}/.bash_profile
+backup {{home_dir}}/.profile
 backup {{home_dir}}/.bashrc
-backup {{home_dir}}/.bash_aliases
-backup {{home_dir}}/.inputrc
-backup {{home_dir}}/.terminal-control
+backup {{xdg_config_home}}/bash/profile
+backup {{xdg_config_home}}/bash/bashrc
+backup {{xdg_config_home}}/bash/bash_aliases
+backup {{xdg_config_home}}/bash/terminal_control
+backup {{xdg_config_home}}/readline/inputrc
 
-link {{config_dir}}/.bash_profile {{home_dir}}/.bash_profile
-link {{config_dir}}/.bashrc {{home_dir}}/.bashrc
-link {{config_dir}}/.bash_aliases {{home_dir}}/.bash_aliases
-link {{config_dir}}/.inputrc {{home_dir}}/.inputrc
-link {{config_dir}}/.terminal-control {{home_dir}}/.terminal-control
+directory {{home_dir}}/.config/bash
+directory {{home_dir}}/.config/readline
+
+link {{xdg_config_home}}/bash/profile {{home_dir}}/.profile
+link {{xdg_config_home}}/bash/bashrc {{home_dir}}/.bashrc
+link {{config_dir}}/profile {{xdg_config_home}}/bash/profile
+link {{config_dir}}/bashrc {{xdg_config_home}}/bash/bashrc
+link {{config_dir}}/bash_aliases {{xdg_config_home}}/bash/bash_aliases
+link {{config_dir}}/terminal_control {{xdg_config_home}}/bash/terminal_control
+link {{config_dir}}/inputrc {{xdg_config_home}}/readline/inputrc
