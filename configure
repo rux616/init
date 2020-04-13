@@ -7,7 +7,7 @@ DIR="$( cd "$( [[ -h "${BASH_SOURCE[0]}" ]] && dirname "$(readlink "${BASH_SOURC
 source "${DIR}/.functions.sh"
 
 # set the config file name
-config_file="config.init"
+config_file="init.config"
 
 # declare some arrays
 declare -A action_execs error_is_fatal variables
