@@ -126,6 +126,20 @@ endfunction
 function SortJson()
     %!jq -S 'walk(if type=="array" then sort elif type == "object" then to_entries | sort | from_entries else . end)'
 endfunction
+" copy to attached terminal using the yank(1) script:
+" https://github.com/sunaku/home/blob/master/bin/yank
+function! Yank(text) abort
+    let escape = system('yank', a:text)
+    if v:shell_error
+        echoerr escape
+    else
+        call writefile([escape], '/dev/tty', 'b')
+    endif
+endfunction
+function! CopyYank() abort
+    call Yank(join(v:event.regcontents, "\n"))
+endfunction
+autocmd TextYankPost * call CopyYank()
 
 " Security
 " --------
