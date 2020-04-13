@@ -30,7 +30,7 @@ export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
 #tmux
 if command -v tmux &>/dev/null; then
     if [[ -n "${XDG_RUNTIME_DIR}" ]]; then
-        mkdir "${XDG_RUNTIME_DIR}/tmux"
+        mkdir -p "${XDG_RUNTIME_DIR}/tmux"
         export TMUX_TEMPDIR="${XDG_RUNTIME_DIR}/tmux"
     fi
 fi
