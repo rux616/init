@@ -39,6 +39,26 @@ alias l="ls"
 
 
 
+# ------------------------------- #
+# Program-specific config aliases #
+# ------------------------------- #
+
+#tmux
+if command -v tmux &>/dev/null; then
+    alias tmux="tmux -f \"${XDG_CONFIG_HOME}/tmux/tmux.conf\""
+fi
+#wget
+if command -v wget &>/dev/null; then
+    mkdir -p "${XDG_CACHE_HOME}/wget"
+    alias wget="wget --hsts-file=\"${XDG_CACHE_HOME}/wget/wget-hsts\""
+fi
+#gnupg
+if command -v gpg &>/dev/null; then
+    alias gpg="gpg --homedir \"${XDG_DATA_HOME}/gnupg\""
+fi
+
+
+
 # --------- #
 # Functions #
 # --------- #
