@@ -1,0 +1,43 @@
+# inputrc
+
+# -------------------- #
+# Load Global Settings #
+# -------------------- #
+
+$include /etc/inputrc
+
+
+
+# -------------------- #
+# OS-specific Settings #
+# -------------------- #
+
+# Nothing here yet
+
+
+
+# -------- #
+# Settings #
+# -------- #
+
+"\C-h": backward-kill-word
+"\e[3;5~": kill-word
+
+"\C-p":history-search-backward
+"\C-n":history-search-forward
+
+set colored-stats On
+set completion-ignore-case On
+set completion-prefix-display-length 3
+set mark-symlinked-directories On
+set show-all-if-ambiguous On
+set show-all-if-unmodified On
+set visible-stats On
+
+
+
+# ------------------------- #
+# Load Local Input Settings #
+# ------------------------- #
+
+$include ./local

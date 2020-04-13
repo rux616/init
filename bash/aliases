@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# aliases
+
+# ------------------- #
+# OS-specific Aliases #
+# ------------------- #
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    # Mac OS
+    alias ls="ls -G"
+
+elif [[ "$(uname)" == "Linux" ]]; then
+    # Linux
+    if [[ -e "/var/log/syslog" ]]; then
+        SYSTEMLOG="/var/log/syslog"
+    else
+        SYSTEMLOG="/var/log/messages"
+    fi
+    alias taillog="sudo tail -f -n 20 $SYSTEMLOG"
+    alias ls="ls --color=auto --time-style=long-iso"
+elif [[ "$(uname)" == "FreeBSD" ]]; then
+    # FreeBSD
+    alias ls="ls -G"
+fi
+
+
+
+# --------------- #
+# General Aliases #
+# --------------- #
+
+alias l1="ls -1"
+alias ll="ls -l"
+alias la="ls -a"
+alias lla="ls -al"
+alias vi="vim"
+alias :q="exit"
+alias l="ls"
+
+
+
+# ------------------------------- #
+# Program-specific config aliases #
+# ------------------------------- #
+
+#wget
+if command -v wget &>/dev/null; then
+    mkdir -p "${XDG_CACHE_HOME}/wget"
+    alias wget="wget --hsts-file=\"${XDG_CACHE_HOME}/wget/wget-hsts\""
+fi
+#gnupg
+if command -v gpg &>/dev/null; then
+    alias gpg="gpg --homedir \"${XDG_DATA_HOME}/gnupg\""
+fi
+
+
+
+# --------- #
+# Functions #
+# --------- #
+
+# enable live grepping; useful for grepping things like "tail -f /var/log/messages"
+# usage: just pipe into it
+# example: tail -f /var/log/messages | livegrep -i " <server_name> "
+livegrep() {
+    grep --line-buffered $* | cat
+}

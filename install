@@ -1,0 +1,255 @@
+#!/usr/bin/env bash
+
+section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux )
+meta_profiles=( all home work local remote )
+
+if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+    printf "section profiles:\n"
+    printf "    %s\n" "${section_profiles[@]}" | sort | column
+    printf "meta profiles:\n"
+    printf "    %s\n" "${meta_profiles[@]}" | sort | column
+    exit 2
+fi
+
+set -ex
+
+declare -A dir
+dir[base]="${HOME}/.local"
+dir[bin]="${dir[base]}/bin"
+dir[lib]="${dir[base]}/lib"
+dir[opt]="${dir[base]}/opt"
+dir[share]="${dir[base]}/share"
+dir[man1]="${dir[share]}/man/man1"
+dir[completions]="${dir[share]}/bash-completion/completions"
+
+for key in "${!dir[@]}"; do mkdir -p "${dir[${key}]}"; done
+
+if command -v apt-get &>/dev/null; then
+    family="deb"
+    pkg_mgr="sudo apt-get"
+elif command -v dnf &>/dev/null; then
+    family="rpm"
+    pkg_mgr="sudo dnf"
+else
+    echo "unknown linux family"
+    exit 1
+fi
+
+# make temp directory
+dir[temp]="$(mktemp -d)"
+chmod ugo+rx "${dir[temp]}"
+cd "${dir[temp]}"
+
+for profile in $@; do
+    case ${profile} in
+        all | home | work | packages )
+            # install packages
+            echo "installing packages..."
+            mkdir "packages" && cd "packages"
+            case ${family} in
+                deb) ${pkg_mgr} update ;;
+                rpm) ${pkg_mgr} makecache ;;
+            esac
+            packages_common=( git vim curl wget python3 python3-pip unzip sysstat pkg-config htop bash-completion )
+            packages_deb=( apt-file python3-venv )
+            packages_rpm=()
+            packages=( ${packages_common[@]} )
+            case ${family} in
+                deb) packages+=( ${packages_deb[@]} ) ;;
+                rpm) packages+=( ${packages_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${packages[@]}
+            cd "${dir[temp]}"
+            ;;&
+        all | work | gcloud )
+            # install gcloud
+            echo "installing gcloud..."
+            mkdir "gcloud" && cd "gcloud"
+            curl -sLo "gcloud_install.sh" "https://sdk.cloud.google.com/"
+            chmod u+x "gcloud_install.sh"
+            ./gcloud_install.sh --disable-prompts --install-dir="${dir[opt]}"
+            ${dir[opt]}/google-cloud-sdk/bin/gcloud -q components install alpha beta cloud_sql_proxy kubectl
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gcloud" "${dir[bin]}/gcloud"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/cloud_sql_proxy" "${dir[bin]}/cloud_sql_proxy"
+            ln -sf "${dir[opt]}/google-cloud-sdk/completions.bash.inc" "${dir[completions]}/gcloud_bq_gsutil"
+            cd "${dir[temp]}"
+            ;;&
+        all | work | kubectl )
+            # install kubectl
+            echo "installing kubectl..."
+            mkdir "kubectl" && cd "kubectl"
+            curl -sLO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+            chmod ugo+x kubectl
+            mv -f kubectl ${dir[bin]}/kubectl #overwrite any existing binaries
+            ${dir[bin]}/kubectl completion bash >${dir[completions]}/kubectl
+            cd "${dir[temp]}"
+            ;;&
+        all | work | terraform )
+            # install terraform
+            section="terraform"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            # put version to be referred to as naked name last
+            versions=( "0.11.14" "0.12.12" )
+            for version in "${versions[@]}"; do
+                curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
+                unzip *
+                rm "${section}_${version}_linux_amd64.zip"
+                mv ${section} "${dir[bin]}/${section}-${version}"
+            done
+            ln -s "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | packer )
+            # install packer
+            section="packer"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            # put version to be referred to as naked name last
+            versions=( "1.5.5" )
+            for version in "${versions[@]}"; do
+                curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
+                unzip *
+                rm "${section}_${version}_linux_amd64.zip"
+                mv ${section} "${dir[bin]}/${section}-${version}"
+            done
+            ln -s "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | keybase )
+            # install keybase
+            echo "installing keybase..."
+            mkdir "keybase" && cd "keybase"
+            if ! command -v keybase &>/dev/null; then
+                case ${family} in
+                    deb) keybase_file="keybase_amd64.deb" ;;
+                    rpm) keybase_file="keybase_amd64.rpm" ;;
+                esac
+                curl -sO "https://prerelease.keybase.io/${keybase_file}"
+                ${pkg_mgr} install -y "./${keybase_file}"
+            fi
+            run_keybase -g
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | pre-commit )
+            # install pre-commit
+            echo "installing pre-commit..."
+            mkdir "pre-commit" && cd "pre-commit"
+            python3 -m pip install --user pre-commit
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | ssh-config )
+            # install basic ssh-config
+            echo "installing basic ssh config..."
+            mkdir "ssh-config" && cd "ssh-config"
+            if [[ ! -f "${HOME}/.ssh/config" ]]; then
+                cat >"${HOME}/.ssh/config" << EOL
+Host *
+    CanonicalizeHostname yes
+    PreferredAuthentications publickey
+    ServerAliveInterval 60
+
+Host github.com
+    IdentityFile ~/.ssh/${HOSTNAME}-to-github
+    User rux616
+EOL
+                chmod 644 "${HOME}/.ssh/config"
+            fi
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | ssh-keys )
+            # create some basic ssh keys
+            echo "creating basic ssh keys..."
+            mkdir "ssh-keys" && cd "ssh-keys"
+            names=( "${HOSTNAME}-to-github" )
+            types=( "ed25519" )
+            for ((i=0; i<${#names[@]}; i++)); do
+                if [[ ! -f "${HOME}/.ssh/${names[$i]}" ]]; then
+                    ssh-keygen -q -t ${types[$i]} -C "${USER}@${names[$i]}" -N "" -f "${HOME}/.ssh/${names[$i]}"
+                fi
+            done
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | util-linux )
+            # install the *full* util-linux, which some distros don't seem to have
+            section="util-linux"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( autoconf bison libtool automake )
+            prereqs_deb=( autopoint gettext libncurses-dev libpam0g-dev libcap-ng-dev )
+            prereqs_rpm=( gettext-devel ncurses-devel pam-devel libcap-ng-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/karelzak/util-linux/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                ./autogen.sh && \
+                ./configure --prefix="${dir[base]}" && \
+                make && \
+                sudo make install && \
+                sudo chown -R ${USER}:${USER} "${dir[base]}"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | tmux )
+            # install tmux
+            section="tmux"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( autoconf bison libtool automake )
+            prereqs_deb=( autopoint gettext libncurses-dev libevent-dev )
+            prereqs_rpm=( gettext-devel ncurses-devel libevent-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/tmux/tmux/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                ./autogen.sh && \
+                ./configure --prefix="${dir[base]}" && \
+                make && \
+                make install
+            cd "${dir[temp]}"
+            ;;&
+        alacritty )
+            # install alacritty
+            section="alacritty"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            curl -sSfo "rust_install.sh" "https://sh.rustup.rs"
+            chmod u+x "rust_install.sh"
+            export CARGO_HOME="${PWD}/rust/.cargo"
+            export RUSTUP_HOME="${PWD}/rust/.rustup"
+            ./rust_install.sh -q -y --no-modify-path --default-toolchain stable --profile minimal
+            prereqs_common=( cmake python3 )
+            prereqs_deb=( pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev )
+            prereqs_rpm=( freetype-devel fontconfig-devel libxcb-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/alacritty/alacritty/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                "${PWD}/rust/.cargo/bin/cargo" build --release && \
+                mv -f "target/release/${section}" "${dir[bin]}/${section}" && \
+                mv -f "extras/alacritty.man" "${dir[man1]}/alacritty" && \
+                mv -f "extras/completions/alacritty.bash" "${dir[completions]}/alacritty" && \
+                tic -xe alacritty,alacritty-direct "extras/alacritty.info"
+            cd "${dir[temp]}"
+            ;;&
+    esac
+done
+
+# cleanup
+rm -rf "${dir[temp]}"
+unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file CARGO_HOME RUSTUP_HOME

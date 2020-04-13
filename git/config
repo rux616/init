@@ -1,3 +1,5 @@
-backup {{home_dir}}/.gitconfig
-
-link {{config_dir}}/.gitconfig {{home_dir}}/.gitconfig
+[user]
+	name = Dan Cassidy
+	email = 5643061+rux616@users.noreply.github.com
+[color]
+	ui = true

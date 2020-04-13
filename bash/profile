@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# profile
+
+# ------------ #
+# Load BASH RC #
+# ------------ #
+if [[ -r "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/bashrc" ]]; then
+    source "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/bashrc"
+fi

@@ -22,7 +22,10 @@ function back_up_files()
 {
     # process list of files
     for file in $@; do
-        if [ -r "${file}" ]; then
+        if [[ -h "${file}" ]]; then
+            # file is a symlink
+            rm "${file}"
+        elif [[ -f "${file}" ]]; then
             # if file exists, move it
             mv "${file}" "${file}.$(date +%Y%m%dT%H%M%S).bak"
         fi
