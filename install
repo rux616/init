@@ -16,11 +16,10 @@ set -ex
 declare -A dir
 dir[base]="${HOME}/.local"
 dir[bin]="${dir[base]}/bin"
-dir[lib]="${dir[base]}/lib"
 dir[opt]="${dir[base]}/opt"
-dir[share]="${dir[base]}/share"
-dir[man1]="${dir[share]}/man/man1"
-dir[completions]="${dir[share]}/bash-completion/completions"
+dir[xdg_data_home]="${XDG_DATA_HOME:-"${HOME}/.local/share"}"
+dir[man1]="${dir[xdg_data_home]}/man/man1"
+dir[completions]="${dir[xdg_data_home]}/bash-completion/completions"
 
 for key in "${!dir[@]}"; do mkdir -p "${dir[${key}]}"; done
 
