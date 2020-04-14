@@ -70,9 +70,11 @@ for profile in $@; do
             chmod u+x "gcloud_install.sh"
             ./gcloud_install.sh --disable-prompts --install-dir="${dir[opt]}"
             ${dir[opt]}/google-cloud-sdk/bin/gcloud -q components install alpha beta cloud_sql_proxy kubectl
-            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gcloud" "${dir[bin]}/gcloud"
-            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/cloud_sql_proxy" "${dir[bin]}/cloud_sql_proxy"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/docker-credential-gcloud" "${dir[bin]}/docker-credential-gcloud"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gcloud" "${dir[bin]}/gcloud"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/git-credential-gcloud.sh" "${dir[bin]}/git-credential-gcloud.sh"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
             ln -sf "${dir[opt]}/google-cloud-sdk/completion.bash.inc" "${dir[completions]}/google-cloud-sdk"
             cd "${dir[temp]}"
             ;;&
