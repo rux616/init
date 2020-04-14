@@ -7,8 +7,7 @@
 
 if [[ "$(uname)" == "Darwin" ]]; then
     # Mac OS
-    alias ls="ls -G"
-
+    :
 elif [[ "$(uname)" == "Linux" ]]; then
     # Linux
     if [[ -e "/var/log/syslog" ]]; then
@@ -17,25 +16,10 @@ elif [[ "$(uname)" == "Linux" ]]; then
         SYSTEMLOG="/var/log/messages"
     fi
     alias taillog="sudo tail -f -n 20 $SYSTEMLOG"
-    alias ls="ls --color=auto --time-style=long-iso"
 elif [[ "$(uname)" == "FreeBSD" ]]; then
     # FreeBSD
-    alias ls="ls -G"
+    :
 fi
-
-
-
-# --------------- #
-# General Aliases #
-# --------------- #
-
-alias l1="ls -1"
-alias ll="ls -l"
-alias la="ls -a"
-alias lla="ls -al"
-alias vi="vim"
-alias :q="exit"
-alias l="ls"
 
 
 
@@ -65,3 +49,29 @@ fi
 livegrep() {
     grep --line-buffered $* | cat
 }
+
+# a better ls command
+# https://www.topbug.net/blog/2016/11/28/a-better-ls-command/
+if ls --color -d . >/dev/null 2>&1; then  # GNU ls
+    export COLUMNS  # Remember columns for subprocesses.
+    eval "$(dircolors)"
+    function ls {
+        command ls -F -h --color=always -v --author --time-style=long-iso -C "$@" | less -R -X -F
+    }
+else
+    alias ls='ls -G'
+fi
+
+
+
+# --------------- #
+# General Aliases #
+# --------------- #
+
+alias l="ls"
+alias l1="ls -1"
+alias ll="ls -l"
+alias la="ls -a"
+alias lla="ls -a -l"
+alias vi="vim"
+alias :q="exit"
