@@ -71,7 +71,7 @@ for profile in $@; do
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/gcloud" "${dir[bin]}/gcloud"
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/cloud_sql_proxy" "${dir[bin]}/cloud_sql_proxy"
-            ln -sf "${dir[opt]}/google-cloud-sdk/completions.bash.inc" "${dir[completions]}/gcloud_bq_gsutil"
+            ln -sf "${dir[opt]}/google-cloud-sdk/completion.bash.inc" "${dir[completions]}/google-cloud-sdk"
             cd "${dir[temp]}"
             ;;&
         all | work | kubectl )
