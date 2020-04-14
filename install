@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO add docker
+
 section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux )
 meta_profiles=( all home work local remote )
 
