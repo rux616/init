@@ -1,0 +1,64 @@
+# color schemes
+schemes:
+  # modified default colors
+  moddef: &moddef
+    primary:
+      background: '#000000'
+      foreground: '#eaeaea'
+
+      dim_foreground: '#9a9a9a'
+      bright_foreground: '#ffffff'
+
+    # Cursor colors
+    cursor:
+      text: '#000000'
+      cursor: '#ffffff'
+
+    # Vi mode cursor colors
+    vi_mode_cursor:
+      text: '#000000'
+      cursor: '#ffffff'
+
+    # Selection colors
+    selection:
+      text: '#eaeaea'
+      background: '#404040'
+
+    # Normal colors
+    normal:
+      black:   '#000000'
+      red:     '#ed3e33'
+      green:   '#11d116'
+      yellow:  '#bbbb22'
+      blue:    '#1d88f3'
+      magenta: '#cc33cc'
+      cyan:    '#50d0ca'
+      white:   '#eaeaea'
+
+    # Bright colors
+    bright:
+      black:   '#666666'
+      red:     '#ff2324'
+      green:   '#16f816'
+      yellow:  '#ffff00'
+      blue:    '#2070ff'
+      magenta: '#fc0fc0'
+      cyan:    '#44eee6'
+      white:   '#ffffff'
+
+    # Dim colors
+    dim:
+      black:   '#000000'
+      red:     '#8c3336'
+      green:   '#108010'
+      yellow:  '#97822e'
+      blue:    '#207088'
+      magenta: '#9f218f'
+      cyan:    '#497e7a'
+      white:   '#9a9a9a'
+
+# Live config reload (changes require restart)
+live_config_reload: true
+
+# colors
+colors: *moddef
