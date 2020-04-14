@@ -155,7 +155,7 @@ tf_disable() {
 source "${XDG_CONFIG_HOME}/bash/terminal-control"
 
 # Set color of the \u@\h section of the prompt command based on whether the system is local or not - must be set manually by running 'touch ~/.localsystem'
-SYSTEM_COLOR="${Red}"
+SYSTEM_COLOR="${IRed}"
 if [[ -e "${XDG_CONFIG_HOME}/bash/localsystem" ]]; then
     SYSTEM_COLOR="${Green}"
 fi
