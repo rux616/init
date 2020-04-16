@@ -12,9 +12,9 @@ _blacklist_glob='@(acroread.sh)'
 _backup_glob='@(#*#|*@(~|.@(bak|orig|rej|swp|dpkg*|rpm@(orig|new|save))))'
 
 # source user completion directory definitions
-completetions_dir="${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions"
+completions_dir="${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions"
 if [[ -d $completions_dir && -r $completions_dir && -x $completions_dir ]]; then
-    for i in "$compat_dir"/*; do
+    for i in "$completions_dir"/*; do
         [[ ${i##*/} != @($_backup_glob|Makefile*|$_blacklist_glob) \
             && -f $i && -r $i ]] && . "$i"
     done
