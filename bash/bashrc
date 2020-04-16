@@ -35,6 +35,8 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 
 #readline
 export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
+#bash_completion
+export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash-completion/bash_completion"
 #tmux
 if command -v tmux &>/dev/null; then
     if [[ -n "${XDG_RUNTIME_DIR}" ]]; then
