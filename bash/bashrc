@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # bashrc
 
+# ------------ #
+# Secure umask #
+# ------------ #
+
+umask 0077
+
+
+
 # -------------------- #
 # Load Global Settings #
 # -------------------- #
