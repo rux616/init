@@ -83,7 +83,7 @@ for profile in $@; do
             echo "installing kubectl..."
             mkdir "kubectl" && cd "kubectl"
             curl -sLO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-            chmod ugo+x kubectl
+            chmod u+x kubectl
             mv -f kubectl ${dir[bin]}/kubectl #overwrite any existing binaries
             ${dir[bin]}/kubectl completion bash >${dir[completions]}/kubectl
             cd "${dir[temp]}"
@@ -130,6 +130,7 @@ for profile in $@; do
                     rpm) keybase_file="keybase_amd64.rpm" ;;
                 esac
                 curl -sO "https://prerelease.keybase.io/${keybase_file}"
+                chmod ugo+r "${keybase_file}"
                 ${pkg_mgr} install -y "./${keybase_file}"
             fi
             run_keybase -g
@@ -146,6 +147,10 @@ for profile in $@; do
             # install basic ssh-config
             echo "installing basic ssh config..."
             mkdir "ssh-config" && cd "ssh-config"
+            if [[ ! -d "${HOME}/.ssh" ]]; then
+                mkdir -p "${HOME}/.ssh"
+                chmod 700 "${HOME}/.ssh"
+            fi
             if [[ ! -f "${HOME}/.ssh/config" ]]; then
                 cat >"${HOME}/.ssh/config" << EOL
 Host *
