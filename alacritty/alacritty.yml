@@ -62,3 +62,14 @@ live_config_reload: true
 
 # colors
 colors: *moddef
+
+# shell
+shell:
+  program: bash
+  args:
+    - --login
+
+# define key bindings
+key_bindings:
+  # control+backspace should send the keycode 0x08 (control+h) for compatability
+  - { key: Back,          mods: Control,        chars: "\x08" }
