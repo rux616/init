@@ -36,6 +36,11 @@ fi
 if command -v gpg &>/dev/null; then
     alias gpg="gpg --homedir \"${XDG_DATA_HOME}/gnupg\""
 fi
+#trash-cli
+if command -v trash-put &>/dev/null; then
+    # if trash-cli is available, remind that it should be used instead
+    alias rm="echo \"use 'trash' instead, or use \\rm if you really want it gone\"; false"
+fi
 
 
 
