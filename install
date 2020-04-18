@@ -2,7 +2,7 @@
 
 # TODO add docker
 
-section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli )
+section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -265,6 +265,18 @@ EOL
                 tar -xf "${section}.tar.gz" --strip 1 && \
                 python3 setup.py install --user
             mkdir -p "${dir[xdg_data_home]}/Trash"
+            cd "${dir[temp]}"
+            ;;&
+        all | work | remote | local | kubeval )
+            # install kubeval
+            section="kubeval"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            release_file="${section}-linux-amd64.tar.gz"
+            latest_release="https://github.com/instrumenta/${section}/releases/latest/download/${release_file}"
+            curl -sLO "${latest_release}" && \
+                tar -xf "${release_file}" && \
+                mv -f "${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
     esac
