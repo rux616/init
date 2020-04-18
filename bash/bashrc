@@ -46,6 +46,8 @@ if command -v tmux &>/dev/null; then
 fi
 #wget
 if command -v wget &>/dev/null; then
+    [[ ! -d "${XDG_CONFIG_HOME}/wget" ]] && mkdir -p "${XDG_CONFIG_HOME}/wget"
+    [[ ! -e "${XDG_CONFIG_HOME}/wget/wgetrc" ]] && touch "${XDG_CONFIG_HOME}/wget/wgetrc"
     export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
 fi
 #ncurses
