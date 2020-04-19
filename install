@@ -2,7 +2,7 @@
 
 # TODO add docker
 
-section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval )
+section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -277,6 +277,36 @@ EOL
             curl -sLO "${latest_release}" && \
                 tar -xf "${release_file}" && \
                 mv -f "${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | remote | local | vim )
+            # install vim
+            section="vim"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            # TODO --BEGIN--
+            # TODO check what the actual prereqs are
+            # TODO for now, run after installing tmux and/or util-linux
+            #prereqs_common=( autoconf bison libtool automake python3 python3-dev )
+            #prereqs_deb=( autopoint gettext libncurses-dev libncurses5-dev libevent-dev )
+            #prereqs_rpm=( gettext-devel ncurses-devel libevent-devel )
+            #prereqs=( ${prereqs_common[@]} )
+            #case ${family} in
+            #    deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+            #    rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            #esac
+            #${pkg_mgr} install -y ${prereqs[@]}
+            # TODO --END--
+            latest_tarball="$(curl -sN "https://api.github.com/repos/vim/vim/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                ./configure \
+                    --with-features=huge \
+                    --enable-python3interp=yes \
+                    --with-python3-config-dir=$(python3-config --configdir) \
+                    --prefix="${dir[base]}" && \
+                make && \
+                make install
             cd "${dir[temp]}"
             ;;&
     esac
