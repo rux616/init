@@ -210,7 +210,7 @@ fi
 
 # Set history file to be different than default to avoid accidental overwrites
 # http://superuser.com/questions/575479/bash-history-truncated-to-500-lines-on-each-login
-export HISTFILE="${XDG_CONFIG_HOME}/bash/history"
+export HISTFILE="${XDG_DATA_HOME}/bash/history"
 
 # Set timestamp format
 export HISTTIMEFORMAT="[%F %T]  "
