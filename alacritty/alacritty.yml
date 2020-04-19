@@ -3,26 +3,26 @@ schemes:
   # modified default colors
   moddef: &moddef
     primary:
-      background: '#000000'
-      foreground: '#eaeaea'
+      background: '#0c0c0c'
+      foreground: '#cccccc'
 
       dim_foreground: '#9a9a9a'
       bright_foreground: '#ffffff'
 
     # Cursor colors
-    cursor:
-      text: '#000000'
-      cursor: '#ffffff'
+    #cursor:
+    #  text: '#000000'
+    #  cursor: '#ffffff'
 
     # Vi mode cursor colors
-    vi_mode_cursor:
-      text: '#000000'
-      cursor: '#ffffff'
+    #vi_mode_cursor:
+    #  text: '#000000'
+    #  cursor: '#ffffff'
 
     # Selection colors
-    selection:
-      text: '#eaeaea'
-      background: '#404040'
+    #selection:
+    #  text: '#eaeaea'
+    #  background: '#404040'
 
     # Normal colors
     normal:
@@ -33,7 +33,7 @@ schemes:
       blue:    '#1d88f3'
       magenta: '#cc33cc'
       cyan:    '#50d0ca'
-      white:   '#eaeaea'
+      white:   '#cccccc'
 
     # Bright colors
     bright:
@@ -44,7 +44,7 @@ schemes:
       blue:    '#2070ff'
       magenta: '#fc0fc0'
       cyan:    '#44eee6'
-      white:   '#ffffff'
+      white:   '#f2f2f2'
 
     # Dim colors
     dim:
@@ -55,7 +55,7 @@ schemes:
       blue:    '#207088'
       magenta: '#9f218f'
       cyan:    '#497e7a'
-      white:   '#9a9a9a'
+      white:   '#999999'
 
 # Live config reload (changes require restart)
 live_config_reload: true
@@ -73,3 +73,5 @@ shell:
 key_bindings:
   # control+backspace should send the keycode 0x08 (control+h) for compatability
   - { key: Back,          mods: Control,        chars: "\x08" }
+  # shift+backspace should send the keycode 0x7f (backspace)
+  - { key: Back,          mods: Shift,          chars: "\x7f" }
