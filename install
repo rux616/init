@@ -19,9 +19,19 @@ declare -A dir
 dir[base]="${HOME}/.local"
 dir[bin]="${dir[base]}/bin"
 dir[opt]="${dir[base]}/opt"
+dir[share]="${dir[base]}/share"
+dir[man]="${dir[share]}/man"
+dir[man1]="${dir[man]}/man1"
 dir[xdg_data_home]="${XDG_DATA_HOME:-"${HOME}/.local/share"}"
-dir[man1]="${dir[xdg_data_home]}/man/man1"
 dir[completions]="${dir[xdg_data_home]}/bash-completion/completions"
+
+if [[ "${XDG_DATA_HOME:-"${HOME}/.local/share"}" == "${HOME}/.local/share" ]]; then
+    if [[ "${XDG_OVERRIDE}" != "true" ]]; then
+        echo "XDG_DATA_HOME is not set or is set to default"
+        echo "configure bash or run again with \"XDG_OVERRIDE=true\" in front"
+        exit 1
+    fi
+fi
 
 for key in "${!dir[@]}"; do mkdir -p "${dir[${key}]}"; done
 
