@@ -58,8 +58,11 @@ livegrep() {
 # a better ls command
 # https://www.topbug.net/blog/2016/11/28/a-better-ls-command/
 if ls --color -d . >/dev/null 2>&1; then  # GNU ls
+    unalias ls
     export COLUMNS  # Remember columns for subprocesses.
-    eval "$(dircolors)"
+    [[ "${TERM}" == "alacritty" ]] \
+        && eval "$(TERM=xterm dircolors "${XDG_CONFIG_HOME}/bash/dircolors")" \
+        || eval "$(dircolors "${XDG_CONFIG_HOME}/bash/dircolors")"
     function ls {
         command ls -F -h --color=always -v --author --time-style=long-iso -C "$@" | less -R -X -F
     }
