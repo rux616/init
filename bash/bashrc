@@ -55,9 +55,9 @@ export TERMINFO="${XDG_DATA_HOME}/terminfo"
 export TERMINFO_DIRS="${XDG_DATA_HOME}/terminfo:/usr/share/terminfo"
 #less
 if command -v less &>/dev/null; then
-    mkdir -p "${XDG_CACHE_HOME}/less"
+    mkdir -p "${XDG_DATA_HOME}/less"
     export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
-    export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
+    export LESSHISTFILE="${XDG_DATA_HOME}/less/history"
 fi
 #gnupg
 if command -v gpg &>/dev/null; then
