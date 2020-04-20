@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# get directory where this script lives
+source_dir="$( cd "$( [[ -h "${BASH_SOURCE[0]}" ]] && dirname "$(readlink "${BASH_SOURCE[0]}")" || dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# source common defaults
+source "${source_dir}/.defaults.sh"
+
 # TODO add docker
 
 section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim )
@@ -22,12 +28,12 @@ dir[opt]="${dir[base]}/opt"
 dir[share]="${dir[base]}/share"
 dir[man]="${dir[share]}/man"
 dir[man1]="${dir[man]}/man1"
-dir[xdg_data_home]="${XDG_DATA_HOME:-"${HOME}/.local/share"}"
+dir[xdg_data_home]="${XDG_DATA_HOME:-"${default[XDG_DATA_HOME]}"}"
 dir[completions]="${dir[xdg_data_home]}/bash-completion/completions"
 
-if [[ "${XDG_DATA_HOME:-"${HOME}/.local/share"}" == "${HOME}/.local/share" ]]; then
+if [[ "${XDG_DATA_HOME}" == "${HOME}/.local/share" ]]; then
     if [[ "${XDG_OVERRIDE}" != "true" ]]; then
-        echo "XDG_DATA_HOME is not set or is set to default"
+        echo "XDG_DATA_HOME is not set or is set to spec defaults"
         echo "configure bash or run again with \"XDG_OVERRIDE=true\" in front"
         exit 1
     fi

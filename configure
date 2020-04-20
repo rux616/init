@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
 # get directory where this script lives
-DIR="$( cd "$( [[ -h "${BASH_SOURCE[0]}" ]] && dirname "$(readlink "${BASH_SOURCE[0]}")" || dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source_dir="$( cd "$( [[ -h "${BASH_SOURCE[0]}" ]] && dirname "$(readlink "${BASH_SOURCE[0]}")" || dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # source common functions
-source "${DIR}/.functions.sh"
+source "${source_dir}/.functions.sh"
+
+# source common defaults
+source "${source_dir}/.defaults.sh"
 
 # set the config file name
 config_file="init.config"
@@ -28,9 +31,9 @@ define_action "postcmd"     "run_command"                                       
 # define variables that can be used
 variables["base_dir"]="${PWD}"
 variables["home_dir"]="${HOME}"
-variables["xdg_config_home"]="${XDG_CONFIG_HOME:-"${HOME}/.config"}"
-variables["xdg_data_home"]="${XDG_DATA_HOME:-"${HOME}/.local/share"}"
-variables["xdg_cache_home"]="${XDG_CACHE_HOME:-"${HOME}/.cache"}"
+variables["xdg_config_home"]="${XDG_CONFIG_HOME:-"${default[XDG_CONFIG_HOME]}"}"
+variables["xdg_data_home"]="${XDG_DATA_HOME:-"${default[XDG_DATA_HOME]}"}"
+variables["xdg_cache_home"]="${XDG_CACHE_HOME:-"${default[XDG_CACHE_HOME]}"}"
 variables["config_dir"]=""
 
 # run through the list of configs
