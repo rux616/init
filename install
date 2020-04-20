@@ -266,9 +266,9 @@ EOL
                 tar -xf "${section}.tar.gz" --strip 1 && \
                 "${PWD}/rust/.cargo/bin/cargo" build --release && \
                 mv -f "target/release/${section}" "${dir[bin]}/${section}" && \
-                mv -f "extras/alacritty.man" "${dir[man1]}/alacritty" && \
-                mv -f "extras/completions/alacritty.bash" "${dir[completions]}/alacritty" && \
-                tic -xe alacritty,alacritty-direct "extras/alacritty.info"
+                mv -f "extra/alacritty.man" "${dir[man1]}/alacritty" && \
+                mv -f "extra/completions/alacritty.bash" "${dir[completions]}/alacritty" && \
+                tic -xe alacritty,alacritty-direct "extra/alacritty.info"
             cd "${dir[temp]}"
             ;;&
         all | home | work | remote | local | trash-cli )
