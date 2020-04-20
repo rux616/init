@@ -58,7 +58,7 @@ livegrep() {
 # a better ls command
 # https://www.topbug.net/blog/2016/11/28/a-better-ls-command/
 if ls --color -d . >/dev/null 2>&1; then  # GNU ls
-    unalias ls
+    unalias ls &>/dev/null
     export COLUMNS  # Remember columns for subprocesses.
     [[ "${TERM}" == "alacritty" ]] \
         && eval "$(TERM=xterm dircolors "${XDG_CONFIG_HOME}/bash/dircolors")" \
