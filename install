@@ -8,7 +8,7 @@ source "${source_dir}/.defaults.sh"
 
 # TODO add docker
 
-section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim )
+section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -268,6 +268,17 @@ EOL
                 mv -f "target/release/${section}" "${dir[bin]}/${section}" && \
                 mv -f "extra/alacritty.man" "${dir[man1]}/alacritty" && \
                 mv -f "extra/completions/alacritty.bash" "${dir[completions]}/alacritty" && \
+                tic -xe alacritty,alacritty-direct "extra/alacritty.info"
+            cd "${dir[temp]}"
+            ;;&
+        alacritty-terminfo )
+            # install alacritty terminfo only
+            section="alacritty-terminfo"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            latest_tarball="$(curl -sN "https://api.github.com/repos/alacritty/alacritty/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
                 tic -xe alacritty,alacritty-direct "extra/alacritty.info"
             cd "${dir[temp]}"
             ;;&
