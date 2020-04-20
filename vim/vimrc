@@ -1,16 +1,22 @@
+" TODO Need to work on importing these settings into main vimrc
+" use ': scriptnames' to find load order
+source $XDG_CONFIG_HOME/vim/fedoravimrc
+
 " Base settings
 " -------------
-set nocompatible              " be iMproved, required
-filetype off                  " required
+if &compatible
+  set nocompatible              " be iMproved, required
+endif
+filetype on                  " required
 
 " Set up XDG spec compatibility
 " -----------------------------
-set backupdir=$XDG_DATA_HOME/vim/backup
-set directory=$XDG_DATA_HOME/vim/swap
-set undodir=$XDG_DATA_HOME/vim/undo
-set viewdir=$XDG_DATA_HOME/vim/view
+set backupdir=$XDG_DATA_HOME/vim/backup//
+set directory=$XDG_DATA_HOME/vim/swap//
+set undodir=$XDG_DATA_HOME/vim/undo//
+set viewdir=$XDG_DATA_HOME/vim/view//
 set viminfo+='1000,n$XDG_DATA_HOME/vim/viminfo
-set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
+set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$XDG_DATA_HOME/vim,$XDG_DATA_HOME/vim/after,$VIM,$VIMRUNTIME
 
 " Set up Vundle
 " -------------
@@ -58,7 +64,8 @@ Plugin 'L9'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
-filetype plugin indent on    " required
+"filetype plugin indent on    " required
+filetype plugin on    " required
 "
 " Brief help
 " :PluginList       - lists configured plugins
@@ -83,6 +90,7 @@ set autoindent                      " Autoindents when you create a new line.
 " ----------------
 set number                          " show line numbers
 set cursorline                      " highlight current line
+"set incsearch                       " highlight as you search with /
 set laststatus=2                    " Force statusline to show
 " Build a statusline
 set statusline=
