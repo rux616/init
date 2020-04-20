@@ -32,10 +32,6 @@ if command -v wget &>/dev/null; then
     mkdir -p "${XDG_CACHE_HOME}/wget"
     alias wget="wget --hsts-file=\"${XDG_CACHE_HOME}/wget/wget-hsts\""
 fi
-#gnupg
-if command -v gpg &>/dev/null; then
-    alias gpg="gpg --homedir \"${XDG_DATA_HOME}/gnupg\""
-fi
 #trash-cli
 if command -v trash-put &>/dev/null; then
     # if trash-cli is available, remind that it should be used instead
