@@ -1,3 +1,8 @@
+# set the TERM variable
+env:
+  TERM: alacritty
+  WSLENV: TERM
+
 # color schemes
 schemes:
   # modified default colors
