@@ -309,3 +309,14 @@ function define_action() {
     # define whether an error in this action is fatal
     error_is_fatal[$1]="$3"
 }
+
+# curl something
+#
+# syntax init_curl <url_to_grab> <filename_to_save_as>
+function init_curl() {
+    url="$1"
+    file="$2"
+
+    curl -sL "${url}" -o "${file}"
+    return $?
+}
