@@ -8,7 +8,7 @@ source "${source_dir}/.defaults.sh"
 
 # TODO add docker
 
-section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo )
+section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -78,10 +78,11 @@ for profile in $@; do
             ${pkg_mgr} install -y ${packages[@]}
             cd "${dir[temp]}"
             ;;&
-        all | work | gcloud )
-            # install gcloud
-            echo "installing gcloud..."
-            mkdir "gcloud" && cd "gcloud"
+        all | work | google-cloud-sdk )
+            # install google-cloud-sdk
+            section="google-cloud-sdk"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
             curl -sLo "gcloud_install.sh" "https://sdk.cloud.google.com/"
             chmod u+x "gcloud_install.sh"
             ./gcloud_install.sh --disable-prompts --install-dir="${dir[opt]}"
@@ -91,17 +92,8 @@ for profile in $@; do
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/gcloud" "${dir[bin]}/gcloud"
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/git-credential-gcloud.sh" "${dir[bin]}/git-credential-gcloud.sh"
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/kubectl" "${dir[bin]}/kubectl"
             ln -sf "${dir[opt]}/google-cloud-sdk/completion.bash.inc" "${dir[completions]}/google-cloud-sdk"
-            cd "${dir[temp]}"
-            ;;&
-        all | work | kubectl )
-            # install kubectl
-            echo "installing kubectl..."
-            mkdir "kubectl" && cd "kubectl"
-            curl -sLO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-            chmod u+x kubectl
-            mv -f kubectl ${dir[bin]}/kubectl #overwrite any existing binaries
-            ${dir[bin]}/kubectl completion bash >${dir[completions]}/kubectl
             cd "${dir[temp]}"
             ;;&
         all | work | terraform )
