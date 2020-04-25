@@ -94,6 +94,7 @@ for profile in $@; do
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
             ln -sf "${dir[opt]}/google-cloud-sdk/bin/kubectl" "${dir[bin]}/kubectl"
             ln -sf "${dir[opt]}/google-cloud-sdk/completion.bash.inc" "${dir[completions]}/google-cloud-sdk"
+            "${dir[bin]}/kubectl" completion bash >"${dir[completions]}/kubectl"
             cd "${dir[temp]}"
             ;;&
         all | work | terraform )
