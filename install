@@ -8,7 +8,7 @@ source "${source_dir}/.defaults.sh"
 
 # TODO add docker
 
-section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo )
+section_profiles=( packages gcloud kubectl terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -358,9 +358,21 @@ EOL
                 PREFIX=${dir[base]} make install
             cd "${dir[temp]}"
             ;;&
+        all | home | work | jd )
+            # install jd
+            section="jd"
+            repo="josephburnett/jd"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz" && \
+                tar -xf "go.tar.gz" && \
+                GOPATH=${PWD} go/bin/go get "github.com/${repo}" && \
+                mv -f "bin/${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
     esac
 done
 
 # cleanup
 rm -rf "${dir[temp]}"
-unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file CARGO_HOME RUSTUP_HOME
+unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file CARGO_HOME RUSTUP_HOME repo
