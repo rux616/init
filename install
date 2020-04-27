@@ -336,6 +336,28 @@ EOL
                 make install
             cd "${dir[temp]}"
             ;;&
+        all | home | work | jsonnet )
+            # install jsonnet
+            section="jsonnet"
+            repo="google/jsonnet"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( make g++ )
+            prereqs_deb=()
+            prereqs_rpm=()
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                make && \
+                PREFIX=${dir[base]} make install
+            cd "${dir[temp]}"
+            ;;&
     esac
 done
 
