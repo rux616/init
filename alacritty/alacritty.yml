@@ -62,7 +62,7 @@ schemes:
       cyan:    '#497e7a'
       white:   '#999999'
 
-# Live config reload (changes require restart)
+# live config reload (changes require restart)
 live_config_reload: true
 
 # colors
@@ -80,3 +80,22 @@ key_bindings:
   - { key: Back,          mods: Control,        chars: "\x08" }
   # shift+backspace should send the keycode 0x7f (backspace)
   - { key: Back,          mods: Shift,          chars: "\x7f" }
+
+# font config
+font:
+  normal:
+    family: PragmataPro Liga
+    style: Regular
+  italic:
+    family: PragmataPro Liga
+    style: Italic
+  bold:
+    family: PragmataPro Liga
+    style: Bold
+  bold_italic:
+    family: PragmataPro Liga
+    style: Bold Italic
+  size: 11
+
+# set the background opacity
+background_opacity: 0.9
