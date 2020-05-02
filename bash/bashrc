@@ -112,7 +112,7 @@ fi
 # ----------------------- #
 
 # Check to see if this is running on any cloud instances. If it is, there may be some one-time initializations to perform.
-if nslookup metadata.google.internal &>/dev/null; then
+if timeout 0.25 nslookup metadata.google.internal &>/dev/null; then
     # GCP
     gce_id="${XDG_CACHE_HOME}/bash/gce_id"
     # Get the ID of the current instance, and the previous (or same) one if there.
