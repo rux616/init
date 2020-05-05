@@ -1,118 +1,213 @@
-" TODO Need to work on importing these settings into main vimrc
-" use ': scriptnames' to find load order
-source $XDG_CONFIG_HOME/vim/fedoravimrc
-
 " Base settings
 " -------------
 if &compatible
-  set nocompatible              " be iMproved, required
+    set nocompatible                    " use Vim settings, rather than Vi settings
 endif
-filetype on                  " required
+
+silent! while 0                         " if +eval feat is missing above will be skipped
+    set nocompatible
+silent! endwhile
+
+filetype plugin indent on               " required
+
+if has("nvim")                          " check if running as vim or neovim
+    let g:variant = 'nvim'
+else
+    let g:variant = 'vim'
+endif
+
+if exists("$XDG_CONFIG_HOME")
+    let g:config_home = expand($XDG_CONFIG_HOME)
+else
+    let g:config_home = expand("~/.config")
+endif
+
+if exists("$XDG_DATA_HOME")
+    let g:data_home = expand($XDG_DATA_HOME)
+else
+    let g:data_home = expand("~/.local/share")
+endif
+
+" Internal functions
+" ------------------
+function! SourceIfExists(file)
+    if filereadable(expand(a:file))
+        exe 'source' a:file
+    endif
+endfunction
 
 " Set up XDG spec compatibility
 " -----------------------------
-set backupdir=$XDG_DATA_HOME/vim/backup//
-set directory=$XDG_DATA_HOME/vim/swap//
-set undodir=$XDG_DATA_HOME/vim/undo//
-set viewdir=$XDG_DATA_HOME/vim/view//
-set viminfo+='1000,n$XDG_DATA_HOME/vim/viminfo
-set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$XDG_DATA_HOME/vim,$XDG_DATA_HOME/vim/after,$VIM,$VIMRUNTIME
+let &backupdir = g:data_home.'/'.g:variant.'/backup//'
+let &directory = g:data_home.'/'.g:variant.'/swap//'
+let &undodir = g:data_home.'/'.g:variant.'/undo//'
+let &viewdir = g:data_home.'/'.g:variant.'/view//'
+let &viminfo = '''1000,"50,s10,h,n'.g:data_home.'/'.g:variant.'/viminfo'
+let &runtimepath = g:config_home.'/'.g:variant.','.g:config_home.'/'.g:variant.'/after,'.g:data_home.'/'.g:variant.','.g:data_home.'/'.g:variant.'/after,'.$VIM.','.$VIMRUNTIME
 
-" Set up Vundle
-" -------------
-" set the runtime path to include Vundle and initialize
-set rtp+=$XDG_DATA_HOME/vim/bundle/Vundle.vim
-call vundle#begin('$XDG_DATA_HOME/vim/bundle')
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+" Plug Options (if they don't make more sense elsewhere)
+" ------------
+" black
+let g:black_virtualenv = g:data_home.'/'.g:variant.'/black'
+" vim-terraform
+let g:terraform_align = 1
+let g:terraform_fmt_on_save = 1
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
 
-" github plugins
-"Plugin 'psf/black'
-Plugin 'sjl/badwolf'
-Plugin 'tpope/vim-fugitive'
-"Plugin 'hashivim/vim-terraform'
-"Plugin 'hashivim/vim-packer'
 
-" vim-scripts.org plugins
-Plugin 'L9'
+" Set up vim-plug
+" ---------------
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin(expand(g:data_home).'/'.expand(g:variant).'/plugged')
 
-" The following are examples of different formats supported.
-" Keep Plugin commands between vundle#begin/end.
+" only install black if system has python3 >= 3.6
+if has('python3') && system("python3 -c \"import sys; print(sys.version_info.minor)\"") >= 6
+    "Plug 'psf/black', { 'tag': '*' }
+    Plug 'psf/black'
+    " NOTE: if black is broken, run the following bash commands to fix:
+    "   bash
+    "   cd $XDG_DATA_HOME/vim/black
+    "   source bin/activate
+    "   python3 -m pip install --upgrade git+https://github.com/psf/black.git
+    " check https://github.com/psf/black/issues/1293 for more info
+endif
 
-" plugin on GitHub repo
-" Plugin 'tpope/vim-fugitive'
+"Plug 'sjl/badwolf' " waiting on merge from rux616/badwolf.git/folded
+Plug 'rux616/badwolf', { 'branch': 'folded' }
 
-" plugin from http://vim-scripts.org/vim/scripts.html
-" Plugin 'L9'
+Plug 'tpope/vim-fugitive'
+Plug 'hashivim/vim-terraform', { 'for': 'terraform' }
+Plug 'hashivim/vim-packer', { 'for': 'packer' }
+Plug 'pseewald/vim-anyfold'
+Plug 'google/vim-jsonnet', { 'for': 'jsonnet' }
+Plug 'Yggdroot/indentLine'
+Plug 'christoomey/vim-tmux-navigator'
 
-" Git plugin not hosted on GitHub
-" Plugin 'git://git.wincent.com/command-t.git'
+call plug#end()
+" this is a very long run on sentence that just keeps going on in the style of
 
-" git repos on your local machine (i.e. when working on your own plugin)
-" Plugin 'file:///home/gmarik/path/to/plugin'
 
-" The sparkup vim script is in a subdirectory of this repo called vim.
-" Pass the path to set the runtimepath properly.
-" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 
-" Install L9 and avoid a Naming conflict if you've already installed a
-" different version somewhere else.
-" Plugin 'ascenator/L9', {'name': 'newL9'}
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-"filetype plugin indent on    " required
-filetype plugin on    " required
+"" Set up Vundle
+"" -------------
+"" set the runtime path to include Vundle and initialize
+"set rtp+=$XDG_DATA_HOME/vim/bundle/Vundle.vim
+"call vundle#begin('$XDG_DATA_HOME/vim/bundle')
+"" alternatively, pass a path where Vundle should install plugins
+""call vundle#begin('~/some/path/here')
 "
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"" let Vundle manage Vundle, required
+"Plugin 'VundleVim/Vundle.vim'
 "
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+"" github plugins
+""Plugin 'psf/black'
+"Plugin 'sjl/badwolf'
+"Plugin 'tomasr/molokai'
+"Plugin 'tpope/vim-fugitive'
+"Plugin 'rafi/awesome-vim-colorschemes'
+""Plugin 'hashivim/vim-terraform'
+""Plugin 'hashivim/vim-packer'
+"Plugin 'pseewald/vim-anyfold'
+"Plugin 'google/vim-jsonnet'
+"
+"" vim-scripts.org plugins
+"Plugin 'L9'
+"
+"" The following are examples of different formats supported.
+"" Keep Plugin commands between vundle#begin/end.
+"
+"" plugin on GitHub repo
+"" Plugin 'tpope/vim-fugitive'
+"
+"" plugin from http://vim-scripts.org/vim/scripts.html
+"" Plugin 'L9'
+"
+"" Git plugin not hosted on GitHub
+"" Plugin 'git://git.wincent.com/command-t.git'
+"
+"" git repos on your local machine (i.e. when working on your own plugin)
+"" Plugin 'file:///home/gmarik/path/to/plugin'
+"
+"" The sparkup vim script is in a subdirectory of this repo called vim.
+"" Pass the path to set the runtimepath properly.
+"" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+"
+"" Install L9 and avoid a Naming conflict if you've already installed a
+"" different version somewhere else.
+"" Plugin 'ascenator/L9', {'name': 'newL9'}
+"
+"" All of your Plugins must be added before the following line
+"call vundle#end()            " required
+""
+"" Brief help
+"" :PluginList       - lists configured plugins
+"" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+"" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+"" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+""
+"" see :h vundle for more details or wiki for FAQ
+"" Put your non-Plugin stuff after this line
 
 
+
+" Encoding
+" --------
+set encoding=utf-8
+set fileencoding=utf-8
+set fileencodings=utf-8
+set ttyfast
+
+" Colors
+" ------
+" If term is screen* or alacritty, set true color mode
+" (compliments +termguicolors compile-time option)
+if &term =~# '^screen' || &term =~# '^alacritty'
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+let g:badwolf_darkgutter = 1            " make gutters darker than the background
+let g:badwolf_tabline = 2               " make the tab line lighter than the background
+let g:badwolf_folded = 0                " make folded lines darker than the background
+silent! colorscheme badwolf             " use the 'badwolf' colorscheme
 
 " Spaces and Tabs
 " ---------------
-set tabstop=2                       " Number of visual spaces per <tab>
-set softtabstop=2                   " Number of spaces in <tab> when editing
-set shiftwidth=2                    " Number of spaces to use for each step of indenting
-set expandtab                       " Turns <tab> into <space>s
-set autoindent                      " Autoindents when you create a new line.
+set tabstop=2                           " Number of visual spaces per <tab>
+set softtabstop=2                       " Number of spaces in <tab> when editing
+set shiftwidth=2                        " Number of spaces to use for each step of indenting
+set expandtab                           " Turns <tab> into <space>s
+set autoindent                          " Autoindents when you create a new line.
+" Filetype-specifics
+autocmd FileType sh setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+autocmd FileType vim setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
 
 " UI Configuration
 " ----------------
-set number                          " show line numbers
-set cursorline                      " highlight current line
-"set incsearch                       " highlight as you search with /
-set laststatus=2                    " Force statusline to show
+set ruler                               " show the cursor position at all time
+set display=truncate                    " show @@@ in the last line if it is truncated
+set showcmd                             " display incomplete commands
+set number                              " show line numbers
+set cursorline                          " highlight current line
+set scrolloff=3                         " show a few lines of context around the cursor
+set laststatus=2                        " Force statusline to show
 " Build a statusline
-set statusline=
-set statusline+=%#PmenuSel#
-"set statusline+=%{StatuslineGit()}
-set statusline+=%#LineNr#
-set statusline+=\ %F
-set statusline+=%m\ 
-set statusline+=%=
-"set statusline+=%#CursorColumn#
-set statusline+=\ %y
-set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
-set statusline+=\[%{&fileformat}\]
-set statusline+=\ %p%%
-set statusline+=\ %l:%c
-set statusline+=\ 
+let &statusline = '%#PmenuSel#%#LineNr# %F %m %= %y %{&fileencoding?&fileenciding:&encoding}|%{&fileformat} %p%% %l:%c '
+" IndentLine
+"let g:indentLine_setColors = 0
+let g:indentLine_enabled = 1
+let g:indentLine_concealcursor = 0
+let g:indentLine_char = '│'
+let g:indentLine_faster = 1
 
 " Folding
 " -------
-set foldenable                      " enable folding
-set foldlevelstart=10               " open most folds by default
-set foldnestmax=10                  " 10 nested fold max
+autocmd Filetype * AnyFoldActivate      " enable any-fold for all filetypes
+set foldlevel=99                        " open all folds initially
+"set foldenable                          " enable folding
+"set foldlevelstart=10                   " open most folds by default
+"set foldnestmax=10                      " 10 nested fold max
 " space opens/closes folds
 nnoremap <space> za
 
@@ -123,19 +218,61 @@ nnoremap j gj
 nnoremap <Up> gk
 nnoremap <Down> gj
 
-" Colors
-" ------
-silent! colorscheme badwolf
-
 " Functionality
 " -------------
-syntax enable                       " enable syntax highlighting
+syntax on                           " enable syntax highlighting
+let c_comment_strings=1             " highlight strings inside C comments
+if has("reltime")                   " do incremental searching when it's possible to timeout
+    set incsearch
+endif
+set hlsearch                        " highlight search matches
+set timeout                         " timeout for key codes
+set timeoutlen=100                  " wait up to 100ms after Est for special key
+set wildmenu                        " display completion matches in a status line
 set backspace=indent,eol,start      " enable backspace to backspace over things in insert mode
+if has ("autocmd")
+    augroup fedora
+        autocmd!
+        " when editing a file, always jump to the last cursor position
+        autocmd BufReadPost *
+        \   if line("'\"") > 0 && line("'\"") <= line("$") |
+        \       exe "normal! g'\"" |
+        \   endif
+    augroup END
+endif
+if has ("cscope") && filereadable("/usr/bin/cscope")
+    set csprg=/usr/bin/cscope
+    set csto=0
+    set cst
+    set nocsverb
+    if filereadable("cscope.out")     " add any database in current directory
+        cs add $PWD/cscope.out
+    elseif $CSCOPE_DB != ""           " else add database pointed to be environment
+        cs add $CSCOPE_DB
+    endif
+    set csverb
+endif
+" Convenience command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+    command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+    \   | wincmd p | diffthis
+endif
+" convenience command to remove trailing whitespace
+if !exists(":FixWhitespace")
+    command FixWhitespace :%s/\s\+$//e
+endif
+if has("langmap") && exists("+langremap")
+    set nolangremap
+endif
+" don't wake up system with blinking cursor
+let &guicursor = &guicursor . ",a:blinkon0"
 function FormatJson()
     %!jq '.'
 endfunction
 function SortJson()
-    %!jq -S 'walk(if type=="array" then sort elif type == "object" then to_entries | sort | from_entries else . end)'
+    %!jq -S 'def sorted_walk(f): . as $in | if type=="object" then reduce keys[] as $key ( {}; . + { ($key): ($in[$key] | sorted_walk(f)) } ) | f elif type == "array" then map( sorted_walk(f) ) | f else f end; def normalize: sorted_walk(if type == "array" then sort else. end); normalize'
 endfunction
 " copy to attached terminal using the yank(1) script:
 " https://github.com/sunaku/home/blob/master/bin/yank
@@ -151,6 +288,24 @@ function! CopyYank() abort
     call Yank(join(v:event.regcontents, "\n"))
 endfunction
 autocmd TextYankPost * call CopyYank()
+autocmd InsertEnter,VimEnter * noh
+
+" Abbreviations
+" -------------
+cnoreabbrev W! w!
+cnoreabbrev Q! q!
+cnoreabbrev Qall! qall!
+cnoreabbrev Wq wq
+cnoreabbrev Wa wa
+cnoreabbrev wQ wq
+cnoreabbrev WQ wq
+cnoreabbrev W w
+cnoreabbrev Q q
+cnoreabbrev Qall qall
+
+" various 'on file write' commands
+autocmd BufWritePre * FixWhitespace
+autocmd FileType python autocmd BufWritePre <buffer> Black
 
 " Security
 " --------
@@ -160,10 +315,15 @@ endif                                           " see https://github.com/numiria
 
 " Keymaps
 " -------
+" shift/ctrl/alt translations from terminal escape sequences to vim maps
 map <ESC>[1;2A <S-Up>
 map <ESC>[1;2B <S-Down>
 map <ESC>[1;2C <S-Right>
 map <ESC>[1;2D <S-Left>
+map <ESC>[1;3A <M-Up>
+map <ESC>[1;3B <M-Down>
+map <ESC>[1;3C <M-Right>
+map <ESC>[1;3D <M-Left>
 map <ESC>[1;4A <S-M-Up>
 map <ESC>[1;4B <S-M-Down>
 map <ESC>[1;4C <S-M-Right>
@@ -188,6 +348,10 @@ map! <ESC>[1;2A <S-Up>
 map! <ESC>[1;2B <S-Down>
 map! <ESC>[1;2C <S-Right>
 map! <ESC>[1;2D <S-Left>
+map! <ESC>[1;3A <M-Up>
+map! <ESC>[1;3B <M-Down>
+map! <ESC>[1;3C <M-Right>
+map! <ESC>[1;3D <M-Left>
 map! <ESC>[1;4A <S-M-Up>
 map! <ESC>[1;4B <S-M-Down>
 map! <ESC>[1;4C <S-M-Right>
@@ -208,26 +372,35 @@ map! <ESC>[1;8A <C-S-M-Up>
 map! <ESC>[1;8B <C-S-M-Down>
 map! <ESC>[1;8C <C-S-M-Right>
 map! <ESC>[1;8D <C-S-M-Left>
+map! <ESC>[3;5~ <C-Del>
 " Adds some GUI-centric keymaps for moving to next/previous word
 map <C-Left> b
+map <C-S-Left> B
 map <C-Right> w
-nnoremap <C-S-Left> gh<C-O>b
-inoremap <C-S-Left> <C-\><C-O>gh<C-O>b
-nnoremap <C-S-Right> gh<C-O>w
-inoremap <C-S-Right> <C-\><C-O>gh<C-O>w
-" Older unused mappings kept for posterity
-"nnoremap <C-Left> b
-"vnoremap <C-S-Left> b
-"nnoremap <C-Right> w
-"vnoremap <C-S-Right> w
-
-" Filetype-specifics
-" ------------------
-autocmd FileType sh setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
-autocmd FileType python setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+map <C-S-Right> W
+" vmap for maintaining visual mode after shifting > and <
+vmap < <gv
+vmap > >gv
+" backspace a word
+inoremap <C-h> <C-\><C-o>db
+cnoremap <C-h> <C-w>
+" del a word
+inoremap <C-Del> <C-\><C-o>dw
+" make shift-{up,down,left,right} moving only one space
+map <S-Up> <Up>
+map! <S-Up> <Up>
+map <S-Down> <Down>
+map! <S-Down> <Down>
+map <S-Left> <Left>
+map! <S-Left> <Left>
+map <S-Right> <Right>
+map! <S-Right> <Right>
+" vim-tmux-navigator mappings
+nnoremap <silent> <M-Left> :TmuxNavigateLeft<cr>
+nnoremap <silent> <M-Down> :TmuxNavigateDown<cr>
+nnoremap <silent> <M-Up> :TmuxNavigateUp<cr>
+nnoremap <silent> <M-Right> :TmuxNavigateRight<cr>
 
 " Local Files
 " -----------
-if filereadable(".vimrc.local")     " enable project-specific .vimrc files
-    source .vimrc.local
-endif
+call SourceIfExists(".vimrc.local")             " enable project-specific .vimrc files
