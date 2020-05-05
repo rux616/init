@@ -56,7 +56,7 @@ function get_platform()
         *)          platform='unknown'  ;;
     esac
     ${shell_nocasematch}
-    
+
     # return the platform
     echo ${platform}
 }
@@ -310,13 +310,13 @@ function define_action() {
     error_is_fatal[$1]="$3"
 }
 
-# curl something
+# download something via curl
 #
-# syntax init_curl <url_to_grab> <filename_to_save_as>
-function init_curl() {
+# syntax download <url_to_grab> <filename_to_save_as>
+function download() {
     url="$1"
     file="$2"
 
-    curl -sL "${url}" -o "${file}"
+    curl -sL "${url}" -o "${file}" --create-dirs
     return $?
 }
