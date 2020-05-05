@@ -14,7 +14,3 @@
   path = tools/tmux-bash-completion
   url = https://github.com/imomaliev/tmux-bash-completion.git
   branch = master
-[submodule "vim-heavy/vundle"]
-  path = vim-heavy/vundle
-  url = https://github.com/VundleVim/Vundle.vim
-  branch = master
