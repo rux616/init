@@ -8,7 +8,7 @@ source "${source_dir}/.defaults.sh"
 
 # TODO add docker
 
-section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd )
+section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd powerline neovim )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -361,6 +361,42 @@ EOL
                 tar -xf "go.tar.gz" && \
                 GOPATH=${PWD} go/bin/go get "github.com/${repo}" && \
                 mv -f "bin/${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | powerline )
+            # install powerline
+            section="powerline"
+            repo="powerline/powerline"
+            echo "installing ${section}..."
+            if command -v python3 &>/dev/null; then
+                if [[ $(python3 -c "import sys; print(sys.version_info.minor)") -ge 2 ]]; then
+                    python3 -m pip install --user psutil
+                    python3 -m pip install --user git+https://github.com/${repo}
+                fi
+            fi
+            ;;&
+        all | home | work | remote | local | neovim )
+            # install neovim
+            section="neovim"
+            repo="neovim/neovim"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( ninja-build autoconf libtool automake cmake unzip )
+            prereqs_deb=( gettext libtool-bin g++ pkg-config )
+            prereqs_rpm=( gcc gcc-c++ pkgconfig patch make )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                make \
+                    CMAKE_BUILD_TYPE=Release \
+                    CMAKE_INSTALL_PREFIX="${dir[base]}" \
+                    install && \
             cd "${dir[temp]}"
             ;;&
     esac
