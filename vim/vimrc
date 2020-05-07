@@ -16,17 +16,7 @@ else
     let g:variant = 'vim'
 endif
 
-if exists("$XDG_CONFIG_HOME")
-    let g:config_home = expand($XDG_CONFIG_HOME)
-else
-    let g:config_home = expand("~/.config")
-endif
 
-if exists("$XDG_DATA_HOME")
-    let g:data_home = expand($XDG_DATA_HOME)
-else
-    let g:data_home = expand("~/.local/share")
-endif
 
 " Internal functions
 " ------------------
@@ -36,14 +26,33 @@ function! SourceIfExists(file)
     endif
 endfunction
 
+
 " Set up XDG spec compatibility
 " -----------------------------
+if exists("$XDG_CONFIG_HOME")
+    let g:config_home = expand($XDG_CONFIG_HOME)
+else
+    let g:config_home = expand("~/.config")
+endif
+if exists("$XDG_DATA_HOME")
+    let g:data_home = expand($XDG_DATA_HOME)
+else
+    let g:data_home = expand("~/.local/share")
+endif
 let &backupdir = g:data_home.'/'.g:variant.'/backup//'
 let &directory = g:data_home.'/'.g:variant.'/swap//'
 let &undodir = g:data_home.'/'.g:variant.'/undo//'
 let &viewdir = g:data_home.'/'.g:variant.'/view//'
 let &viminfo = '''1000,"50,s10,h,n'.g:data_home.'/'.g:variant.'/viminfo'
-let &runtimepath = g:config_home.'/'.g:variant.','.g:config_home.'/'.g:variant.'/after,'.g:data_home.'/'.g:variant.','.g:data_home.'/'.g:variant.'/after,'.$VIM.','.$VIMRUNTIME
+" vim and neovim are just different enough to make attempting to automagically
+" set the runtimepath painful enough that each deserves their own declaration
+if has("nvim")
+    let &runtimepath = g:config_home.'/nvim,'.g:data_home.'/nvim/site,'.$VIMRUNTIME.','.g:data_home.'/nvim/site/after,'.g:config_home.'/nvim/after'
+else
+    let &runtimepath = g:config_home.'/vim,'.g:config_home.'/vim/after,'.g:data_home.'/vim,'.g:data_home.'/vim/after,'.$VIM.','.$VIMRUNTIME
+endif
+let &packpath = &runtimepath
+
 
 " Plug Options (if they don't make more sense elsewhere)
 " ------------
@@ -54,19 +63,16 @@ let g:terraform_align = 1
 let g:terraform_fmt_on_save = 1
 
 
-
 " Set up vim-plug
 " ---------------
 " Specify a directory for plugins
-" - For Neovim: stdpath('data') . '/plugged'
-" - Avoid using standard Vim directory names like 'plugin'
 call plug#begin(expand(g:data_home).'/'.expand(g:variant).'/plugged')
 
 " only install black if system has python3 >= 3.6
 if has('python3') && system("python3 -c \"import sys; print(sys.version_info.minor)\"") >= 6
     "Plug 'psf/black', { 'tag': '*' }
     Plug 'psf/black'
-    " NOTE: if black is broken, run the following bash commands to fix:
+    " NOTE: if black is broken, potentially run the following bash commands to fix:
     "   bash
     "   cd $XDG_DATA_HOME/vim/black
     "   source bin/activate
@@ -84,72 +90,9 @@ Plug 'pseewald/vim-anyfold'
 Plug 'google/vim-jsonnet', { 'for': 'jsonnet' }
 Plug 'Yggdroot/indentLine'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'airblade/vim-gitgutter'
 
 call plug#end()
-" this is a very long run on sentence that just keeps going on in the style of
-
-
-
-"" Set up Vundle
-"" -------------
-"" set the runtime path to include Vundle and initialize
-"set rtp+=$XDG_DATA_HOME/vim/bundle/Vundle.vim
-"call vundle#begin('$XDG_DATA_HOME/vim/bundle')
-"" alternatively, pass a path where Vundle should install plugins
-""call vundle#begin('~/some/path/here')
-"
-"" let Vundle manage Vundle, required
-"Plugin 'VundleVim/Vundle.vim'
-"
-"" github plugins
-""Plugin 'psf/black'
-"Plugin 'sjl/badwolf'
-"Plugin 'tomasr/molokai'
-"Plugin 'tpope/vim-fugitive'
-"Plugin 'rafi/awesome-vim-colorschemes'
-""Plugin 'hashivim/vim-terraform'
-""Plugin 'hashivim/vim-packer'
-"Plugin 'pseewald/vim-anyfold'
-"Plugin 'google/vim-jsonnet'
-"
-"" vim-scripts.org plugins
-"Plugin 'L9'
-"
-"" The following are examples of different formats supported.
-"" Keep Plugin commands between vundle#begin/end.
-"
-"" plugin on GitHub repo
-"" Plugin 'tpope/vim-fugitive'
-"
-"" plugin from http://vim-scripts.org/vim/scripts.html
-"" Plugin 'L9'
-"
-"" Git plugin not hosted on GitHub
-"" Plugin 'git://git.wincent.com/command-t.git'
-"
-"" git repos on your local machine (i.e. when working on your own plugin)
-"" Plugin 'file:///home/gmarik/path/to/plugin'
-"
-"" The sparkup vim script is in a subdirectory of this repo called vim.
-"" Pass the path to set the runtimepath properly.
-"" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
-"
-"" Install L9 and avoid a Naming conflict if you've already installed a
-"" different version somewhere else.
-"" Plugin 'ascenator/L9', {'name': 'newL9'}
-"
-"" All of your Plugins must be added before the following line
-"call vundle#end()            " required
-""
-"" Brief help
-"" :PluginList       - lists configured plugins
-"" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-"" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-"" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-""
-"" see :h vundle for more details or wiki for FAQ
-"" Put your non-Plugin stuff after this line
-
 
 
 " Encoding
@@ -157,7 +100,7 @@ call plug#end()
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8
-set ttyfast
+
 
 " Colors
 " ------
@@ -172,6 +115,7 @@ let g:badwolf_tabline = 2               " make the tab line lighter than the bac
 let g:badwolf_folded = 0                " make folded lines darker than the background
 silent! colorscheme badwolf             " use the 'badwolf' colorscheme
 
+
 " Spaces and Tabs
 " ---------------
 set tabstop=2                           " Number of visual spaces per <tab>
@@ -180,8 +124,12 @@ set shiftwidth=2                        " Number of spaces to use for each step 
 set expandtab                           " Turns <tab> into <space>s
 set autoindent                          " Autoindents when you create a new line.
 " Filetype-specifics
-autocmd FileType sh setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
-autocmd FileType vim setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+augroup vimrc_filetype
+    autocmd!
+    autocmd FileType sh setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+    autocmd FileType vim setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+augroup END
+
 
 " UI Configuration
 " ----------------
@@ -200,16 +148,30 @@ let g:indentLine_enabled = 1
 let g:indentLine_concealcursor = 0
 let g:indentLine_char = '│'
 let g:indentLine_faster = 1
+" powerline symbols for airline
+" NOTE: vim-airline is disabled due to not playing nice with tmux+alacritty
+"let g:airline_left_sep = ''
+"let g:airline_left_alt_sep = ''
+"let g:airline_right_sep = ''
+"let g:airline_right_alt_sep = ''
+"let g:airline_symbols.branch = ''
+"let g:airline_symbols.readonly = ''
+"let g:airline_symbols.linenr = ''
+
 
 " Folding
 " -------
-autocmd Filetype * AnyFoldActivate      " enable any-fold for all filetypes
+augroup vimrc_anyfold
+    autocmd!
+    autocmd Filetype * AnyFoldActivate  " enable any-fold for all filetypes
+augroup END
 set foldlevel=99                        " open all folds initially
 "set foldenable                          " enable folding
 "set foldlevelstart=10                   " open most folds by default
 "set foldnestmax=10                      " 10 nested fold max
 " space opens/closes folds
 nnoremap <space> za
+
 
 " Movement
 " --------
@@ -230,16 +192,19 @@ set timeout                         " timeout for key codes
 set timeoutlen=100                  " wait up to 100ms after Est for special key
 set wildmenu                        " display completion matches in a status line
 set backspace=indent,eol,start      " enable backspace to backspace over things in insert mode
-if has ("autocmd")
-    augroup fedora
-        autocmd!
-        " when editing a file, always jump to the last cursor position
-        autocmd BufReadPost *
-        \   if line("'\"") > 0 && line("'\"") <= line("$") |
-        \       exe "normal! g'\"" |
-        \   endif
-    augroup END
-endif
+set ttyfast                         " indicates a fast terminal connection
+set updatetime=250                  " sets updatetime to 250ms
+augroup vimrc_functionality
+    autocmd!
+    " when editing a file, always jump to the last cursor position
+    autocmd BufReadPost *
+    \   if line("'\"") > 0 && line("'\"") <= line("$") |
+    \       exe "normal! g'\"" |
+    \   endif
+
+    " remove highlights when entering insert mode or starting vim
+    autocmd InsertEnter,VimEnter * noh
+augroup END
 if has ("cscope") && filereadable("/usr/bin/cscope")
     set csprg=/usr/bin/cscope
     set csto=0
@@ -287,8 +252,11 @@ endfunction
 function! CopyYank() abort
     call Yank(join(v:event.regcontents, "\n"))
 endfunction
-autocmd TextYankPost * call CopyYank()
-autocmd InsertEnter,VimEnter * noh
+augroup vimrc_yank
+    autocmd!
+    autocmd TextYankPost * call CopyYank()
+augroup END
+
 
 " Abbreviations
 " -------------
@@ -304,14 +272,19 @@ cnoreabbrev Q q
 cnoreabbrev Qall qall
 
 " various 'on file write' commands
-autocmd BufWritePre * FixWhitespace
-autocmd FileType python autocmd BufWritePre <buffer> Black
+augroup vimrc_on_file_write
+    autocmd!
+    autocmd BufWritePre * FixWhitespace
+    autocmd FileType python autocmd BufWritePre <buffer> Black
+augroup END
+
 
 " Security
 " --------
 if v:version < 801 || !has("patch-8.1.1365")    " check if vim is < v8.1.1365
     set nomodeline                              " disable modeline capability for security purposes
 endif                                           " see https://github.com/numirias/security/blob/master/doc/2019-06-04_ace-vim-neovim.md for more info
+
 
 " Keymaps
 " -------
@@ -344,6 +317,7 @@ map <ESC>[1;8A <C-S-M-Up>
 map <ESC>[1;8B <C-S-M-Down>
 map <ESC>[1;8C <C-S-M-Right>
 map <ESC>[1;8D <C-S-M-Left>
+map <ESC>l <M-l>
 map! <ESC>[1;2A <S-Up>
 map! <ESC>[1;2B <S-Down>
 map! <ESC>[1;2C <S-Right>
@@ -373,6 +347,7 @@ map! <ESC>[1;8B <C-S-M-Down>
 map! <ESC>[1;8C <C-S-M-Right>
 map! <ESC>[1;8D <C-S-M-Left>
 map! <ESC>[3;5~ <C-Del>
+map! <ESC>l <M-l>
 " Adds some GUI-centric keymaps for moving to next/previous word
 map <C-Left> b
 map <C-S-Left> B
@@ -395,11 +370,14 @@ map <S-Left> <Left>
 map! <S-Left> <Left>
 map <S-Right> <Right>
 map! <S-Right> <Right>
-" vim-tmux-navigator mappings
+" vim-tmux-navigator
+let g:tmux_navigator_no_mappings = 1
 nnoremap <silent> <M-Left> :TmuxNavigateLeft<cr>
 nnoremap <silent> <M-Down> :TmuxNavigateDown<cr>
 nnoremap <silent> <M-Up> :TmuxNavigateUp<cr>
 nnoremap <silent> <M-Right> :TmuxNavigateRight<cr>
+nnoremap <silent> <M-l> :TmuxNavigatePrevious<cr>
+
 
 " Local Files
 " -----------
