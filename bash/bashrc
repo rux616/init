@@ -159,6 +159,23 @@ tf_disable() {
 
 
 
+# --------------- #
+# Local or Remote #
+# --------------- #
+
+if [[ -e "${XDG_CONFIG_HOME}/bash/localsystem" ]]; then
+    export SESSION_TYPE="local"
+elif [[ -n "${SSH_TTY}" || -n "${SSH_CLIENT}" ]]; then
+    export SESSION_TYPE="remote/ssh"
+else
+    case $(ps -o comm= -p $PPID) in
+        sshd|*/sshd) export SESSION_TYPE="remote/ssh" ;;
+        *)           export SESSION_TYPE="local"      ;;
+    esac
+fi
+
+
+
 # -------------- #
 # Command Prompt #
 # -------------- #
@@ -166,10 +183,11 @@ tf_disable() {
 # Source the terminal control file to make things easier in terms of colors.
 source "${XDG_CONFIG_HOME}/bash/terminal-control"
 
-# Set color of the \u@\h section of the prompt command based on whether the system is local or not - must be set manually by running 'touch ~/.localsystem'
-SYSTEM_COLOR="${Red}"
-if [[ -e "${XDG_CONFIG_HOME}/bash/localsystem" ]]; then
+# Set color of the \u@\h section of the prompt command based on whether the system is local or not
+if [[ "${SESSION_TYPE}" == "local" ]]; then
     SYSTEM_COLOR="${Green}"
+elif [[ "${SESSION_TYPE}" == "remote/ssh" ]]; then
+    SYSTEM_COLOR="${Red}"
 fi
 
 # Prepare to include the git prompt.
@@ -184,8 +202,8 @@ if [[ -r ${git_prompt_sh_location} ]]; then
 
     # Source the git-prompt helper script
     source ${git_prompt_sh_location}
-    
-    # Set the command prompt to execute __git_ps1 with it taking the custom command prompt strings as arguments. 
+
+    # Set the command prompt to execute __git_ps1 with it taking the custom command prompt strings as arguments.
     export PROMPT_COMMAND="__git_ps1 \"${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\n\$ \""
 else
     # If the git prompt is not found for whatever reason, go with the basic command prompt.
