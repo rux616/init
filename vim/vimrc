@@ -373,10 +373,30 @@ map! <S-Right> <Right>
 " vim-tmux-navigator
 let g:tmux_navigator_no_mappings = 1
 nnoremap <silent> <M-Left> :TmuxNavigateLeft<cr>
-nnoremap <silent> <M-Down> :TmuxNavigateDown<cr>
-nnoremap <silent> <M-Up> :TmuxNavigateUp<cr>
+vnoremap <silent> <M-Left> :<C-u>TmuxNavigateLeft<cr>gv
+onoremap <silent> <M-Left> :TmuxNavigateLeft<cr>
+inoremap <silent> <M-Left> <C-\><C-o>:TmuxNavigateLeft<cr>
+cnoremap <silent> <M-Left> <C-c>:TmuxNavigateLeft<cr>
 nnoremap <silent> <M-Right> :TmuxNavigateRight<cr>
+vnoremap <silent> <M-Right> :<C-u>TmuxNavigateRight<cr>gv
+onoremap <silent> <M-Right> :TmuxNavigateRight<cr>
+inoremap <silent> <M-Right> <C-\><C-o>:TmuxNavigateRight<cr>
+cnoremap <silent> <M-Right> <C-c>:TmuxNavigateRight<cr>
+nnoremap <silent> <M-Up> :TmuxNavigateUp<cr>
+vnoremap <silent> <M-Up> :<C-u>TmuxNavigateUp<cr>gv
+onoremap <silent> <M-Up> :TmuxNavigateUp<cr>
+inoremap <silent> <M-Up> <C-\><C-o>:TmuxNavigateUp<cr>
+cnoremap <silent> <M-Up> <C-c>:TmuxNavigateUp<cr>
+nnoremap <silent> <M-Down> :TmuxNavigateDown<cr>
+vnoremap <silent> <M-Down> :<C-u>TmuxNavigateDown<cr>gv
+onoremap <silent> <M-Down> :TmuxNavigateDown<cr>
+inoremap <silent> <M-Down> <C-\><C-o>:TmuxNavigateDown<cr>
+cnoremap <silent> <M-Down> <C-c>:TmuxNavigateDown<cr>
 nnoremap <silent> <M-l> :TmuxNavigatePrevious<cr>
+vnoremap <silent> <M-l> :<C-u>TmuxNavigatePrevious<cr>gv
+onoremap <silent> <M-l> :TmuxNavigatePrevious<cr>
+inoremap <silent> <M-l> <C-\><C-o>:TmuxNavigatePrevious<cr>
+cnoremap <silent> <M-l> <C-c>:TmuxNavigatePrevious<cr>
 
 
 " Local Files
