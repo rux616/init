@@ -3,3 +3,5 @@
 	email = 5643061+rux616@users.noreply.github.com
 [color]
 	ui = true
+[diff]
+	wsErrorHighlight = all

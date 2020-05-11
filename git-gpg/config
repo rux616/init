@@ -6,3 +6,5 @@
 	ui = true
 [commit]
 	gpgsign = true
+[diff]
+	wsErrorHighlight = all
