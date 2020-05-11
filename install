@@ -8,7 +8,7 @@ source "${source_dir}/.defaults.sh"
 
 # TODO add docker
 
-section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd powerline neovim )
+section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd powerline neovim ble.sh )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -396,7 +396,29 @@ EOL
                 make \
                     CMAKE_BUILD_TYPE=Release \
                     CMAKE_INSTALL_PREFIX="${dir[base]}" \
-                    install && \
+                    install
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | remote | local | ble.sh )
+            # install blesh
+            section="ble.sh"
+            section_actual="blesh"
+            repo="akinomyoga/ble.sh"
+            echo "installing ${section}..."
+            mkdir "${section_actual}" && cd "${section_actual}"
+            prereqs_common=( git make gawk )
+            prereqs_deb=()
+            prereqs_rpm=()
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            git clone --recursive https://github.com/${repo}.git ${PWD}
+            make all && \
+                make INSDIR="${dir[xdg_data_home]}/${section_actual}" install
+            sed -i "s|${dir[temp]}/${section_actual}|release:master|" "${dir[xdg_data_home]}/${section_actual}/ble.sh"
             cd "${dir[temp]}"
             ;;&
     esac

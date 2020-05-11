@@ -29,6 +29,15 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 
 
 
+# ----------- #
+# Load ble.sh #
+# ----------- #
+
+# disabled for now until timestamps get implemented
+#[[ $- == *i* && -f "${XDG_DATA_HOME}/blesh/ble.sh" ]] && source "${XDG_DATA_HOME}/blesh/ble.sh"
+
+
+
 # ----------------------- #
 # Various Config Settings #
 # ----------------------- #
@@ -246,7 +255,7 @@ shopt -s histappend
 
 # After each command, append to the history file and reread it
 # http://superuser.com/questions/20900/bash-history-loss
-export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+((_ble_bash)) || export PROMPT_COMMAND="${PROMPT_COMMAND:+"${PROMPT_COMMAND}; "}history -a; history -c; history -r"
 
 
 
@@ -267,6 +276,7 @@ export MANPATH="${HOME}/.local/share/man:/usr/share/man${MANPATH:+":${MANPATH}"}
 export PATH="${HOME}/.local/sbin:${HOME}/.local/bin${PATH:+":${PATH}"}"
 
 
+
 # ------------------------ #
 # Load Local BASH Settings #
 # ------------------------ #
@@ -285,3 +295,10 @@ if [[ -r "${XDG_CONFIG_HOME}/bash/aliases" ]]; then
     source "${XDG_CONFIG_HOME}/bash/aliases"
 fi
 
+
+
+# --------------- #
+# Activate ble.sh #
+# --------------- #
+
+((_ble_bash)) && ble-attach
