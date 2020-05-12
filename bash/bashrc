@@ -33,7 +33,13 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 # Load ble.sh #
 # ----------- #
 
-[[ $- == *i* && -f "${XDG_DATA_HOME}/blesh/ble.sh" ]] && source "${XDG_DATA_HOME}/blesh/ble.sh"
+if [[ $- == *i* && -f "${XDG_DATA_HOME}/blesh/ble.sh" ]]; then
+    # ble.sh has issues with the alacritty terminal profile. not sure if it's on alacritty's side
+    # or ble.sh's side, but alacritty seems to work decently with the xterm-256color profile, so
+    # setting that in the meantime
+    [[ $TERM == alacritty ]] && export TERM=xterm-256color
+    source "${XDG_DATA_HOME}/blesh/ble.sh"
+fi
 
 
 
