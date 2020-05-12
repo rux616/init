@@ -29,5 +29,5 @@ function my/complete-load-hook {
 }
 
 # load hooks
-blehook/eval-after-load keymap_emacs_load my/keymap-settings-for-emacs-mode
+blehook/eval-after-load keymap_emacs my/keymap-settings-for-emacs-mode
 blehook/eval-after-load complete my/complete-load-hook
