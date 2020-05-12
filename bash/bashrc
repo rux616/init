@@ -33,8 +33,7 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 # Load ble.sh #
 # ----------- #
 
-# disabled for now until timestamps get implemented
-#[[ $- == *i* && -f "${XDG_DATA_HOME}/blesh/ble.sh" ]] && source "${XDG_DATA_HOME}/blesh/ble.sh"
+[[ $- == *i* && -f "${XDG_DATA_HOME}/blesh/ble.sh" ]] && source "${XDG_DATA_HOME}/blesh/ble.sh"
 
 
 
@@ -243,7 +242,7 @@ export HISTFILE="${XDG_DATA_HOME}/bash/history"
 export HISTTIMEFORMAT="[%F %T]  "
 
 # Avoid duplicates
-export HISTCONTROL=ignoredups:erasedups
+export HISTCONTROL=ignoredups
 
 # Unlimited history
 # http://stackoverflow.com/questions/9457233/unlimited-bash-history
