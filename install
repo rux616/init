@@ -357,9 +357,10 @@ EOL
             repo="josephburnett/jd"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
-            curl -sLo "go.tar.gz" "https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz" && \
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -Vr | head -n 1)
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
-                GOPATH=${PWD} go/bin/go get "github.com/${repo}" && \
+                GOPATH=${PWD} go/bin/go get -u "github.com/${repo}" && \
                 mv -f "bin/${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
@@ -421,9 +422,22 @@ EOL
             sed -i "s|${dir[temp]}/${section_actual}|release:master|" "${dir[xdg_data_home]}/${section_actual}/ble.sh"
             cd "${dir[temp]}"
             ;;&
+        all | home | work | fzf )
+            # install fzf
+            section="fzf"
+            repo="junegunn/fzf"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -Vr | head -n 1)
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
+                tar -xf "go.tar.gz" && \
+                GOPATH=${PWD} go/bin/go get -u "github.com/${repo}" && \
+                mv -f "bin/${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
     esac
 done
 
 # cleanup
 rm -rf "${dir[temp]}"
-unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section section_actual prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file CARGO_HOME RUSTUP_HOME repo
+unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section section_actual prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file CARGO_HOME RUSTUP_HOME repo latest_go
