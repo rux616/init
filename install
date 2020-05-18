@@ -259,7 +259,7 @@ EOL
                 tar -xf "${section}.tar.gz" --strip 1 && \
                 "${PWD}/rust/.cargo/bin/cargo" build --release && \
                 mv -f "target/release/${section}" "${dir[bin]}/${section}" && \
-                mv -f "extra/alacritty.man" "${dir[man1]}/alacritty" && \
+                mv -f "extra/alacritty.man" "${dir[man1]}/alacritty.1" && \
                 mv -f "extra/completions/alacritty.bash" "${dir[completions]}/alacritty" && \
                 tic -xe alacritty,alacritty-direct "extra/alacritty.info"
             cd "${dir[temp]}"
@@ -357,7 +357,7 @@ EOL
             repo="josephburnett/jd"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
-            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -Vr | head -n 1)
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
                 GOPATH=${PWD} go/bin/go get -u "github.com/${repo}" && \
@@ -428,11 +428,16 @@ EOL
             repo="junegunn/fzf"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
-            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -Vr | head -n 1)
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags "https://github.com/golang/go" refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
                 GOPATH=${PWD} go/bin/go get -u "github.com/${repo}" && \
-                mv -f "bin/${section}" "${dir[bin]}/${section}"
+                cp -f "bin/${section}" "${dir[bin]}/${section}" && \
+                rm -rf "${dir[xdg_data_home]}/fzf/fzf" && \
+                mkdir -p "${dir[xdg_data_home]}/fzf" && \
+                cp -a "src/github.com/${repo}" "${dir[xdg_data_home]}/fzf/fzf" && \
+                mkdir -p "${dir[man1]}" && \
+                cp -r "src/github.com/${repo}/man/man1" "${dir[man]}"
             cd "${dir[temp]}"
             ;;&
     esac
@@ -440,4 +445,4 @@ done
 
 # cleanup
 rm -rf "${dir[temp]}"
-unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section section_actual prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball keybase_file CARGO_HOME RUSTUP_HOME repo latest_go
+unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section section_actual prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball latest_version keybase_file CARGO_HOME RUSTUP_HOME repo latest_go
