@@ -5,6 +5,12 @@
 # https://github.com/akinomyoga/ble.sh/wiki/Manual-%C2%A74-Editing#41213-bleopt-history_share-emptynon-empty-v04
 bleopt history_share=1
 
+if command -v fzf &>/dev/null; then
+    _ble_contrib_fzf_base=${XDG_DATA_HOME:-${HOME}/.local/share}/fzf/fzf
+    ble-import -d contrib/fzf-completion
+    ble-import -d contrib/fzf-key-bindings
+fi
+
 function my/keymap-settings-for-emacs-mode {
   # bind C-h to backwards delete word
   # https://github.com/akinomyoga/ble.sh/wiki/Manual-%C2%A73-Key-Binding#33-keymap-keymap
