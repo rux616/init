@@ -47,6 +47,9 @@ if command -v apt-get &>/dev/null; then
 elif command -v dnf &>/dev/null; then
     family="rhel"
     pkg_mgr="sudo dnf"
+elif command -v yum &>/dev/null; then
+    family="rhel"
+    pkg_mgr="sudo yum"
 else
     echo "unknown linux family"
     exit 1
