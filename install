@@ -45,7 +45,7 @@ if command -v apt-get &>/dev/null; then
     family="deb"
     pkg_mgr="sudo apt-get --ignore-missing"
 elif command -v dnf &>/dev/null; then
-    family="rpm"
+    family="rhel"
     pkg_mgr="sudo dnf"
 else
     echo "unknown linux family"
@@ -65,7 +65,7 @@ for profile in $@; do
             mkdir "packages" && cd "packages"
             case ${family} in
                 deb) ${pkg_mgr} update ;;
-                rpm) ${pkg_mgr} makecache ;;
+                rhel) ${pkg_mgr} makecache ;;
             esac
             packages_common=( git vim curl wget python3 python3-pip unzip sysstat pkg-config htop bash-completion )
             packages_deb=( apt-file python3-venv )
@@ -73,7 +73,7 @@ for profile in $@; do
             packages=( ${packages_common[@]} )
             case ${family} in
                 deb) packages+=( ${packages_deb[@]} ) ;;
-                rpm) packages+=( ${packages_rpm[@]} ) ;;
+                rhel) packages+=( ${packages_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${packages[@]}
             cd "${dir[temp]}"
@@ -136,7 +136,7 @@ for profile in $@; do
             if ! command -v keybase &>/dev/null; then
                 case ${family} in
                     deb) keybase_file="keybase_amd64.deb" ;;
-                    rpm) keybase_file="keybase_amd64.rpm" ;;
+                    rhel) keybase_file="keybase_amd64.rpm" ;;
                 esac
                 curl -sO "https://prerelease.keybase.io/${keybase_file}"
                 chmod ugo+r "${keybase_file}"
@@ -199,7 +199,7 @@ EOL
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
             latest_tarball="$(curl -sN "https://api.github.com/repos/karelzak/util-linux/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
@@ -223,7 +223,7 @@ EOL
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
             latest_tarball="$(curl -sN "https://api.github.com/repos/tmux/tmux/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
@@ -251,7 +251,7 @@ EOL
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
             latest_tarball="$(curl -sN "https://api.github.com/repos/alacritty/alacritty/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
@@ -313,7 +313,7 @@ EOL
             #prereqs=( ${prereqs_common[@]} )
             #case ${family} in
             #    deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-            #    rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            #    rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             #esac
             #${pkg_mgr} install -y ${prereqs[@]}
             # TODO --END--
@@ -341,7 +341,7 @@ EOL
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
             latest_tarball="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
@@ -388,7 +388,7 @@ EOL
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
             latest_tarball="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
@@ -413,7 +413,7 @@ EOL
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rpm) prereqs+=( ${prereqs_rpm[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
             git clone --recursive https://github.com/${repo}.git ${PWD}
