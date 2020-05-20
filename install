@@ -52,6 +52,11 @@ else
     exit 1
 fi
 
+# if "--no-pkgs" or "-n" arguments are given, disable package manager
+if [[ "$1" == "--no-pkgs" || "$1" == "-n" ]]; then
+    pkg_mgr=":"
+fi
+
 # make temp directory
 dir[temp]="$(mktemp -d)"
 chmod ugo+rx "${dir[temp]}"
