@@ -41,22 +41,22 @@ fi
 
 for key in "${!dir[@]}"; do mkdir -p "${dir[${key}]}"; done
 
-if command -v apt-get &>/dev/null; then
-    family="deb"
-    pkg_mgr="sudo apt-get --ignore-missing"
-elif command -v dnf &>/dev/null; then
-    family="rhel"
-    pkg_mgr="sudo dnf"
-elif command -v yum &>/dev/null; then
-    family="rhel"
-    pkg_mgr="sudo yum"
+# if "--install-pkgs" or "-p" arguments are given, enable package manager
+if [[ "$1" == "--install-pkgs" || "$1" == "-p" ]]; then
+    if command -v apt-get &>/dev/null; then
+        family="deb"
+        pkg_mgr="sudo apt-get --ignore-missing"
+    elif command -v dnf &>/dev/null; then
+        family="rhel"
+        pkg_mgr="sudo dnf"
+    elif command -v yum &>/dev/null; then
+        family="rhel"
+        pkg_mgr="sudo yum"
+    else
+        echo "unknown linux family"
+        exit 1
+    fi
 else
-    echo "unknown linux family"
-    exit 1
-fi
-
-# if "--no-pkgs" or "-n" arguments are given, disable package manager
-if [[ "$1" == "--no-pkgs" || "$1" == "-n" ]]; then
     pkg_mgr=":"
 fi
 
