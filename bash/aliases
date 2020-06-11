@@ -66,6 +66,15 @@ else
     alias ls='ls -G'
 fi
 
+git-merge-from-master() {
+    [[ "$(git branch --no-color 2>/dev/null)" != '* master' ]] && return 2
+    git fetch --prune --all --tags && \
+        git checkout master && \
+        git pull && \
+        git checkout - && \
+        git merge master -m "merge from master"
+}
+
 
 
 # --------------- #
