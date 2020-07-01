@@ -5,6 +5,9 @@
 # https://github.com/akinomyoga/ble.sh/wiki/Manual-%C2%A74-Editing#41213-bleopt-history_share-emptynon-empty-v04
 bleopt history_share=1
 
+# add short delay to auto-complete
+bleopt complete_auto_delay=300
+
 if command -v fzf &>/dev/null; then
     _ble_contrib_fzf_base=${XDG_DATA_HOME:-${HOME}/.local/share}/fzf/fzf
     ble-import -d contrib/fzf-completion

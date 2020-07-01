@@ -307,3 +307,4 @@ fi
 # --------------- #
 
 ((_ble_bash)) && ble-attach
+ble-reload
