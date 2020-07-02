@@ -84,11 +84,20 @@ git-merge-from-master() {
 # General Aliases #
 # --------------- #
 
+# ls
 alias l="ls"
 alias l1="ls -1"
 alias ll="ls -l"
 alias la="ls -a"
 alias lla="ls -a -l"
+
+# kubectl
+alias k="kubectl"
+alias ka="kubectl --all-namespaces"
+alias kevents="k get events --sort-by='{.lastTimestamp}' -owide"
+alias kaevents="ka get events --sort-by='{.lastTimestamp}' -owide"
+
+# other
 alias vi="vim"
 alias :q="exit"
 alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
