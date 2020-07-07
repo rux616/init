@@ -70,6 +70,7 @@ export TERMINFO_DIRS="${XDG_DATA_HOME}/terminfo:/usr/share/terminfo"
 #less
 if command -v less &>/dev/null; then
     mkdir -p "${XDG_DATA_HOME}/less"
+    export LESS="-MNR"
     export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
     export LESSHISTFILE="${XDG_DATA_HOME}/less/history"
 fi
