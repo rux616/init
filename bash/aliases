@@ -60,7 +60,7 @@ if ls --color -d . >/dev/null 2>&1; then  # GNU ls
         && eval "$(TERM=xterm dircolors "${XDG_CONFIG_HOME}/bash/dircolors")" \
         || eval "$(dircolors "${XDG_CONFIG_HOME}/bash/dircolors")"
     function ls {
-        command ls -F -h --color=always -v --author --time-style=long-iso -C "$@" | less -R -X -F
+        command ls -F -h --color=always -v --author --time-style=long-iso -C "$@" | LESS="" less -R -X -F
     }
 else
     alias ls='ls -G'
