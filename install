@@ -8,7 +8,7 @@ source "${source_dir}/.defaults.sh"
 
 # TODO add docker
 
-section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd powerline neovim ble.sh jsonnet-lint )
+section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd neovim ble.sh fzf jsonnet-lint )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -111,7 +111,7 @@ for profile in $@; do
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             # put version to be referred to as naked name last
-            versions=( "0.11.14" "0.12.12" )
+            versions=( "0.11.14" "0.12.12" "0.12.28" )
             for version in "${versions[@]}"; do
                 curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
@@ -371,18 +371,6 @@ EOL
                 GOPATH=${PWD} go/bin/go get -u "github.com/${repo}" && \
                 mv -f "bin/${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
-            ;;&
-        all | home | work | powerline )
-            # install powerline
-            section="powerline"
-            repo="powerline/powerline"
-            echo "installing ${section}..."
-            if command -v python3 &>/dev/null; then
-                if [[ $(python3 -c "import sys; print(sys.version_info.minor)") -ge 2 ]]; then
-                    python3 -m pip install --user psutil
-                    python3 -m pip install --user git+https://github.com/${repo}
-                fi
-            fi
             ;;&
         all | home | work | remote | local | neovim )
             # install neovim
