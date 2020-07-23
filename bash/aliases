@@ -93,9 +93,8 @@ alias lla="ls -a -l"
 
 # kubectl
 alias k="kubectl"
-alias ka="kubectl --all-namespaces"
 alias kevents="k get events --sort-by='{.lastTimestamp}' -owide"
-alias kaevents="ka get events --sort-by='{.lastTimestamp}' -owide"
+alias kaevents="k get events --all-namespaces --sort-by='{.lastTimestamp}' -owide"
 
 # other
 alias vi="vim"
