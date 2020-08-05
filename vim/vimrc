@@ -91,6 +91,7 @@ Plug 'google/vim-jsonnet', { 'for': 'jsonnet' }
 Plug 'Yggdroot/indentLine'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'airblade/vim-gitgutter'
+Plug 'nvie/vim-flake8'
 "Plug 'junegunn/fzf'
 "Plug 'junegunn/fzf.vim'
 
