@@ -71,11 +71,23 @@ git-merge-from-master() {
         printf "can't merge from master to master!\n"
         return 2
     fi
-    git fetch --prune --all --tags && \
+    git fetch --tags --all --prune && \
         git checkout master && \
         git pull && \
         git checkout - && \
         git merge master -m "merge from master"
+}
+
+git-rebase-onto-master() {
+    if git branch --no-color 2>/dev/null | grep '^* master$' >/dev/null; then
+        printf "can't rebase master onto master!\n"
+        return 2
+    fi
+    git fetch --tags --all --prune && \
+        git checkout master && \
+        git pull && \
+        git checkout - && \
+        git rebase master
 }
 
 
@@ -90,6 +102,9 @@ alias l1="ls -1"
 alias ll="ls -l"
 alias la="ls -a"
 alias lla="ls -a -l"
+
+# git
+alias gftap="git fetch --tags --all --prune"
 
 # kubectl
 alias k="kubectl"
