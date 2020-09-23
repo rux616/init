@@ -90,6 +90,10 @@ git-rebase-onto-master() {
         git rebase master
 }
 
+ka() {
+    kubectl $@ --all-namespaces
+}
+
 
 
 # --------------- #
