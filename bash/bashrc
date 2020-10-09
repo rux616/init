@@ -237,6 +237,14 @@ fi
 
 
 
+# ---------------------- #
+# Debug Trace Log Format #
+# ---------------------- #
+
+export PS4='# ${BASH_SOURCE}:${LINENO}: ${FUNCNAME[0]}() - [${SHLVL},${BASH_SUBSHELL},$?] '
+
+
+
 # ---------------- #
 # History Settings #
 # ---------------- #
