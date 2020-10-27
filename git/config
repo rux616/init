@@ -5,3 +5,5 @@
 	ui = true
 [diff]
 	wsErrorHighlight = all
+[alias]
+	root = !pwd
