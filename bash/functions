@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+# functions
+
+# --------- #
+# Functions #
+# --------- #
+
+function cd() {
+    # remember to use "builtin cd ..." to avoid infinite recursion (followed by a segfault)
+    if [[ $1 == "%" ]]; then
+        builtin cd "$(git root)"
+    else
+        builtin cd "$@"
+    fi
+}
+
+function gcp-group-membership() {
+    if [[ ${#@} -lt 1 ]]; then
+        printf '\nusage: gcp-group-membership <group_1> [group_2] ... [group_n]\n'
+        return 1
+    else
+        for group in "$@"; do
+            printf "\n%s\n%${#group}s\n" "${group}" " " | tr " " "-"
+            gcloud identity groups memberships list --format='value(preferredMemberKey.id)' --group-email="${group}"
+        done
+    fi
+}
+
+function git-merge-from-master() {
+    if git branch --no-color 2>/dev/null | grep '^* master$' >/dev/null; then
+        printf "can't merge from master to master!\n"
+        return 2
+    fi
+    git fetch --tags --all --prune && \
+        git checkout master && \
+        git pull && \
+        git checkout - && \
+        git merge master -m "merge from master"
+}
+
+function git-rebase-onto-master() {
+    if git branch --no-color 2>/dev/null | grep '^* master$' >/dev/null; then
+        printf "can't rebase master onto master!\n"
+        return 2
+    fi
+    git fetch --tags --all --prune && \
+        git checkout master && \
+        git pull && \
+        git checkout - && \
+        git rebase master
+}
+
+function ka() {
+    kubectl $@ --all-namespaces
+}
+
+# enable live grepping; useful for grepping things like "tail -f /var/log/messages"
+# usage: just pipe into it
+# example: tail -f /var/log/messages | livegrep -i " <server_name> "
+function livegrep() {
+    grep --line-buffered $* | cat
+}
+
+# a better ls command
+# https://www.topbug.net/blog/2016/11/28/a-better-ls-command/
+if ls --color -d . >/dev/null 2>&1; then  # GNU ls
+    unalias ls &>/dev/null
+    export COLUMNS  # Remember columns for subprocesses.
+    [[ "${TERM}" == "alacritty" ]] \
+        && eval "$(TERM=xterm dircolors "${XDG_CONFIG_HOME}/bash/dircolors")" \
+        || eval "$(dircolors "${XDG_CONFIG_HOME}/bash/dircolors")"
+    function ls {
+        command ls -F -h --color=always -v --author --time-style=long-iso -C "$@" | LESS="" less -R -X -F
+    }
+fi
+
+function tf_enable() {
+    # Remove ".disabled" suffix from passed terraform files (*.tf, *.tfvars)
+    for file in $@; do
+        [[ "${file}" =~ ^.*\.tf.disabled$ || "${file}" =~ ^.*\.tfvars.disabled$ ]] || continue
+        mv -i "${file}" "${file/%.disabled/}"
+    done
+}
+
+function tf_disable() {
+    # Add ".disabled" suffix to passed terraform files (*.tf, *.tfvars)
+    for file in $@; do
+        [[ "${file}" =~ ^.*\.tf$ || "${file}" =~ ^.*\.tfvars$ ]] || continue
+        mv -i "${file}" "${file}.disabled"
+    done
+}
+
+function tz_trimmed() {
+    # Trim the basic date "%z" timezone string because FreeBSD doesn't have the "%:::z" format string
+    tz=$(date +%z)
+    if [[ "${tz:3}" == "00" ]]; then
+        echo "${tz:0:3}"
+    else
+        echo "${tz}"
+    fi
+}

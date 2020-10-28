@@ -40,67 +40,17 @@ fi
 
 
 
-# --------- #
-# Functions #
-# --------- #
-
-# enable live grepping; useful for grepping things like "tail -f /var/log/messages"
-# usage: just pipe into it
-# example: tail -f /var/log/messages | livegrep -i " <server_name> "
-livegrep() {
-    grep --line-buffered $* | cat
-}
-
-# a better ls command
-# https://www.topbug.net/blog/2016/11/28/a-better-ls-command/
-if ls --color -d . >/dev/null 2>&1; then  # GNU ls
-    unalias ls &>/dev/null
-    export COLUMNS  # Remember columns for subprocesses.
-    [[ "${TERM}" == "alacritty" ]] \
-        && eval "$(TERM=xterm dircolors "${XDG_CONFIG_HOME}/bash/dircolors")" \
-        || eval "$(dircolors "${XDG_CONFIG_HOME}/bash/dircolors")"
-    function ls {
-        command ls -F -h --color=always -v --author --time-style=long-iso -C "$@" | LESS="" less -R -X -F
-    }
-else
-    alias ls='ls -G'
-fi
-
-git-merge-from-master() {
-    if git branch --no-color 2>/dev/null | grep '^* master$' >/dev/null; then
-        printf "can't merge from master to master!\n"
-        return 2
-    fi
-    git fetch --tags --all --prune && \
-        git checkout master && \
-        git pull && \
-        git checkout - && \
-        git merge master -m "merge from master"
-}
-
-git-rebase-onto-master() {
-    if git branch --no-color 2>/dev/null | grep '^* master$' >/dev/null; then
-        printf "can't rebase master onto master!\n"
-        return 2
-    fi
-    git fetch --tags --all --prune && \
-        git checkout master && \
-        git pull && \
-        git checkout - && \
-        git rebase master
-}
-
-ka() {
-    kubectl $@ --all-namespaces
-}
-
-
-
 # --------------- #
 # General Aliases #
 # --------------- #
 
 # ls
+# a better ls command
+# https://www.topbug.net/blog/2016/11/28/a-better-ls-command/
+# see counterpart in "functions" file
+if ! ls --color -d . >/dev/null 2>&1; then  # *NOT* GNU ls
+    alias ls='ls -G'
+fi
 alias l="ls"
 alias l1="ls -1"
 alias ll="ls -l"
@@ -122,3 +72,4 @@ alias tfinit='\rm -rf "./.terraform" && terraform init'
 alias vi="vim"
 alias :q="exit"
 alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
+alias mkdir="mkdir -p"

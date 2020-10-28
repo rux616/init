@@ -142,38 +142,6 @@ fi
 
 
 
-# ---------------- #
-# Global Functions #
-# ---------------- #
-
-tz_trimmed() {
-    # Trim the basic date "%z" timezone string because FreeBSD doesn't have the "%:::z" format string
-    tz=$(date +%z)
-    if [[ "${tz:3}" == "00" ]]; then
-        echo ${tz:0:3}
-    else
-        echo ${tz}
-    fi
-}
-
-tf_enable() {
-    # Remove ".disabled" suffix from passed terraform files (*.tf, *.tfvars)
-    for file in $@; do
-        [[ "${file}" =~ ^.*\.tf.disabled$ || "${file}" =~ ^.*\.tfvars.disabled$ ]] || continue
-        mv -i "${file}" "${file/%.disabled/}"
-    done
-}
-
-tf_disable() {
-    # Add ".disabled" suffix to passed terraform files (*.tf, *.tfvars)
-    for file in $@; do
-        [[ "${file}" =~ ^.*\.tf$ || "${file}" =~ ^.*\.tfvars$ ]] || continue
-        mv -i "${file}" "${file}.disabled"
-    done
-}
-
-
-
 # --------------- #
 # Local or Remote #
 # --------------- #
@@ -307,6 +275,16 @@ fi
 
 if [[ -r "${XDG_CONFIG_HOME}/bash/aliases" ]]; then
     source "${XDG_CONFIG_HOME}/bash/aliases"
+fi
+
+
+
+# ------------------- #
+# Load BASH Functions #
+# ------------------- #
+
+if [[ -r "${XDG_CONFIG_HOME}/bash/functions" ]]; then
+    source "${XDG_CONFIG_HOME}/bash/functions"
 fi
 
 
