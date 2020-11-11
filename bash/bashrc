@@ -86,6 +86,11 @@ fi
 if command -v vim &>/dev/null; then
     export VIMINIT=":source ${XDG_CONFIG_HOME}/vim/vimrc"
 fi
+#go
+if command -v go &>/dev/null; then
+    export GOBIN="${HOME}/.local/bin"
+    export GOPATH="${XDG_DATA_HOME}/go"
+fi
 
 
 

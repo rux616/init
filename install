@@ -366,9 +366,11 @@ EOL
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            GOPATH="${PWD}"
+            GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
-                GOPATH=${PWD} go/bin/go get -u "github.com/${repo}" && \
+                go/bin/go get -u "github.com/${repo}" && \
                 mv -f "bin/${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
@@ -425,9 +427,11 @@ EOL
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags "https://github.com/golang/go" refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            GOPATH="${PWD}"
+            GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
-                GOPATH=${PWD} go/bin/go get -u "github.com/${repo}" && \
+                go/bin/go get -u "github.com/${repo}" && \
                 cp -f "bin/${section}" "${dir[bin]}/${section}" && \
                 rm -rf "${dir[xdg_data_home]}/fzf/fzf" && \
                 mkdir -p "${dir[xdg_data_home]}/fzf" && \
@@ -443,10 +447,26 @@ EOL
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            GOPATH="${PWD}"
+            GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
-                GOPATH=${PWD} go/bin/go get -u "github.com/${repo}" && \
+                go/bin/go get -u "github.com/${repo}" && \
                 mv -f "bin/${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | go )
+            # install go
+            section="go"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz"
+            tar -xf "go.tar.gz"
+            mkdir -p "${dir[opt]}/golang"
+            mv "go" "${dir[opt]}/golang/${latest_go}"
+            ln -fs "${dir[opt]}/golang/${latest_go}/bin/go" "${dir[bin]}/go"
+            ln -fs "${dir[opt]}/golang/${latest_go}/bin/gofmt" "${dir[bin]}/gofmt"
             cd "${dir[temp]}"
             ;;&
     esac
