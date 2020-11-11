@@ -74,9 +74,14 @@ function myupdate() {
         return 1
     fi
 
+    printf -- '-> gcloud components update <-\n'
     gcloud components update
+    printf -- '----------\n'
+    printf -- '-> ble-update <-\n'
     ble-update
-    ${pkg_update_cmd}
+    printf -- '----------\n'
+    printf -- '-> %s <- \n' "${pkg_update_cmd}"
+    eval "${pkg_update_cmd}"
 }
 
 # a better ls command
