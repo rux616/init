@@ -76,7 +76,7 @@ function myupdate() {
 
     gcloud components update
     ble-update
-    sudo ${pkg_mgr
+    ${pkg_update_cmd}
 }
 
 # a better ls command
