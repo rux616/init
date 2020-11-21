@@ -14,39 +14,11 @@ function cd() {
     fi
 }
 
-function kube_current_gke() {
-    if ! command -v pcre2grep &>/dev/null; then
-        return 255
+function clearall() {
+    clear
+    if [[ -n ${TMUX_PANE} ]]; then
+        tmux clear-history
     fi
-
-    local config=${KUBECONFIG:-"${HOME}/.kube/config"}
-
-    if [[ ! -r "${config}" ]]; then
-        return 254
-    fi
-
-    local current_context_name="$(grep '^current-context: ' "${config}")"
-    current_context_name="${current_context_name#*: }"
-
-    if [[ "${current_context_name}" == \"\" ]]; then
-        return 253
-    fi
-
-    local -a context_info=($(pcre2grep -M -o1 -o2 -- "- context:\s+(cluster: .*\s)\s+(namespace: .*){0,1}\s+user: .*\s+name: ${current_context_name}" "${config}"))
-    local current_cluster="${context_info[1]}"
-    local current_namespace="${context_info[3]:-"default"}"
-
-    if [[ "$1" == "PS1" ]]; then
-        local TC='\e['
-        local Rst="${TC}0m"
-        local Green="${TC}32m"
-        local Red="${TC}31m"
-        printf " ${Rst}[${Green}%s/%s${Rst}:${Red}%s${Rst}]" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
-    else
-        printf "%s/%s:%s\n" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
-    fi
-
-    return 0
 }
 
 function gcp-group-membership() {
@@ -87,6 +59,41 @@ function git-rebase-onto-master() {
 
 function ka() {
     kubectl $@ --all-namespaces
+}
+
+function kube_current_gke() {
+    if ! command -v pcre2grep &>/dev/null; then
+        return 255
+    fi
+
+    local config=${KUBECONFIG:-"${HOME}/.kube/config"}
+
+    if [[ ! -r "${config}" ]]; then
+        return 254
+    fi
+
+    local current_context_name="$(grep '^current-context: ' "${config}")"
+    current_context_name="${current_context_name#*: }"
+
+    if [[ "${current_context_name}" == \"\" ]]; then
+        return 253
+    fi
+
+    local -a context_info=($(pcre2grep -M -o1 -o2 -- "- context:\s+(cluster: .*\s)\s+(namespace: .*){0,1}\s+user: .*\s+name: ${current_context_name}" "${config}"))
+    local current_cluster="${context_info[1]}"
+    local current_namespace="${context_info[3]:-"default"}"
+
+    if [[ "$1" == "PS1" ]]; then
+        local TC='\e['
+        local Rst="${TC}0m"
+        local Green="${TC}32m"
+        local Red="${TC}31m"
+        printf " ${Rst}[${Green}%s/%s${Rst}:${Red}%s${Rst}]" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
+    else
+        printf "%s/%s:%s\n" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
+    fi
+
+    return 0
 }
 
 # enable live grepping; useful for grepping things like "tail -f /var/log/messages"
