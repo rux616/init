@@ -86,9 +86,10 @@ function kube_current_gke() {
     if [[ "$1" == "PS1" ]]; then
         local TC='\e['
         local Rst="${TC}0m"
-        local Green="${TC}32m"
         local Red="${TC}31m"
-        printf " ${Rst}[${Green}%s/%s${Rst}:${Red}%s${Rst}]" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
+        local Green="${TC}32m"
+        local Blue="${TC}34m"
+        printf " ${Rst}[${Blue}%s/%s${Rst}:${Green}%s${Rst}]" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
     else
         printf "%s/%s:%s\n" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
     fi
