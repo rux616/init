@@ -61,7 +61,7 @@ function ka() {
     kubectl $@ --all-namespaces
 }
 
-function kube_current_gke() {
+function kube-current-gke() {
     if ! command -v pcre2grep &>/dev/null; then
         return 255
     fi
@@ -89,7 +89,7 @@ function kube_current_gke() {
         local Red="${TC}31m"
         local Green="${TC}32m"
         local Blue="${TC}34m"
-        printf " ${Rst}[${Blue}%s/%s${Rst}:${Green}%s${Rst}]" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
+        printf " ${Rst}[${Green}%s/%s${Rst}:${Red}%s${Rst}]" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
     else
         printf "%s/%s:%s\n" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
     fi
