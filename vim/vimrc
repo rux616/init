@@ -128,10 +128,19 @@ set shiftwidth=2                        " Number of spaces to use for each step 
 set expandtab                           " Turns <tab> into <space>s
 set autoindent                          " Autoindents when you create a new line.
 " Filetype-specifics
-augroup vimrc_filetype
+augroup vimrc_spaces_and_tabs
     autocmd!
     autocmd FileType sh setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
     autocmd FileType vim setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+augroup END
+
+
+" Word Wrapping
+" -------------
+augroup vimrc_word_wrapping
+    autocmd!
+    autocmd FileType markdown setlocal linebreak
+    autocmd FileType text setlocal linebreak
 augroup END
 
 
@@ -280,6 +289,7 @@ augroup vimrc_on_file_write
     autocmd!
     autocmd BufWritePre * FixWhitespace
     autocmd FileType python autocmd BufWritePre <buffer> Black
+    " autocmd FileType python autocmd BufWritePost <afile> call flake8#Flake8()
 augroup END
 
 
