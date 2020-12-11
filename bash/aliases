@@ -66,7 +66,8 @@ alias kevents="k get events --sort-by='{.lastTimestamp}' -owide"
 alias kaevents="k get events --all-namespaces --sort-by='{.lastTimestamp}' -owide"
 
 # terraform
-alias tfinit='\rm -rf "./.terraform" && terraform init'
+alias tf='terraform'
+alias tfinit='\rm -rf "./.terraform" && tf init'
 
 # other
 alias vi="vim"
