@@ -237,10 +237,20 @@ if !exists(":DiffOrig")
     command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
     \   | wincmd p | diffthis
 endif
-" convenience command to remove trailing whitespace
-if !exists(":FixWhitespace")
-    command FixWhitespace :%s/\s\+$//e
-endif
+" convenience function to remove trailing whitespaces, with allowances
+" for markdown's line-wrap capability
+function! StripTrailingWhitespace()
+    if &ft =~ 'markdown'
+        " strip whitespace other than space
+        %s/[^\S ]+$//e
+        " strip spaces if there's only 1
+        %s/\(\S\)[ ]\{1\}$/\1/e
+        " strip spaces if there are 3 or more
+        %s/\(\S\)[ ]\{3,\}$/\1/e
+    else
+        %s/\s\+$//e
+    endif
+endfunction
 if has("langmap") && exists("+langremap")
     set nolangremap
 endif
@@ -287,7 +297,7 @@ cnoreabbrev Qall qall
 " various 'on file write' commands
 augroup vimrc_on_file_write
     autocmd!
-    autocmd BufWritePre * FixWhitespace
+    autocmd BufWritePre * call StripTrailingWhitespace()
     autocmd FileType python autocmd BufWritePre <buffer> Black
     " autocmd FileType python autocmd BufWritePost <afile> call flake8#Flake8()
 augroup END
