@@ -298,5 +298,5 @@ fi
 # Activate ble.sh #
 # --------------- #
 
-((_ble_bash)) && ble-attach
-((_ble_bash)) && ble-reload
+[[ ${BLE_VERSION-} ]] && ble-attach
+[[ ${BLE_VERSION-} && ! ${TMUX} ]] && ble-reload
