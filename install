@@ -111,7 +111,7 @@ for profile in $@; do
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             # put version to be referred to as naked name last
-            versions=( "0.11.14" "0.12.30" "0.13.6" "0.14.7" "0.12.29" )
+            versions=( "0.11.14" "0.12.30" "0.13.6" "0.14.8" "0.12.29" )
             for version in "${versions[@]}"; do
                 curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
