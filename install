@@ -367,8 +367,8 @@ EOL
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
-            GOPATH="${PWD}"
-            GOBIN="${GOPATH}/bin"
+            export GOPATH="${PWD}"
+            export GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
                 go/bin/go get -u "github.com/${repo}" && \
@@ -428,8 +428,8 @@ EOL
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags "https://github.com/golang/go" refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
-            GOPATH="${PWD}"
-            GOBIN="${GOPATH}/bin"
+            export GOPATH="${PWD}"
+            export GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
                 go/bin/go get -u "github.com/${repo}" && \
@@ -448,8 +448,8 @@ EOL
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
-            GOPATH="${PWD}"
-            GOBIN="${GOPATH}/bin"
+            export GOPATH="${PWD}"
+            export GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
                 go/bin/go get -u "github.com/${repo}" && \
