@@ -436,9 +436,9 @@ EOL
                 cp -f "bin/${section}" "${dir[bin]}/${section}" && \
                 rm -rf "${dir[xdg_data_home]}/fzf/fzf" && \
                 mkdir -p "${dir[xdg_data_home]}/fzf" && \
-                cp -a "src/github.com/${repo}" "${dir[xdg_data_home]}/fzf/fzf" && \
+                cp -a "$(find "pkg/mod/github.com" -type d -name "${section}*")" "${dir[xdg_data_home]}/fzf/fzf" && \
                 mkdir -p "${dir[man1]}" && \
-                cp -r "src/github.com/${repo}/man/man1" "${dir[man]}"
+                cp -r "$(find "pkg/mod/github.com" -type d -name "${section}*")/man/man1" "${dir[man]}"
             cd "${dir[temp]}"
             ;;&
         all | home | work | jsonnet-lint )
