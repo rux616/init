@@ -474,5 +474,6 @@ EOL
 done
 
 # cleanup
+find "${dir[temp]}" -type d -print0 | xargs -0 chmod u+w
 rm -rf "${dir[temp]}"
 unset dir key family pkg_mgr packages_common packages_deb packages_rpm packages versions names types section section_actual prereqs_common prereqs_deb prereqs_rpm prereqs latest_tarball latest_version keybase_file CARGO_HOME RUSTUP_HOME repo latest_go
