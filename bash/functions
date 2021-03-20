@@ -157,11 +157,11 @@ function tf-disable() {
 }
 
 function tf-taint-module() {
-    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -n 1 terraform-0.${1} taint
+    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform-0.${1} taint '{}'
 }
 
 function tf-untaint-module() {
-    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -n 1 terraform-0.${1} untaint
+    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform-0.${1} untaint '{}'
 }
 
 function tz_trimmed() {
