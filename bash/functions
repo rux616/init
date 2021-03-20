@@ -140,10 +140,6 @@ if ls --color -d . >/dev/null 2>&1; then  # GNU ls
     }
 fi
 
-function tf-taint-module() {
-    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -n 1 terraform-0.${1} taint
-}
-
 function tf-enable() {
     # Remove ".disabled" suffix from passed terraform files (*.tf, *.tfvars)
     for file in $@; do
@@ -158,6 +154,14 @@ function tf-disable() {
         [[ "${file}" =~ ^.*\.tf$ || "${file}" =~ ^.*\.tfvars$ ]] || continue
         mv -i "${file}" "${file}.disabled"
     done
+}
+
+function tf-taint-module() {
+    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -n 1 terraform-0.${1} taint
+}
+
+function tf-untaint-module() {
+    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -n 1 terraform-0.${1} untaint
 }
 
 function tz_trimmed() {
