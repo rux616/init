@@ -7,8 +7,8 @@
 
 function cd() {
     # remember to use "builtin cd ..." to avoid infinite recursion (followed by a segfault)
-    if [[ $1 == "%" ]]; then
-        builtin cd "$(git root)"
+    if [[ $1 == "%" || $1 =~ ^%/.* ]]; then
+        builtin cd "$(git root)${1#\%}"
     else
         builtin cd "$@"
     fi
@@ -140,7 +140,11 @@ if ls --color -d . >/dev/null 2>&1; then  # GNU ls
     }
 fi
 
-function tf_enable() {
+function tf-taint-module() {
+    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -n 1 terraform-0.${1} taint
+}
+
+function tf-enable() {
     # Remove ".disabled" suffix from passed terraform files (*.tf, *.tfvars)
     for file in $@; do
         [[ "${file}" =~ ^.*\.tf.disabled$ || "${file}" =~ ^.*\.tfvars.disabled$ ]] || continue
@@ -148,7 +152,7 @@ function tf_enable() {
     done
 }
 
-function tf_disable() {
+function tf-disable() {
     # Add ".disabled" suffix to passed terraform files (*.tf, *.tfvars)
     for file in $@; do
         [[ "${file}" =~ ^.*\.tf$ || "${file}" =~ ^.*\.tfvars$ ]] || continue
