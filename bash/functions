@@ -117,8 +117,8 @@ function myupdate() {
         return 1
     fi
 
-    printf -- '-> gcloud components update <-\n'
-    gcloud components update
+    printf -- '-> gcloud --quiet components update <-\n'
+    gcloud --quiet components update
     printf -- '----------\n'
     printf -- '-> ble-update <-\n'
     ble-update
@@ -140,14 +140,6 @@ if ls --color -d . >/dev/null 2>&1; then  # GNU ls
     }
 fi
 
-function tf-enable() {
-    # Remove ".disabled" suffix from passed terraform files (*.tf, *.tfvars)
-    for file in $@; do
-        [[ "${file}" =~ ^.*\.tf.disabled$ || "${file}" =~ ^.*\.tfvars.disabled$ ]] || continue
-        mv -i "${file}" "${file/%.disabled/}"
-    done
-}
-
 function tf-disable() {
     # Add ".disabled" suffix to passed terraform files (*.tf, *.tfvars)
     for file in $@; do
@@ -156,12 +148,36 @@ function tf-disable() {
     done
 }
 
+function tf-docs() {
+    if [[ ! -e "./backend.tf" ]]; then
+        touch "./backend.tf"
+    fi
+
+    "${1:-"${HOME}/src/github.com/descarteslabs/devops/tools/terraform-docs/update-tf-docs"}" .
+
+    if [[ -s "./backend.tf" ]]; then
+        return
+    else
+        \rm -f "./backend.tf"
+    fi
+}
+
+function tf-enable() {
+    # Remove ".disabled" suffix from passed terraform files (*.tf, *.tfvars)
+    for file in $@; do
+        [[ "${file}" =~ ^.*\.tf.disabled$ || "${file}" =~ ^.*\.tfvars.disabled$ ]] || continue
+        mv -i "${file}" "${file/%.disabled/}"
+    done
+}
+
 function tf-taint-module() {
-    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform-0.${1} taint '{}'
+    tfswitch || return 1
+    terraform state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform taint '{}'
 }
 
 function tf-untaint-module() {
-    terraform-0.${1} state list | grep -e "^module\.${2}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform-0.${1} untaint '{}'
+    tfswitch || return 1
+    terraform state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform untaint '{}'
 }
 
 function tz_trimmed() {
