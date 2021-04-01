@@ -8,7 +8,7 @@ source "${source_dir}/.defaults.sh"
 
 # TODO add docker
 
-section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd neovim ble.sh fzf jsonnet-lint )
+section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd neovim ble.sh fzf jsonnet-lint go tfswitch )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -111,7 +111,7 @@ for profile in $@; do
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             # put version to be referred to as naked name last
-            versions=( "0.11.14" "0.12.30" "0.13.6" "0.14.9" "0.12.29" )
+            versions=( "0.11.14" "0.12.29" "0.12.30" "0.13.6" "0.14.9" )
             for version in "${versions[@]}"; do
                 curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
@@ -468,6 +468,21 @@ EOL
             mv "go" "${dir[opt]}/golang/${latest_go}"
             ln -fs "${dir[opt]}/golang/${latest_go}/bin/go" "${dir[bin]}/go"
             ln -fs "${dir[opt]}/golang/${latest_go}/bin/gofmt" "${dir[bin]}/gofmt"
+            cd "${dir[temp]}"
+            ;;&
+        all | work | tfswitch )
+            # install terraform-switcher
+            section="terraform-switcher"
+            repo="warrensbox/terraform-switcher"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            export GOPATH="${PWD}"
+            export GOBIN="${GOPATH}/bin"
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
+                tar -xf "go.tar.gz" && \
+                go/bin/go get -u "github.com/${repo}@$(curl -sS "https://api.github.com/repos/${repo}/releases?per_page=1" | jq -r '.[].tag_name')" && \
+                mv -f "bin/${section}" "${dir[bin]}/tfswitch"
             cd "${dir[temp]}"
             ;;&
     esac
