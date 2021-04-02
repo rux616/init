@@ -67,7 +67,8 @@ alias kaevents="k get events --all-namespaces --sort-by='{.lastTimestamp}' -owid
 
 # terraform
 alias tf="tfswitch -b \"${HOME}/.local/bin/terraform\" && printf \"\n\" && terraform"
-alias tfinit='\rm -rf "./.terraform" && \rm -f "./.terraform.lock.hcl" && tf init'
+alias tf-init='\rm -rf "./.terraform" && \rm -f "./.terraform.lock.hcl" && tf init'
+alias tf-cleanse='find . -name .terraform -type d -o -name .terraform.lock.hcl -type f -print0 | xargs -0 \rm -rf'
 
 # other
 alias vi="vim"
