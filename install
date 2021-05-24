@@ -278,7 +278,7 @@ EOL
             section="alacritty-terminfo"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
-            latest_tarball="$(curl -sN "https://api.github.com/repos/alacritty/alacritty/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            latest_tarball="$(curl -sN "https://api.github.com/repos/alacritty/alacritty/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")' | sed -E 's|(https://.*?/tarball/)(.*)|\1refs/tags/\2|')"
             curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
                 tar -xf "${section}.tar.gz" --strip 1 && \
                 tic -xe alacritty,alacritty-direct "extra/alacritty.info"
