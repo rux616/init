@@ -140,6 +140,26 @@ if ls --color -d . >/dev/null 2>&1; then  # GNU ls
     }
 fi
 
+function tf() {
+    if command -v tfswitch >/dev/null; then
+        if ! tfswitch -b "${HOME}/.local/bin/terraform"; then
+            printf "\ntfswitch failed; attempting to run with existing terraform binary\n\n"
+        else
+            printf "\n"
+        fi
+    fi
+
+    terraform "$@"
+}
+
+function tf-cleanse() {
+    if [[ $1 == "--repo" ]]; then
+        cd %
+    fi
+
+    find . \( -name ".terraform" -type d -o -name ".terraform.lock.hcl" -type f \) -print0 | xargs -0 \rm -rf --
+}
+
 function tf-disable() {
     # Add ".disabled" suffix to passed terraform files (*.tf, *.tfvars)
     for file in $@; do
@@ -170,14 +190,16 @@ function tf-enable() {
     done
 }
 
+function tf-init() {
+    \rm -rf "./.terraform" && \rm -f "./.terraform.lock.hcl" && tf init
+}
+
 function tf-taint-module() {
-    tfswitch || return 1
-    terraform state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform taint '{}'
+    tf state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform taint '{}'
 }
 
 function tf-untaint-module() {
-    tfswitch || return 1
-    terraform state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform untaint '{}'
+    tf state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform untaint '{}'
 }
 
 function tz_trimmed() {

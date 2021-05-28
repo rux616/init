@@ -59,16 +59,12 @@ alias lla="ls -a -l"
 
 # git
 alias gftap="git fetch --tags --all --prune"
+alias gftapp="git fetch --tags --all --prune && git pull"
 
 # kubectl
 alias k="kubectl"
 alias kevents="k get events --sort-by='{.lastTimestamp}' -owide"
 alias kaevents="k get events --all-namespaces --sort-by='{.lastTimestamp}' -owide"
-
-# terraform
-alias tf="tfswitch -b \"${HOME}/.local/bin/terraform\" && printf \"\n\" && terraform"
-alias tf-init='\rm -rf "./.terraform" && \rm -f "./.terraform.lock.hcl" && tf init'
-alias tf-cleanse='find . \( -name .terraform -type d -o -name .terraform.lock.hcl -type f \) -print0 | xargs -0 \rm -rf --'
 
 # other
 alias vi="vim"
