@@ -470,7 +470,7 @@ EOL
             ln -fs "${dir[opt]}/golang/${latest_go}/bin/gofmt" "${dir[bin]}/gofmt"
             cd "${dir[temp]}"
             ;;&
-        all | work | tfswitch )
+        all | home | work | tfswitch )
             # install terraform-switcher
             section="terraform-switcher"
             repo="warrensbox/terraform-switcher"
@@ -483,6 +483,16 @@ EOL
                 tar -xf "go.tar.gz" && \
                 go/bin/go get -u "github.com/${repo}@$(curl -sS "https://api.github.com/repos/${repo}/releases?per_page=1" | jq -r '.[].tag_name')" && \
                 mv -f "bin/${section}" "${dir[bin]}/tfswitch"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | aws )
+            # install aws cli v2
+            section="aws-cli"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            curl -sLo "awscliv2.zip" "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+            unzip awscliv2.zip
+            ./aws/install --install-dir "${dir[opt]}/aws-cli" --bin-dir "${dir[bin]}"
             cd "${dir[temp]}"
             ;;&
     esac
