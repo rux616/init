@@ -62,6 +62,18 @@ fi
 
 
 
+# -------- #
+# Globbing #
+# -------- #
+
+# enable extended globbing by default
+shopt -s extglob
+
+# enable ** globbing by default
+shopt -s globstar
+
+
+
 # ----------------------- #
 # Various Config Settings #
 # ----------------------- #
