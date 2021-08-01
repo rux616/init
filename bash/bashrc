@@ -50,6 +50,11 @@ fi
 export MANPATH="${HOME}/.local/share/man:/usr/share/man${MANPATH:+":${MANPATH}"}"
 export PATH="${HOME}/.local/sbin:${HOME}/.local/bin${PATH:+":${PATH}"}"
 
+# if Rust is installed, add it to the path
+if [[ -e "${HOME}/.cargo/bin/rustc" ]]; then
+    export PATH="${HOME}/.cargo/bin${PATH:+":${PATH}"}"
+fi
+
 
 
 # ------------------- #
