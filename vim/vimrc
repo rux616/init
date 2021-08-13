@@ -61,6 +61,8 @@ let g:black_virtualenv = g:data_home.'/'.g:variant.'/black'
 " vim-terraform
 let g:terraform_align = 1
 let g:terraform_fmt_on_save = 1
+" rust.vim
+let g:rustfmt_autosave = 1
 
 
 " Set up vim-plug
@@ -95,6 +97,9 @@ Plug 'nvie/vim-flake8'
 Plug 'roxma/vim-paste-easy'
 "Plug 'junegunn/fzf'
 "Plug 'junegunn/fzf.vim'
+Plug 'vim-syntastic/syntastic'
+Plug 'preservim/tagbar'
+Plug 'rust-lang/rust.vim'
 
 call plug#end()
 
@@ -421,6 +426,8 @@ vnoremap <silent> <M-l> :<C-u>TmuxNavigatePrevious<cr>gv
 onoremap <silent> <M-l> :TmuxNavigatePrevious<cr>
 inoremap <silent> <M-l> <C-\><C-o>:TmuxNavigatePrevious<cr>
 cnoremap <silent> <M-l> <C-c>:TmuxNavigatePrevious<cr>
+" tagbar
+nmap <F8> :TagbarToggle<cr>
 
 
 " Local Files
