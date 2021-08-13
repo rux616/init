@@ -10,3 +10,5 @@
 	wsErrorHighlight = all
 [alias]
 	root = !pwd
+[init]
+	defaultBranch = main
