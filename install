@@ -8,7 +8,7 @@ source "${source_dir}/.defaults.sh"
 
 # TODO add docker
 
-section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd neovim ble.sh fzf jsonnet-lint go tfswitch )
+section_profiles=( packages google-cloud-sdk terraform packer keybase pre-commit ssh-config ssh-keys util-linux tmux trash-cli kubeval vim alacritty alacritty-terminfo jsonnet jd neovim ble.sh fzf jsonnet-lint go tfswitch yank )
 meta_profiles=( all home work local remote )
 
 if [[ "$1" == "" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
@@ -493,6 +493,15 @@ EOL
             curl -sLo "awscliv2.zip" "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
             unzip awscliv2.zip
             ./aws/install --install-dir "${dir[opt]}/aws-cli" --bin-dir "${dir[bin]}"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | yank )
+            # install 'yank' script
+            section="yank"
+            echo "installing ${section}"
+            mkdir "${section}" && cd "${section}"
+            curl -sLo "${section}" "https://github.com/sunaku/home/raw/master/bin/yank" && \
+                mv -f "${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
     esac
