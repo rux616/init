@@ -501,6 +501,7 @@ EOL
             echo "installing ${section}"
             mkdir "${section}" && cd "${section}"
             curl -sLo "${section}" "https://github.com/sunaku/home/raw/master/bin/yank" && \
+                chmod u+x "${section}" && \
                 mv -f "${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
