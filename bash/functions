@@ -153,11 +153,16 @@ function tf() {
 }
 
 function tf-cleanse() {
+    local changed_dir="false"
+
     if [[ $1 == "--repo" ]]; then
+        changed_dir="true"
         cd %
     fi
 
     find . \( -name ".terraform" -type d -o -name ".terraform.lock.hcl" -type f \) -print0 | xargs -0 \rm -rf --
+
+    ${changed_dir} && cd - >/dev/null
 }
 
 function tf-disable() {
