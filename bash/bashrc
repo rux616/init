@@ -127,6 +127,11 @@ if command -v go &>/dev/null; then
     export GOBIN="${HOME}/.local/bin"
     export GOPATH="${XDG_DATA_HOME}/go"
 fi
+#terraform
+if command -v terraform &>/dev/null; then
+    mkdir -p "${XDG_CACHE_HOME}/terraform"
+    export TF_PLUGIN_CACHE_DIR="${XDG_CACHE_HOME}/terraform"
+fi
 
 
 
