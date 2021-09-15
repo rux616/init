@@ -97,6 +97,13 @@ function kube-current-gke() {
     return 0
 }
 
+function kubectlgetall() {
+    [[ $# -eq 1 ]] || { echo "must specify namespace"; return 1; }
+    local resources
+    printf -v resources "%s," $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq)
+    kubectl -n "${1}" get --ignore-not-found "${resources:: -1}"
+}
+
 # enable live grepping; useful for grepping things like "tail -f /var/log/messages"
 # usage: just pipe into it
 # example: tail -f /var/log/messages | livegrep -i " <server_name> "
