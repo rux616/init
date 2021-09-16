@@ -7,10 +7,24 @@
 
 function cd() {
     # remember to use "builtin cd ..." to avoid infinite recursion (followed by a segfault)
-    if [[ $1 == "%" || $1 =~ ^%/.* ]]; then
-        builtin cd "$(git root)${1#\%}"
+    if [[ ${#} -ne 1 ]]; then
+        builtin cd "${@}"
     else
-        builtin cd "$@"
+        local dir="${1}"
+        if [[ ${dir} =~ ^%(/.*|$) ]]; then
+            dir="$(git root)${dir#\%}"
+        elif [[ "${dir}" == "-" ]]; then
+            dir="${OLDPWD}"
+            printf "%s\n" "${dir}"
+        fi
+        if [[ -e ${dir} && ! -d ${dir} ]]; then
+            printf "'%s' is a file; cd-ing to parent directory\n" "${dir}"
+            dir="$(dirname "${dir}")"
+        elif [[ ! -e ${dir} && -d $(dirname "${dir}") ]]; then
+            printf "'%s' does not exist; cd-ing to parent directory\n" "${dir}"
+            dir="$(dirname "${dir}")"
+        fi
+        builtin cd "${dir}"
     fi
 }
 
