@@ -5,21 +5,26 @@
 # Functions #
 # --------- #
 
+# remember to use "builtin cd ..." to avoid infinite recursion (followed by a segfault)
 function cd() {
-    # remember to use "builtin cd ..." to avoid infinite recursion (followed by a segfault)
-    if [[ ${#} -ne 1 ]]; then
+    # if more than 1 argument (using options) or if `dirname` can't be found, dump right into cd
+    if [[ ${#} -ne 1 || ! $(command -v dirname >/dev/null) ]]; then
         builtin cd "${@}"
     else
         local dir="${1}"
+        # check if user wants to go up to git repo root
         if [[ ${dir} =~ ^%(/.*|$) ]]; then
             dir="$(git root)${dir#\%}"
+        # handle '-' special "directory"
         elif [[ "${dir}" == "-" ]]; then
             dir="${OLDPWD}"
             printf "%s\n" "${dir}"
         fi
+        # if file exists and is not a directory
         if [[ -e ${dir} && ! -d ${dir} ]]; then
             printf "'%s' is a file; cd-ing to parent directory\n" "${dir}"
             dir="$(dirname "${dir}")"
+        # if file does not exist but the parent directory does
         elif [[ ! -e ${dir} && -d $(dirname "${dir}") ]]; then
             printf "'%s' does not exist; cd-ing to parent directory\n" "${dir}"
             dir="$(dirname "${dir}")"
