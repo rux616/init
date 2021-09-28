@@ -8,7 +8,7 @@
 # remember to use "builtin cd ..." to avoid infinite recursion (followed by a segfault)
 function cd() {
     # if more than 1 argument (using options) or if `dirname` can't be found, dump right into cd
-    if [[ ${#} -ne 1 || ! $(command -v dirname >/dev/null) ]]; then
+    if [[ ${#} -ne 1 || -z $(command -v dirname) ]]; then
         builtin cd "${@}"
     else
         local dir="${1}"
