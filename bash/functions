@@ -144,10 +144,10 @@ function myupdate() {
     fi
 
     printf -- '-> gcloud --quiet components update <-\n'
-    command -v gcloud >/dev/null && gcloud --quiet components update || printf -- '(gcloud command not found; skipping)'
+    command -v gcloud >/dev/null && gcloud --quiet components update || printf -- '(gcloud command not found; skipping)\n'
     printf -- '----------\n'
     printf -- '-> ble-update <-\n'
-    command -v ble-update >/dev/null && ble-update || printf -- '(ble-update command not found; skipping)'
+    command -v ble-update >/dev/null && ble-update || printf -- '(ble-update command not found; skipping)\n'
     printf -- '----------\n'
     printf -- '-> %s <- \n' "${pkg_update_cmd}"
     eval "${pkg_update_cmd}"
