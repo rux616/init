@@ -211,7 +211,7 @@ EOL
                 rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
             ${pkg_mgr} install -y ${prereqs[@]}
-            latest_tarball="$(curl -sN "https://api.github.com/repos/karelzak/util-linux/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            latest_tarball="$(curl -sN "https://api.github.com/repos/util-linux/util-linux/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
             curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
                 tar -xf "${section}.tar.gz" --strip 1 && \
                 ./autogen.sh && \
@@ -371,7 +371,7 @@ EOL
             export GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
-                go/bin/go get -u "github.com/${repo}" && \
+                go/bin/go install "github.com/${repo}@latest" && \
                 mv -f "bin/${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
@@ -425,20 +425,22 @@ EOL
             # install fzf
             section="fzf"
             repo="junegunn/fzf"
-            echo "installing ${section}..."
+            version="0.28.0"
+            echo "installing ${section} v${version}..."
             mkdir "${section}" && cd "${section}"
             [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags "https://github.com/golang/go" refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
             export GOPATH="${PWD}"
             export GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
-                go/bin/go get -u "github.com/${repo}" && \
+                go/bin/go install "github.com/${repo}@${version}" && \
                 cp -f "bin/${section}" "${dir[bin]}/${section}" && \
                 rm -rf "${dir[xdg_data_home]}/fzf/fzf" && \
                 mkdir -p "${dir[xdg_data_home]}/fzf" && \
                 cp -a "$(find "pkg/mod/github.com" -type d -name "${section}*")" "${dir[xdg_data_home]}/fzf/fzf" && \
+                chmod -R u+w "${dir[xdg_data_home]}/fzf"
                 mkdir -p "${dir[man1]}" && \
-                cp -r "$(find "pkg/mod/github.com" -type d -name "${section}*")/man/man1" "${dir[man]}"
+                cp -r "${dir[xdg_data_home]}/fzf/fzf/man/man1" "${dir[man]}"
             cd "${dir[temp]}"
             ;;&
         all | home | work | jsonnet-lint )
@@ -452,7 +454,7 @@ EOL
             export GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
-                go/bin/go get -u "github.com/${repo}" && \
+                go/bin/go install "github.com/${repo}@latest" && \
                 mv -f "bin/${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
@@ -481,7 +483,7 @@ EOL
             export GOBIN="${GOPATH}/bin"
             curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
                 tar -xf "go.tar.gz" && \
-                go/bin/go get -u "github.com/${repo}@$(curl -sS "https://api.github.com/repos/${repo}/releases?per_page=1" | jq -r '.[].tag_name')" && \
+                go/bin/go install "github.com/${repo}@$(curl -sS "https://api.github.com/repos/${repo}/releases?per_page=1" | jq -r '.[].tag_name')" && \
                 mv -f "bin/${section}" "${dir[bin]}/tfswitch"
             cd "${dir[temp]}"
             ;;&
