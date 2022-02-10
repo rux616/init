@@ -132,6 +132,17 @@ if command -v terraform &>/dev/null; then
     mkdir -p "${XDG_CACHE_HOME}/terraform"
     export TF_PLUGIN_CACHE_DIR="${XDG_CACHE_HOME}/terraform"
 fi
+#krew
+export KREW_ROOT="${XDG_DATA_HOME}/krew"
+#aws
+if command -v aws &>/dev/null; then
+    mkdir -p "${XDG_CONFIG_HOME}/aws" "${XDG_DATA_HOME}/aws"
+    export AWS_CONFIG_FILE="${XDG_CONFIG_HOME}/aws/config"
+    export AWS_CLI_HISTORY_FILE="${XDG_DATA_HOME}/aws/history"
+    export AWS_CREDENTIALS_FILE="${XDG_DATA_HOME}/aws/credentials"
+    export AWS_WEB_IDENTITY_TOKEN_FILE="${XDG_DATA_HOME}/aws/token"
+    export AWS_SHARED_CREDENTIALS_FILE="${XDG_DATA_HOME}/aws/shared-credentials"
+fi
 
 
 
@@ -233,10 +244,10 @@ if [[ -r ${git_prompt_sh_location} ]]; then
     source ${git_prompt_sh_location}
 
     # Set the command prompt to execute __git_ps1 with it taking the custom command prompt strings as arguments.
-    export PROMPT_COMMAND="__git_ps1 \"${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\$(kube-current-gke PS1)\n\$ \""
+    export PROMPT_COMMAND="__git_ps1 \"${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\$(kcc PS1)\n\$ \""
 else
     # If the git prompt is not found for whatever reason, go with the basic command prompt.
-    export PS1="${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}"'$(kube-current-gke PS1)'"\n\$ "
+    export PS1="${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}"'$(kcc PS1)'"\n\$ "
 fi
 
 # activate command completion for the AWS CLI if the completer command is installed
@@ -316,9 +327,39 @@ fi
 
 
 
+# ------------------- #
+# Late *PATH Settings #
+# ------------------- #
+
+export PATH="${KREW_ROOT:-${HOME}/.krew}/bin:${PATH}"
+
+
+
 # --------------- #
 # Activate ble.sh #
 # --------------- #
 
 [[ ${BLE_VERSION-} ]] && ble-attach
 [[ ${BLE_VERSION-} && ! ${TMUX} ]] && ble-reload
+
+
+
+# ----- #
+# Conda #
+# ----- #
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/dan/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/dan/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/dan/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/dan/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
