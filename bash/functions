@@ -80,12 +80,13 @@ function ka() {
     kubectl $@ --all-namespaces
 }
 
-function kube-current-gke() {
+#kubectl current context (kcc)
+function kcc() {
     if ! command -v pcre2grep &>/dev/null; then
         return 255
     fi
 
-    local config=${KUBECONFIG:-"${HOME}/.kube/config"}
+    local config="${KUBECONFIG:-"${HOME}/.kube/config"}"
 
     if [[ ! -r "${config}" ]]; then
         return 254
@@ -99,20 +100,88 @@ function kube-current-gke() {
     fi
 
     local -a context_info=($(pcre2grep -M -o1 -o2 -- "- context:\s+(cluster: .*\s)\s+(namespace: .*){0,1}\s+user: .*\s+name: ${current_context_name}" "${config}"))
-    local current_cluster="${context_info[1]}"
-    local current_namespace="${context_info[3]:-"default"}"
+    local cluster="${context_info[1]}"
+    local namespace="${context_info[3]:-"default"}"
 
+    local format
+    case "${context_info[1]}" in
+        gke_*)  format="gke"      ;;
+        arn:*)  format="eks"      ;;
+        *)      format="generic"  ;;
+    esac
     if [[ "$1" == "PS1" ]]; then
-        local TC='\e['
-        local Rst="${TC}0m"
-        local Red="${TC}31m"
-        local Green="${TC}32m"
-        local Blue="${TC}34m"
-        printf " ${Rst}[${Green}%s/%s${Rst}:${Red}%s${Rst}]" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
-    else
-        printf "%s/%s:%s\n" $(awk -F '_' '{print $2,$4}' <<<"${current_cluster}") "${current_namespace}"
+        KCC_PS1=true
     fi
+    kcc-formatter "${format}" "${cluster}" "${namespace}"
+}
 
+function kcc-formatter() {
+    if [[ $# -ne 3 ]]; then
+        >&2 printf "kcc-formatter: invalid syntax\n"
+        >&2 printf "usage: kcc-formatter <format> <cluster> <namespace>\n"
+        return 1
+    fi
+    local format="$1"
+    local cluster="$2"
+    local namespace="$3"
+    local KCC_PS1="${KCC_PS1:-false}"
+
+    local TC='\e['
+    local Rst="${TC}0m"
+    local Red="${TC}31m"
+    local Green="${TC}32m"
+    local Blue="${TC}34m"
+
+    local format_string
+    local -a cluster_info
+
+    case "${format}" in
+        gke)
+            IFS='_' read -r -a cluster_info <<<"${cluster}"
+            local project="${cluster_info[1]}"
+            local region="${cluster_info[2]}"
+            local cluster_name="${cluster_info[3]}"
+            if ${KCC_PS1:-false}; then
+                format_string=" ${Rst}[${Green}%s/%s${Rst}:${Red}%s${Rst}]"
+            else
+                format_string="%s/%s:%s\n"
+            fi
+            printf "${format_string}" "${project}" "${cluster_name}" "${namespace}"
+            ;;
+        eks)
+            IFS=':/' read -r -a cluster_info <<<"${cluster}"
+            local account="${cluster_info[4]}"
+            local region="${cluster_info[3]}"
+            local cluster_name="${cluster_info[6]}"
+            if [[ "${cluster_name}" =~ "${region}" ]]; then
+                if ${KCC_PS1:-false}; then
+                    format_string=" ${Rst}[${Green}%s/%s${Rst}:${Red}%s${Rst}]"
+                else
+                    format_string="%s/%s:%s\n"
+                fi
+                printf "${format_string}" "${account}" "${cluster_name}" "${namespace}"
+            else
+                if ${KCC_PS1:-false}; then
+                    format_string=" ${Rst}[(${Blue}%s${Rst})${Green}%s/%s${Rst}:${Red}%s${Rst}]"
+                else
+                    format_string="(%s)%s/%s:%s\n"
+                fi
+                printf "${format_string}" "${region}" "${account}" "${cluster_name}" "${namespace}"
+            fi
+            ;;
+        generic)
+            if ${KCC_PS1:-false}; then
+                format_string=" ${Rst}[${Green}%s${Rst}:${Red}%s${Rst}]"
+            else
+                format_string="%s:%s\n"
+            fi
+            printf "${format_string}" "${cluster}" "${namespace}"
+            ;;
+        *)
+            >&2 printf "kcc-formatter: unknown format \"%s\"\n" "${format}"
+            return 1
+            ;;
+    esac
     return 0
 }
 
