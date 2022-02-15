@@ -52,28 +52,38 @@ function gcp-group-membership() {
     fi
 }
 
-function git-merge-from-master() {
-    if git branch --no-color 2>/dev/null | grep '^* master$' >/dev/null; then
-        printf "can't merge from master to master!\n"
+function git-merge-from() {
+    [[ $# -lt 1 || $1 =~ -h|--help ]] && { printf "usage: git-merge-from <branch-name>\n"; return 1; }
+
+    branch="${1:-"main"}"
+
+    if git branch --no-color 2>/dev/null | grep "^* ${branch}$" >/dev/null; then
+        printf "can't merge from ${branch} to ${branch}!\n"
         return 2
     fi
+
     git fetch --tags --all --prune && \
-        git checkout master && \
+        git checkout "${branch}" && \
         git pull && \
         git checkout - && \
-        git merge master -m "merge from master"
+        git merge "${branch}" -m "merge from ${branch}"
 }
 
-function git-rebase-onto-master() {
-    if git branch --no-color 2>/dev/null | grep '^* master$' >/dev/null; then
-        printf "can't rebase master onto master!\n"
+function git-rebase-onto() {
+    [[ $# -lt 1 || $1 =~ -h|--help ]] && { printf "usage: git-merge-from <branch-name>\n"; return 1; }
+
+    branch="${1:-"main"}"
+
+    if git branch --no-color 2>/dev/null | grep "^* ${branch}$" >/dev/null; then
+        printf "can't rebase ${branch} onto ${branch}!\n"
         return 2
     fi
+
     git fetch --tags --all --prune && \
-        git checkout master && \
+        git checkout "${branch}" && \
         git pull && \
         git checkout - && \
-        git rebase master
+        git rebase "${branch}"
 }
 
 function ka() {
