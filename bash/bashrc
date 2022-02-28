@@ -171,6 +171,11 @@ elif [[ "$(uname)" == "Linux" ]]; then
             git_prompt_sh_location="/dev/null/git-prompt.sh"
             ;;
     esac
+    if $(grep -q -i "microsoft" "/proc/version"); then
+        export IS_WSL=true
+    else
+        export IS_WSL=false
+    fi
 elif [[ "$(uname)" == "FreeBSD" ]]; then
     # FreeBSD
     # uname >/dev/null   # dummy line to make bash stop complaining
