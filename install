@@ -14,6 +14,7 @@ section_profiles=(
     aws-cli
     ble.sh
     fzf
+    gh-cli
     go
     google-cloud-sdk
     jd
@@ -363,7 +364,7 @@ EOL
                 ./configure \
                     --with-features=huge \
                     --enable-python3interp=yes \
-                    --with-python3-config-dir=$(python3-config --configdir) \
+                    --with-python3-config-dir="$(python3-config --configdir)" \
                     --prefix="${dir[base]}" && \
                 make && \
                 make install
@@ -536,6 +537,20 @@ EOL
             curl -sLo "${section}" "https://github.com/sunaku/home/raw/master/bin/yank" && \
                 chmod u+x "${section}" && \
                 mv -f "${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        all | home | work | gh-cli )
+            # install github cli
+            section="gh-cli"
+            repo="cli/cli"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            release_file="${section}-linux-amd64.tar.gz"
+            latest_release="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | jq -r '.assets[] | select(.name | test("gh_[0-9.]+_linux_amd64\\.tar\\.gz")).browser_download_url')"
+            curl -sL "${latest_release}" -o "${release_file}" && \
+                tar -xf "${release_file}" --strip 1 && \
+                mv -f bin/* "${dir[bin]}/" && \
+                mv -f share/man/man1/* "${dir[man1]}/"
             cd "${dir[temp]}"
             ;;&
     esac
