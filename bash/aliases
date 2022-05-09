@@ -70,5 +70,4 @@ alias kaevents="k get events --all-namespaces --sort-by='{.lastTimestamp}' -owid
 alias vi="vim"
 alias :e="vim"
 alias :q="exit"
-alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
 alias mkdir="mkdir -p"

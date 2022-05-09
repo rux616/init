@@ -255,10 +255,15 @@ function kcc-formatter() {
 }
 
 function kubectlgetall() {
-    [[ $# -eq 1 ]] || { echo "must specify namespace"; return 1; }
-    local resources
+    local namespace resources
+    if [[ $# -ge 2 && ( "${1}" == "-n" || "${1}" == "--namespace" ) ]]; then
+        namespace="${2}"
+        shift 2
+    else
+        namespace="$(kubens --current)"
+    fi
     printf -v resources "%s," $(kubectl api-resources --verbs=list --namespaced -o name | grep -v "events.events.k8s.io" | grep -v "events" | sort | uniq)
-    kubectl -n "${1}" get --ignore-not-found "${resources:: -1}"
+    kubectl -n "${namespace}" get --ignore-not-found "${resources:: -1}" "${@}"
 }
 
 # enable live grepping; useful for grepping things like "tail -f /var/log/messages"
@@ -266,6 +271,15 @@ function kubectlgetall() {
 # example: tail -f /var/log/messages | livegrep -i " <server_name> "
 function livegrep() {
     grep --line-buffered $* | cat
+}
+
+function myip() {
+    local ip
+    ip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+    if [[ -z "${ip}" ]]; then
+        ip="$(curl -s ifconfig.me)"
+    fi
+    printf "%s\n" "${ip}"
 }
 
 function myupdate() {
