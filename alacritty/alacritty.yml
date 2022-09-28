@@ -98,4 +98,5 @@ font:
   size: 11
 
 # set the background opacity
-background_opacity: 0.9
+window:
+  opacity: 0.9
