@@ -160,7 +160,7 @@ for profile in $@; do
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             # put version to be referred to as naked name last
-            versions=( "1.5.5" )
+            versions=( "1.8.4" )
             for version in "${versions[@]}"; do
                 curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
