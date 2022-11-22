@@ -117,6 +117,20 @@ fi
 #docker
 if command -v docker &>/dev/null; then
     export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
+    # check if running in a WSL2 environment
+    if $(uname -r | grep -iq "microsoft"); then
+        DOCKER_DISTRO="${WSL_DISTRO_NAME}"
+        DOCKER_DIR="/mnt/wsl/shared-docker"
+        DOCKER_SOCK="${DOCKER_DIR}/docker.sock"
+        export DOCKER_HOST="unix://${DOCKER_SOCK}"
+        if [[ ! -S "${DOCKER_SOCK}" ]]; then
+            mkdir -pm o=,ug=rwx "${DOCKER_DIR}"
+            if [[ "$(stat --printf='%G' "${DOCKER_DIR}")" != "docker" ]]; then
+                sudo chgrp docker "${DOCKER_DIR}"
+            fi
+            /mnt/c/Windows/System32/wsl.exe -d "${DOCKER_DISTRO}" sh -c "nohup sudo -b dockerd </dev/null >\"${DOCKER_DIR}/dockerd.log\" 2>&1"
+        fi
+    fi
 fi
 #vim
 if command -v vim &>/dev/null; then
@@ -138,10 +152,15 @@ export KREW_ROOT="${XDG_DATA_HOME}/krew"
 if command -v aws &>/dev/null; then
     mkdir -p "${XDG_CONFIG_HOME}/aws" "${XDG_DATA_HOME}/aws"
     export AWS_CONFIG_FILE="${XDG_CONFIG_HOME}/aws/config"
-    export AWS_CLI_HISTORY_FILE="${XDG_DATA_HOME}/aws/history"
-    export AWS_CREDENTIALS_FILE="${XDG_DATA_HOME}/aws/credentials"
-    export AWS_WEB_IDENTITY_TOKEN_FILE="${XDG_DATA_HOME}/aws/token"
-    export AWS_SHARED_CREDENTIALS_FILE="${XDG_DATA_HOME}/aws/shared-credentials"
+    export AWS_SHARED_CREDENTIALS_FILE="${XDG_DATA_HOME}/aws/credentials"
+fi
+#packer
+if command -v packer &>/dev/null; then
+    mkdir -p "${XDG_CACHE_HOME}/packer" "${XDG_CONFIG_HOME}/packer" "${XDG_DATA_HOME}/packer"
+    export PACKER_CACHE_DIR="${XDG_CACHE_HOME}/packer"
+    export PACKER_CONFIG_DIR="${XDG_CONFIG_HOME}/packer"
+    export PACKER_HOME_DIR="${XDG_DATA_HOME}/packer"
+    export PACKER_LOG_PATH="${XDG_DATA_HOME}/packer"
 fi
 
 
