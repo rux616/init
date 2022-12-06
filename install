@@ -571,7 +571,9 @@ EOL
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
                 rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
-            if [[ ${#prereqs[@]} -gt 0 ]]; ${pkg_mgr} install -y ${prereqs[@]}
+            if [[ ${#prereqs[@]} -gt 0 ]]; then
+                ${pkg_mgr} install -y ${prereqs[@]}
+            fi
             latest_tarball="$(curl -sN "https://api.github.com/repos/dandavison/delta/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
             curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
                 tar -xf "${section}.tar.gz" --strip 1 && \
