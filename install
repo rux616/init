@@ -582,6 +582,31 @@ EOL
                 mv -f "etc/completion/completion.bash" "${dir[completions]}/delta"
             cd "${dir[temp]}"
             ;;&
+        muc )
+            # install muc
+            section="muc"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            curl -sSfo "rust_install.sh" "https://sh.rustup.rs"
+            chmod u+x "rust_install.sh"
+            export CARGO_HOME="${PWD}/rust/.cargo"
+            export RUSTUP_HOME="${PWD}/rust/.rustup"
+            ./rust_install.sh -q -y --no-modify-path --default-toolchain stable --profile minimal
+            prereqs_common=( )
+            prereqs_deb=( )
+            prereqs_rpm=( )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            if [[ ${#prereqs[@]} -gt 0 ]]; then
+                ${pkg_mgr} install -y ${prereqs[@]}
+            fi
+            "${PWD}/rust/.cargo/bin/cargo" install --git=https://github.com/nate-sys/muc && \
+                mv -f "${PWD}/rust/.cargo/bin/${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
     esac
 done
 
