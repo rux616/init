@@ -162,6 +162,14 @@ if command -v packer &>/dev/null; then
     export PACKER_HOME_DIR="${XDG_DATA_HOME}/packer"
     export PACKER_LOG_PATH="${XDG_DATA_HOME}/packer"
 fi
+#bat
+if command -v bat &>/dev/null; then
+    export BAT_PAGER="less -MnR"
+fi
+#man
+if command -v man &>/dev/null; then
+    export MANPAGER="less -MnR"
+fi
 
 
 
