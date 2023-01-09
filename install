@@ -12,7 +12,9 @@ section_profiles=(
     alacritty
     alacritty-terminfo
     aws-cli
-    ble.sh
+    bat
+    ble.sh blesh
+    delta
     fzf
     gh-cli
     go
@@ -22,12 +24,15 @@ section_profiles=(
     jsonnet-lint
     keybase
     kubeval
+    most
+    muc
     neovim
     packages
+    packer
     pre-commit
     ssh-config
     ssh-keys
-    terraform packer
+    terraform
     tfswitch
     tmux
     trash-cli
@@ -99,183 +104,6 @@ cd "${dir[temp]}"
 
 for profile in $@; do
     case ${profile} in
-        all | home | work | packages )
-            # install packages
-            echo "installing packages..."
-            mkdir "packages" && cd "packages"
-            case ${family} in
-                deb) ${pkg_mgr} update ;;
-                rhel) ${pkg_mgr} makecache ;;
-            esac
-            packages_common=( git vim curl wget python3 python3-pip unzip sysstat pkg-config htop bash-completion )
-            packages_deb=( apt-file python3-venv )
-            packages_rpm=()
-            packages=( ${packages_common[@]} )
-            case ${family} in
-                deb) packages+=( ${packages_deb[@]} ) ;;
-                rhel) packages+=( ${packages_rpm[@]} ) ;;
-            esac
-            ${pkg_mgr} install -y ${packages[@]}
-            cd "${dir[temp]}"
-            ;;&
-        all | work | google-cloud-sdk )
-            # install google-cloud-sdk
-            section="google-cloud-sdk"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            curl -sLo "gcloud_install.sh" "https://sdk.cloud.google.com/"
-            chmod u+x "gcloud_install.sh"
-            ./gcloud_install.sh --disable-prompts --install-dir="${dir[opt]}"
-            ${dir[opt]}/google-cloud-sdk/bin/gcloud -q components install alpha beta cloud_sql_proxy kubectl
-            ln -sf "${dir[opt]}/google-cloud-sdk/bin/cloud_sql_proxy" "${dir[bin]}/cloud_sql_proxy"
-            ln -sf "${dir[opt]}/google-cloud-sdk/bin/docker-credential-gcloud" "${dir[bin]}/docker-credential-gcloud"
-            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gcloud" "${dir[bin]}/gcloud"
-            ln -sf "${dir[opt]}/google-cloud-sdk/bin/git-credential-gcloud.sh" "${dir[bin]}/git-credential-gcloud.sh"
-            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
-            ln -sf "${dir[opt]}/google-cloud-sdk/bin/kubectl" "${dir[bin]}/kubectl"
-            ln -sf "${dir[opt]}/google-cloud-sdk/completion.bash.inc" "${dir[completions]}/google-cloud-sdk"
-            "${dir[bin]}/kubectl" completion bash >"${dir[completions]}/kubectl"
-            cd "${dir[temp]}"
-            ;;&
-        all | work | terraform )
-            # install terraform
-            section="terraform"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            # put version to be referred to as naked name last
-            versions=( "0.11.14" "0.12.29" "0.12.30" "0.13.6" "0.14.9" )
-            for version in "${versions[@]}"; do
-                curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
-                unzip *
-                rm "${section}_${version}_linux_amd64.zip"
-                mv ${section} "${dir[bin]}/${section}-${version}"
-                ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}-${version%.*}"
-            done
-            ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | packer )
-            # install packer
-            section="packer"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            # put version to be referred to as naked name last
-            versions=( "1.8.4" )
-            for version in "${versions[@]}"; do
-                curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
-                unzip *
-                rm "${section}_${version}_linux_amd64.zip"
-                mv ${section} "${dir[bin]}/${section}-${version}"
-            done
-            ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | keybase )
-            # install keybase
-            echo "installing keybase..."
-            mkdir "keybase" && cd "keybase"
-            if ! command -v keybase &>/dev/null; then
-                case ${family} in
-                    deb) keybase_file="keybase_amd64.deb" ;;
-                    rhel) keybase_file="keybase_amd64.rpm" ;;
-                esac
-                curl -sO "https://prerelease.keybase.io/${keybase_file}"
-                chmod ugo+r "${keybase_file}"
-                ${pkg_mgr} install -y "./${keybase_file}"
-            fi
-            run_keybase -g
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | pre-commit )
-            # install pre-commit
-            echo "installing pre-commit..."
-            mkdir "pre-commit" && cd "pre-commit"
-            python3 -m pip install --user pre-commit
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | ssh-config )
-            # install basic ssh-config
-            echo "installing basic ssh config..."
-            mkdir "ssh-config" && cd "ssh-config"
-            if [[ ! -d "${HOME}/.ssh" ]]; then
-                mkdir -p "${HOME}/.ssh"
-                chmod 700 "${HOME}/.ssh"
-            fi
-            if [[ ! -f "${HOME}/.ssh/config" ]]; then
-                cat >"${HOME}/.ssh/config" << EOL
-Host *
-    CanonicalizeHostname yes
-    PreferredAuthentications publickey
-    ServerAliveInterval 60
-
-Host github.com
-    IdentityFile ~/.ssh/${HOSTNAME}-to-github
-    User rux616
-EOL
-                chmod 644 "${HOME}/.ssh/config"
-            fi
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | ssh-keys )
-            # create some basic ssh keys
-            echo "creating basic ssh keys..."
-            mkdir "ssh-keys" && cd "ssh-keys"
-            names=( "${HOSTNAME}-to-github" )
-            types=( "ed25519" )
-            for ((i=0; i<${#names[@]}; i++)); do
-                if [[ ! -f "${HOME}/.ssh/${names[$i]}" ]]; then
-                    ssh-keygen -q -t ${types[$i]} -C "${USER}@${names[$i]}" -N "" -f "${HOME}/.ssh/${names[$i]}"
-                fi
-            done
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | util-linux )
-            # install the *full* util-linux, which some distros don't seem to have
-            section="util-linux"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            prereqs_common=( autoconf bison libtool automake )
-            prereqs_deb=( autopoint gettext libncurses-dev libpam0g-dev libcap-ng-dev )
-            prereqs_rpm=( gettext-devel ncurses-devel pam-devel libcap-ng-devel )
-            prereqs=( ${prereqs_common[@]} )
-            case ${family} in
-                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
-            esac
-            ${pkg_mgr} install -y ${prereqs[@]}
-            latest_tarball="$(curl -sN "https://api.github.com/repos/util-linux/util-linux/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
-            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
-                tar -xf "${section}.tar.gz" --strip 1 && \
-                ./autogen.sh && \
-                ./configure --prefix="${dir[base]}" && \
-                make && \
-                sudo make install && \
-                sudo chown -R ${USER}:${USER} "${dir[base]}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | tmux )
-            # install tmux
-            section="tmux"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            prereqs_common=( autoconf bison libtool automake )
-            prereqs_deb=( autopoint gettext libncurses-dev libevent-dev )
-            prereqs_rpm=( gettext-devel ncurses-devel libevent-devel )
-            prereqs=( ${prereqs_common[@]} )
-            case ${family} in
-                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
-            esac
-            ${pkg_mgr} install -y ${prereqs[@]}
-            latest_tarball="$(curl -sN "https://api.github.com/repos/tmux/tmux/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
-            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
-                tar -xf "${section}.tar.gz" --strip 1 && \
-                ./autogen.sh && \
-                ./configure --prefix="${dir[base]}" && \
-                make && \
-                make install
-            cd "${dir[temp]}"
-            ;;&
         alacritty )
             # install alacritty
             section="alacritty"
@@ -316,122 +144,49 @@ EOL
                 tic -xe alacritty,alacritty-direct "extra/alacritty.info"
             cd "${dir[temp]}"
             ;;&
-        all | home | work | remote | local | trash-cli )
-            # install trash-cli
-            section="trash-cli"
+        aws-cli | all | home | work )
+            # install aws cli v2
+            section="aws-cli"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
-            latest_tarball="$(curl -sN "https://api.github.com/repos/andreafrancia/trash-cli/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
-            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
-                tar -xf "${section}.tar.gz" --strip 1 && \
-                python3 setup.py install --user
-            mkdir -p "${dir[xdg_data_home]}/Trash"
+            curl -sLo "awscliv2.zip" "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+            unzip awscliv2.zip
+            ./aws/install --update --install-dir "${dir[opt]}/aws-cli" --bin-dir "${dir[bin]}"
             cd "${dir[temp]}"
             ;;&
-        all | work | remote | local | kubeval )
-            # install kubeval
-            section="kubeval"
+        bat | all | home | work )
+            # install bat
+            section="bat"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
-            release_file="${section}-linux-amd64.tar.gz"
-            latest_release="https://github.com/instrumenta/${section}/releases/latest/download/${release_file}"
-            curl -sLO "${latest_release}" && \
-                tar -xf "${release_file}" && \
-                mv -f "${section}" "${dir[bin]}/${section}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | remote | local | vim )
-            # install vim
-            section="vim"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            # TODO --BEGIN--
-            # TODO check what the actual prereqs are
-            # TODO for now, run after installing tmux and/or util-linux
-            #prereqs_common=( autoconf bison libtool automake python3 python3-dev )
-            #prereqs_deb=( autopoint gettext libncurses-dev libncurses5-dev libevent-dev )
-            #prereqs_rpm=( gettext-devel ncurses-devel libevent-devel )
-            #prereqs=( ${prereqs_common[@]} )
-            #case ${family} in
-            #    deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-            #    rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
-            #esac
-            #${pkg_mgr} install -y ${prereqs[@]}
-            # TODO --END--
-            latest_tarball="$(curl -sN "https://api.github.com/repos/vim/vim/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
-            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
-                tar -xf "${section}.tar.gz" --strip 1 && \
-                ./configure \
-                    --with-features=huge \
-                    --enable-python3interp=yes \
-                    --with-python3-config-dir="$(python3-config --configdir)" \
-                    --prefix="${dir[base]}" && \
-                make && \
-                make install
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | jsonnet )
-            # install jsonnet
-            section="jsonnet"
-            repo="google/jsonnet"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            prereqs_common=( make g++ )
-            prereqs_deb=()
-            prereqs_rpm=()
+            curl -sSfo "rust_install.sh" "https://sh.rustup.rs"
+            chmod u+x "rust_install.sh"
+            export CARGO_HOME="${PWD}/rust/.cargo"
+            export RUSTUP_HOME="${PWD}/rust/.rustup"
+            ./rust_install.sh -q -y --no-modify-path --default-toolchain stable --profile minimal
+            prereqs_common=( )
+            prereqs_deb=( )
+            prereqs_rpm=( )
             prereqs=( ${prereqs_common[@]} )
             case ${family} in
                 deb) prereqs+=( ${prereqs_deb[@]} ) ;;
                 rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
             esac
-            ${pkg_mgr} install -y ${prereqs[@]}
-            latest_tarball="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            if [[ ${#prereqs[@]} -gt 0 ]]; then
+                ${pkg_mgr} install -y ${prereqs[@]}
+            fi
+            latest_tarball="$(curl -sN "https://api.github.com/repos/sharkdp/bat/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
             curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
                 tar -xf "${section}.tar.gz" --strip 1 && \
-                make && \
-                PREFIX=${dir[base]} make install
+                "${PWD}/rust/.cargo/bin/cargo" build --release && \
+                mv -f "target/release/${section}" "${dir[bin]}/${section}" && \
+                sed -i "s/{{PROJECT_EXECUTABLE}}/${section}/g" "assets/completions/${section}.bash.in"  "assets/manual/${section}.1.in" && \
+                sed -i "s/{{PROJECT_EXECUTABLE_UPPERCASE}}/${section^^}/g" "assets/manual/${section}.1.in" && \
+                mv -f "assets/completions/${section}.bash.in" "${dir[completions]}/${section}" && \
+                mv -f "assets/manual/${section}.1.in" "${dir[man1]}/${section}.1"
             cd "${dir[temp]}"
             ;;&
-        all | home | work | jd )
-            # install jd
-            section="jd"
-            repo="josephburnett/jd"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
-            export GOPATH="${PWD}"
-            export GOBIN="${GOPATH}/bin"
-            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
-                tar -xf "go.tar.gz" && \
-                go/bin/go install "github.com/${repo}@latest" && \
-                mv -f "bin/${section}" "${dir[bin]}/${section}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | remote | local | neovim )
-            # install neovim
-            section="neovim"
-            repo="neovim/neovim"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            prereqs_common=( ninja-build autoconf libtool automake cmake unzip )
-            prereqs_deb=( gettext libtool-bin g++ pkg-config )
-            prereqs_rpm=( gcc gcc-c++ pkgconfig patch make )
-            prereqs=( ${prereqs_common[@]} )
-            case ${family} in
-                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
-            esac
-            ${pkg_mgr} install -y ${prereqs[@]}
-            latest_tarball="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
-            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
-                tar -xf "${section}.tar.gz" --strip 1 && \
-                make \
-                    CMAKE_BUILD_TYPE=Release \
-                    CMAKE_INSTALL_PREFIX="${dir[base]}" \
-                    install
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | remote | local | ble.sh )
+        ble.sh | blesh | all | home | work | remote | local )
             # install blesh
             section="ble.sh"
             section_actual="blesh"
@@ -451,106 +206,6 @@ EOL
             make all && \
                 make INSDIR="${dir[xdg_data_home]}/${section_actual}" install
             sed -i "s|${dir[temp]}/${section_actual}|release:master|" "${dir[xdg_data_home]}/${section_actual}/ble.sh"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | fzf )
-            # install fzf
-            section="fzf"
-            repo="junegunn/fzf"
-            version="0.28.0"
-            echo "installing ${section} v${version}..."
-            mkdir "${section}" && cd "${section}"
-            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags "https://github.com/golang/go" refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
-            export GOPATH="${PWD}"
-            export GOBIN="${GOPATH}/bin"
-            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
-                tar -xf "go.tar.gz" && \
-                go/bin/go install "github.com/${repo}@${version}" && \
-                cp -f "bin/${section}" "${dir[bin]}/${section}" && \
-                rm -rf "${dir[xdg_data_home]}/fzf/fzf" && \
-                mkdir -p "${dir[xdg_data_home]}/fzf" && \
-                cp -a "$(find "pkg/mod/github.com" -type d -name "${section}*")" "${dir[xdg_data_home]}/fzf/fzf" && \
-                chmod -R u+w "${dir[xdg_data_home]}/fzf"
-                mkdir -p "${dir[man1]}" && \
-                cp -r "${dir[xdg_data_home]}/fzf/fzf/man/man1" "${dir[man]}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | jsonnet-lint )
-            # install jsonnet-lint
-            section="jsonnet-lint"
-            repo="google/go-jsonnet/linter/jsonnet-lint"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
-            export GOPATH="${PWD}"
-            export GOBIN="${GOPATH}/bin"
-            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
-                tar -xf "go.tar.gz" && \
-                go/bin/go install "github.com/${repo}@latest" && \
-                mv -f "bin/${section}" "${dir[bin]}/${section}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | go )
-            # install go
-            section="go"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
-            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz"
-            tar -xf "go.tar.gz"
-            mkdir -p "${dir[opt]}/golang"
-            mv "go" "${dir[opt]}/golang/${latest_go}"
-            ln -fs "${dir[opt]}/golang/${latest_go}/bin/go" "${dir[bin]}/go"
-            ln -fs "${dir[opt]}/golang/${latest_go}/bin/gofmt" "${dir[bin]}/gofmt"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | tfswitch )
-            # install terraform-switcher
-            section="terraform-switcher"
-            repo="warrensbox/terraform-switcher"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
-            export GOPATH="${PWD}"
-            export GOBIN="${GOPATH}/bin"
-            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
-                tar -xf "go.tar.gz" && \
-                go/bin/go install "github.com/${repo}@$(curl -sS "https://api.github.com/repos/${repo}/releases?per_page=1" | jq -r '.[].tag_name')" && \
-                mv -f "bin/${section}" "${dir[bin]}/tfswitch"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | aws-cli )
-            # install aws cli v2
-            section="aws-cli"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            curl -sLo "awscliv2.zip" "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
-            unzip awscliv2.zip
-            ./aws/install --update --install-dir "${dir[opt]}/aws-cli" --bin-dir "${dir[bin]}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | yank )
-            # install 'yank' script
-            section="yank"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            curl -sLo "${section}" "https://github.com/sunaku/home/raw/master/bin/yank" && \
-                chmod u+x "${section}" && \
-                mv -f "${section}" "${dir[bin]}/${section}"
-            cd "${dir[temp]}"
-            ;;&
-        all | home | work | gh-cli )
-            # install github cli
-            section="gh-cli"
-            repo="cli/cli"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            release_file="${section}-linux-amd64.tar.gz"
-            latest_release="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | jq -r '.assets[] | select(.name | test("gh_[0-9.]+_linux_amd64\\.tar\\.gz")).browser_download_url')"
-            curl -sL "${latest_release}" -o "${release_file}" && \
-                tar -xf "${release_file}" --strip 1 && \
-                mv -f bin/* "${dir[bin]}/" && \
-                mv -f share/man/man1/* "${dir[man1]}/"
             cd "${dir[temp]}"
             ;;&
         delta | all | home | work )
@@ -582,6 +237,173 @@ EOL
                 mv -f "etc/completion/completion.bash" "${dir[completions]}/delta"
             cd "${dir[temp]}"
             ;;&
+        fzf | all | home | work )
+            # install fzf
+            section="fzf"
+            repo="junegunn/fzf"
+            version="0.28.0"
+            echo "installing ${section} v${version}..."
+            mkdir "${section}" && cd "${section}"
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags "https://github.com/golang/go" refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            export GOPATH="${PWD}"
+            export GOBIN="${GOPATH}/bin"
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
+                tar -xf "go.tar.gz" && \
+                go/bin/go install "github.com/${repo}@${version}" && \
+                cp -f "bin/${section}" "${dir[bin]}/${section}" && \
+                rm -rf "${dir[xdg_data_home]}/fzf/fzf" && \
+                mkdir -p "${dir[xdg_data_home]}/fzf" && \
+                cp -a "$(find "pkg/mod/github.com" -type d -name "${section}*")" "${dir[xdg_data_home]}/fzf/fzf" && \
+                chmod -R u+w "${dir[xdg_data_home]}/fzf"
+                mkdir -p "${dir[man1]}" && \
+                cp -r "${dir[xdg_data_home]}/fzf/fzf/man/man1" "${dir[man]}"
+            cd "${dir[temp]}"
+            ;;&
+        gh-cli | all | home | work )
+            # install github cli
+            section="gh-cli"
+            repo="cli/cli"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            release_file="${section}-linux-amd64.tar.gz"
+            latest_release="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | jq -r '.assets[] | select(.name | test("gh_[0-9.]+_linux_amd64\\.tar\\.gz")).browser_download_url')"
+            curl -sL "${latest_release}" -o "${release_file}" && \
+                tar -xf "${release_file}" --strip 1 && \
+                mv -f bin/* "${dir[bin]}/" && \
+                mv -f share/man/man1/* "${dir[man1]}/"
+            cd "${dir[temp]}"
+            ;;&
+        go | all | home | work )
+            # install go
+            section="go"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz"
+            tar -xf "go.tar.gz"
+            mkdir -p "${dir[opt]}/golang"
+            mv "go" "${dir[opt]}/golang/${latest_go}"
+            ln -fs "${dir[opt]}/golang/${latest_go}/bin/go" "${dir[bin]}/go"
+            ln -fs "${dir[opt]}/golang/${latest_go}/bin/gofmt" "${dir[bin]}/gofmt"
+            cd "${dir[temp]}"
+            ;;&
+        google-cloud-sdk | all | work )
+            # install google-cloud-sdk
+            section="google-cloud-sdk"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            curl -sLo "gcloud_install.sh" "https://sdk.cloud.google.com/"
+            chmod u+x "gcloud_install.sh"
+            ./gcloud_install.sh --disable-prompts --install-dir="${dir[opt]}"
+            ${dir[opt]}/google-cloud-sdk/bin/gcloud -q components install alpha beta cloud_sql_proxy kubectl
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/cloud_sql_proxy" "${dir[bin]}/cloud_sql_proxy"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/docker-credential-gcloud" "${dir[bin]}/docker-credential-gcloud"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gcloud" "${dir[bin]}/gcloud"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/git-credential-gcloud.sh" "${dir[bin]}/git-credential-gcloud.sh"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/gsutil" "${dir[bin]}/gsutil"
+            ln -sf "${dir[opt]}/google-cloud-sdk/bin/kubectl" "${dir[bin]}/kubectl"
+            ln -sf "${dir[opt]}/google-cloud-sdk/completion.bash.inc" "${dir[completions]}/google-cloud-sdk"
+            "${dir[bin]}/kubectl" completion bash >"${dir[completions]}/kubectl"
+            cd "${dir[temp]}"
+            ;;&
+        jd | all | home | work )
+            # install jd
+            section="jd"
+            repo="josephburnett/jd"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            export GOPATH="${PWD}"
+            export GOBIN="${GOPATH}/bin"
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
+                tar -xf "go.tar.gz" && \
+                go/bin/go install "github.com/${repo}@latest" && \
+                mv -f "bin/${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        jsonnet | all | home | work )
+            # install jsonnet
+            section="jsonnet"
+            repo="google/jsonnet"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( make g++ )
+            prereqs_deb=()
+            prereqs_rpm=()
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                make && \
+                PREFIX=${dir[base]} make install
+            cd "${dir[temp]}"
+            ;;&
+        jsonnet-lint | all | home | work )
+            # install jsonnet-lint
+            section="jsonnet-lint"
+            repo="google/go-jsonnet/linter/jsonnet-lint"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            export GOPATH="${PWD}"
+            export GOBIN="${GOPATH}/bin"
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
+                tar -xf "go.tar.gz" && \
+                go/bin/go install "github.com/${repo}@latest" && \
+                mv -f "bin/${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        keybase | all | home | work )
+            # install keybase
+            echo "installing keybase..."
+            mkdir "keybase" && cd "keybase"
+            if ! command -v keybase &>/dev/null; then
+                case ${family} in
+                    deb) keybase_file="keybase_amd64.deb" ;;
+                    rhel) keybase_file="keybase_amd64.rpm" ;;
+                esac
+                curl -sO "https://prerelease.keybase.io/${keybase_file}"
+                chmod ugo+r "${keybase_file}"
+                ${pkg_mgr} install -y "./${keybase_file}"
+            fi
+            run_keybase -g
+            cd "${dir[temp]}"
+            ;;&
+        kubeval | all | work | remote | local )
+            # install kubeval
+            section="kubeval"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            release_file="${section}-linux-amd64.tar.gz"
+            latest_release="https://github.com/instrumenta/${section}/releases/latest/download/${release_file}"
+            curl -sLO "${latest_release}" && \
+                tar -xf "${release_file}" && \
+                mv -f "${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+#        most )
+#            # install most
+#            section="most"
+#            echo "installing ${section}..."
+#            mkdir "${section}" && cd "${section}"
+#            prereqs_common=( make g++ )
+#            prereqs_deb=()
+#            prereqs_rpm=()
+#            prereqs=( ${prereqs_common[@]} )
+#            case ${family} in
+#                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+#                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+#            esac
+#            ${pkg_mgr} install -y ${prereqs[@]}
+#            most_version="5.2.0"
+#            curl -sSfo "${section}.tar.gz" "https://www.jedsoft.org/releases/${section}/${section}-${most_version}.tar.gz"
+#            cd "${dir[temp]}"
+#            ;;&
         muc )
             # install muc
             section="muc"
@@ -605,6 +427,248 @@ EOL
             fi
             "${PWD}/rust/.cargo/bin/cargo" install --git=https://github.com/nate-sys/muc && \
                 mv -f "${PWD}/rust/.cargo/bin/${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        neovim | all | home | work | remote | local )
+            # install neovim
+            section="neovim"
+            repo="neovim/neovim"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( ninja-build autoconf libtool automake cmake unzip )
+            prereqs_deb=( gettext libtool-bin g++ pkg-config )
+            prereqs_rpm=( gcc gcc-c++ pkgconfig patch make )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/${repo}/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                make \
+                    CMAKE_BUILD_TYPE=Release \
+                    CMAKE_INSTALL_PREFIX="${dir[base]}" \
+                    install
+            cd "${dir[temp]}"
+            ;;&
+        packages | all | home | work )
+            # install packages
+            echo "installing packages..."
+            mkdir "packages" && cd "packages"
+            case ${family} in
+                deb) ${pkg_mgr} update ;;
+                rhel) ${pkg_mgr} makecache ;;
+            esac
+            packages_common=( git vim curl wget python3 python3-pip unzip sysstat pkg-config htop bash-completion )
+            packages_deb=( apt-file python3-venv )
+            packages_rpm=()
+            packages=( ${packages_common[@]} )
+            case ${family} in
+                deb) packages+=( ${packages_deb[@]} ) ;;
+                rhel) packages+=( ${packages_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${packages[@]}
+            cd "${dir[temp]}"
+            ;;&
+        packer | all | home | work )
+            # install packer
+            section="packer"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            # put version to be referred to as naked name last
+            versions=( "1.8.4" )
+            for version in "${versions[@]}"; do
+                curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
+                unzip *
+                rm "${section}_${version}_linux_amd64.zip"
+                mv ${section} "${dir[bin]}/${section}-${version}"
+            done
+            ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        pre-commit | all | home | work )
+            # install pre-commit
+            echo "installing pre-commit..."
+            mkdir "pre-commit" && cd "pre-commit"
+            python3 -m pip install --user pre-commit
+            cd "${dir[temp]}"
+            ;;&
+        ssh-config | all | home | work )
+            # install basic ssh-config
+            echo "installing basic ssh config..."
+            mkdir "ssh-config" && cd "ssh-config"
+            if [[ ! -d "${HOME}/.ssh" ]]; then
+                mkdir -p "${HOME}/.ssh"
+                chmod 700 "${HOME}/.ssh"
+            fi
+            if [[ ! -f "${HOME}/.ssh/config" ]]; then
+                cat >"${HOME}/.ssh/config" << EOL
+Host *
+    CanonicalizeHostname yes
+    PreferredAuthentications publickey
+    ServerAliveInterval 60
+
+Host github.com
+    IdentityFile ~/.ssh/${HOSTNAME}-to-github
+    User rux616
+EOL
+                chmod 644 "${HOME}/.ssh/config"
+            fi
+            cd "${dir[temp]}"
+            ;;&
+        ssh-keys | all | home | work )
+            # create some basic ssh keys
+            echo "creating basic ssh keys..."
+            mkdir "ssh-keys" && cd "ssh-keys"
+            names=( "${HOSTNAME}-to-github" )
+            types=( "ed25519" )
+            for ((i=0; i<${#names[@]}; i++)); do
+                if [[ ! -f "${HOME}/.ssh/${names[$i]}" ]]; then
+                    ssh-keygen -q -t ${types[$i]} -C "${USER}@${names[$i]}" -N "" -f "${HOME}/.ssh/${names[$i]}"
+                fi
+            done
+            cd "${dir[temp]}"
+            ;;&
+        terraform | all | work )
+            # install terraform
+            section="terraform"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            # put version to be referred to as naked name last
+            versions=( "0.11.14" "0.12.29" "0.12.30" "0.13.6" "0.14.9" )
+            for version in "${versions[@]}"; do
+                curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
+                unzip *
+                rm "${section}_${version}_linux_amd64.zip"
+                mv ${section} "${dir[bin]}/${section}-${version}"
+                ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}-${version%.*}"
+            done
+            ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        tfswitch | all | home | work )
+            # install terraform-switcher
+            section="terraform-switcher"
+            repo="warrensbox/terraform-switcher"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            [[ -z ${latest_go} ]] && latest_go=$(git ls-remote --tags https://github.com/golang/go refs/tags/go* | awk -F '/' '{print $NF}' | sort -V | tail -n 1)
+            export GOPATH="${PWD}"
+            export GOBIN="${GOPATH}/bin"
+            curl -sLo "go.tar.gz" "https://dl.google.com/go/${latest_go}.linux-amd64.tar.gz" && \
+                tar -xf "go.tar.gz" && \
+                go/bin/go install "github.com/${repo}@$(curl -sS "https://api.github.com/repos/${repo}/releases?per_page=1" | jq -r '.[].tag_name')" && \
+                mv -f "bin/${section}" "${dir[bin]}/tfswitch"
+            cd "${dir[temp]}"
+            ;;&
+        tmux | all | home | work )
+            # install tmux
+            section="tmux"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( autoconf bison libtool automake )
+            prereqs_deb=( autopoint gettext libncurses-dev libevent-dev )
+            prereqs_rpm=( gettext-devel ncurses-devel libevent-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/tmux/tmux/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                ./autogen.sh && \
+                ./configure --prefix="${dir[base]}" && \
+                make && \
+                make install
+            cd "${dir[temp]}"
+            ;;&
+        trash-cli | all | home | work | remote | local )
+            # install trash-cli
+            section="trash-cli"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( python3-pip )
+            prereqs_deb=()
+            prereqs_rpm=()
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/andreafrancia/trash-cli/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                python3 setup.py install --user
+            mkdir -p "${dir[xdg_data_home]}/Trash"
+            cd "${dir[temp]}"
+            ;;&
+        util-linux | all | home | work )
+            # install the *full* util-linux, which some distros don't seem to have
+            section="util-linux"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( autoconf bison libtool automake )
+            prereqs_deb=( autopoint gettext libncurses-dev libpam0g-dev libcap-ng-dev )
+            prereqs_rpm=( gettext-devel ncurses-devel pam-devel libcap-ng-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            latest_tarball="$(curl -sN "https://api.github.com/repos/util-linux/util-linux/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                ./autogen.sh && \
+                ./configure --prefix="${dir[base]}" && \
+                make && \
+                sudo make install && \
+                sudo chown -R ${USER}:${USER} "${dir[base]}"
+            cd "${dir[temp]}"
+            ;;&
+        vim | all | home | work | remote | local )
+            # install vim
+            section="vim"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            # TODO --BEGIN--
+            # TODO check what the actual prereqs are
+            # TODO for now, run after installing tmux and/or util-linux
+            #prereqs_common=( autoconf bison libtool automake python3 python3-dev )
+            #prereqs_deb=( autopoint gettext libncurses-dev libncurses5-dev libevent-dev )
+            #prereqs_rpm=( gettext-devel ncurses-devel libevent-devel )
+            #prereqs=( ${prereqs_common[@]} )
+            #case ${family} in
+            #    deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+            #    rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            #esac
+            #${pkg_mgr} install -y ${prereqs[@]}
+            # TODO --END--
+            latest_tarball="$(curl -sN "https://api.github.com/repos/vim/vim/tags" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                ./configure \
+                    --with-features=huge \
+                    --enable-python3interp=yes \
+                    --with-python3-config-dir="$(python3-config --configdir)" \
+                    --prefix="${dir[base]}" && \
+                make && \
+                make install
+            cd "${dir[temp]}"
+            ;;&
+        yank | all | home | work )
+            # install 'yank' script
+            section="yank"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            curl -sLo "${section}" "https://github.com/sunaku/home/raw/master/bin/yank" && \
+                chmod u+x "${section}" && \
+                mv -f "${section}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
     esac
