@@ -117,8 +117,8 @@ fi
 #docker
 if command -v docker &>/dev/null; then
     export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
-    # check if running in a WSL2 environment
-    if $(uname -r | grep -iq "microsoft"); then
+    # check if running in a WSL2 environment and systemd is NOT enabled
+    if $(uname -r | grep -iq "microsoft") && ! $(grep -siq "^systemd *= *true$" "/etc/wsl.conf"); then
         DOCKER_DISTRO="${WSL_DISTRO_NAME}"
         DOCKER_DIR="/mnt/wsl/shared-docker"
         DOCKER_SOCK="${DOCKER_DIR}/docker.sock"
