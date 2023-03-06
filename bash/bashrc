@@ -55,6 +55,11 @@ if [[ -e "${HOME}/.cargo/bin/rustc" ]]; then
     export PATH="${HOME}/.cargo/bin${PATH:+":${PATH}"}"
 fi
 
+# if go is installed, add the gopath bin directory to PATH
+if command -v go &>/dev/null && [[ -e "$(go env GOPATH)" ]]; then
+    export PATH="$(go env GOPATH)/bin${PATH:+":${PATH}"}"
+fi
+
 
 
 # ------------------- #
