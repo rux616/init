@@ -33,6 +33,7 @@ section_profiles=(
     ssh-config
     ssh-keys
     terraform
+    terraform-docs
     tfswitch
     tmux
     trash-cli
@@ -564,6 +565,19 @@ EOL
                 ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}-${version%.*}"
             done
             ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        terraform-docs | all | work )
+            # install terraform-docs
+            section="terraform-docs"
+            repo="terraform-docs/terraform-docs"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            version="$(curl -sS "https://api.github.com/repos/${repo}/releases?per_page=1" | jq -r '.[].tag_name')"
+            curl -sLo "terraform-docs.tar.gz" "https://github.com/${repo}/releases/download/${version}/terraform-docs-${version}-$(uname)-amd64.tar.gz" && \
+                tar -xzf "terraform-docs.tar.gz" && \
+                chmod +x "terraform-docs" && \
+                mv -f "terraform-docs" "${dir[bin]}/terraform-docs"
             cd "${dir[temp]}"
             ;;&
         tfswitch | all | home | work )
