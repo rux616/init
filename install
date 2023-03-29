@@ -9,6 +9,7 @@ source "${source_dir}/.defaults.sh"
 # TODO add docker
 
 section_profiles=(
+    act
     alacritty
     alacritty-terminfo
     aws-cli
@@ -108,6 +109,19 @@ cd "${dir[temp]}"
 
 for profile in $@; do
     case ${profile} in
+        act | all | home | work )
+            # install act
+            section="act"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            current_release="$(curl -sN https://api.github.com/repos/nektos/act/releases/latest | jq -r --arg kernel "$(uname -s)" --arg machine "$(uname -m)" '.assets[] | select(.name == "act_" + $kernel + "_" + $machine + ".tar.gz") | .browser_download_url')"
+            bin_name="act"
+            curl -fsLo "act.tar.gz" "${current_release}" && \
+                tar -x "${bin_name}" -f "act.tar.gz" && \
+                chmod u+x "${bin_name}" && \
+                mv -f "${bin_name}" "${dir[bin]}/${bin_name}"
+            cd "${dir[temp]}"
+            ;;&
         alacritty )
             # install alacritty
             section="alacritty"
