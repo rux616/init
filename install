@@ -28,6 +28,7 @@ section_profiles=(
     most
     muc
     neovim
+    nmap
     packages
     packer
     pre-commit
@@ -484,6 +485,30 @@ for profile in $@; do
                     CMAKE_BUILD_TYPE=Release \
                     CMAKE_INSTALL_PREFIX="${dir[base]}" \
                     install
+            cd "${dir[temp]}"
+            ;;&
+        nmap | all | home | work )
+            # install nmap
+            section="nmap"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            prereqs_common=( ca-certificates subversion gcc python3 make g++ autoconf )
+            prereqs_deb=( libssh2-1-dev libssl-dev )
+            prereqs_rpm=( libssh2-devel openssl-devel )
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
+            svn checkout https://svn.nmap.org/nmap/ . && \
+                mkdir -p install/local/share && \
+                ./configure --prefix "${PWD}/install" --exec-prefix "${PWD}/install/local"  --datarootdir "${PWD}/install/local/share" && \
+                make && \
+                make install && \
+                cp -r "install/local/bin/"* "${dir[bin]}" && \
+                cp -r "install/local/lib/"* "${dir[lib]}" && \
+                cp -r "install/local/share/"* "${dir[share]}"
             cd "${dir[temp]}"
             ;;&
         packages | all | home | work )
