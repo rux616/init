@@ -115,17 +115,22 @@ function git-merge-from() {
     [[ $# -lt 1 || $1 =~ -h|--help ]] && { printf "usage: git-merge-from <branch-name>\n"; return 1; }
 
     branch="${1:-"main"}"
+    current_branch="$(git rev-parse --abbrev-ref HEAD)"
 
     if git branch --no-color 2>/dev/null | grep "^* ${branch}$" >/dev/null; then
         printf "can't merge from ${branch} to ${branch}!\n"
         return 2
+    fi
+    if [[ -z "${current_branch}" ]]; then
+        printf "can't merge into non-existent branch!\n"
+        return 3
     fi
 
     git fetch --tags --all --prune && \
         git checkout "${branch}" && \
         git pull && \
         git checkout - && \
-        git merge "${branch}" -m "merge from ${branch}"
+        git merge "${branch}" -m "Merge branch '${branch}' into ${current_branch}"
 }
 
 function git-rebase-onto() {
