@@ -42,6 +42,7 @@ section_profiles=(
     util-linux
     vim
     yank
+    yq
 )
 meta_profiles=(
     all
@@ -740,6 +741,24 @@ EOL
             curl -sLo "${section}" "https://github.com/sunaku/home/raw/master/bin/yank" && \
                 chmod u+x "${section}" && \
                 mv -f "${section}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        yq | all | home | work )
+            # install yq
+            section="yq"
+            echo "Installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            system_type="$(uname -s)"
+            system_type="${system_type,,}"
+            machine_type="$(uname -m)"
+            if [[ "${machine_type}" == "x86_64" ]]; then machine_type="amd64"; fi
+            release_name="${section}_${system_type}_${machine_type}"
+            release_file_type=".tar.gz"
+            release_file="${release_name}${release_file_type}"
+            curl -sLo "${release_file}" "https://github.com/mikefarah/${section}/releases/latest/download/${release_file}" && \
+                tar -xf "${release_file}" && \
+                cp -f "${section}.1" "${dir[man1]}" && \
+                cp -f "${release_name}" "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
     esac
