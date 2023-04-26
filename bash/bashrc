@@ -160,6 +160,11 @@ if command -v aws &>/dev/null; then
     export AWS_CONFIG_FILE="${XDG_CONFIG_HOME}/aws/config"
     export AWS_SHARED_CREDENTIALS_FILE="${XDG_DATA_HOME}/aws/credentials"
 fi
+#aws-sso
+if command -v aws-sso &>/dev/null; then
+    mkdir -p "${XDG_CONFIG_HOME}/aws-sso"
+    export AWS_SSO_CONFIG="${XDG_CONFIG_HOME}/aws-sso/config.yaml"
+fi
 #packer
 if command -v packer &>/dev/null; then
     mkdir -p "${XDG_CACHE_HOME}/packer" "${XDG_CONFIG_HOME}/packer" "${XDG_DATA_HOME}/packer"
