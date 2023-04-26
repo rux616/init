@@ -12,7 +12,8 @@ section_profiles=(
     act
     alacritty
     alacritty-terminfo
-    aws-cli
+    aws aws-cli
+    aws-sso aws-sso-cli
     bat
     ble.sh blesh
     delta
@@ -164,7 +165,7 @@ for profile in $@; do
                 tic -xe alacritty,alacritty-direct "extra/alacritty.info"
             cd "${dir[temp]}"
             ;;&
-        aws-cli | all | home | work )
+        aws | aws-cli | all | home | work )
             # install aws cli v2
             section="aws-cli"
             echo "installing ${section}..."
@@ -172,6 +173,22 @@ for profile in $@; do
             curl -sLo "awscliv2.zip" "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
             unzip awscliv2.zip
             ./aws/install --update --install-dir "${dir[opt]}/aws-cli" --bin-dir "${dir[bin]}"
+            cd "${dir[temp]}"
+            ;;&
+        aws-sso | aws-sso-cli | all | home | work )
+            # install aws-sso cli
+            section="aws-sso"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            repo_name="synfinatic/${section}-cli"
+            system_type="$(uname -s)"
+            system_type="${system_type,,}"
+            machine_type="$(uname -m)"
+            if [[ "${machine_type}" == "x86_64" ]]; then machine_type="amd64"; fi
+            latest_release="$(curl -sN "https://api.github.com/repos/${repo_name}/releases/latest" | jq -r --arg system "${system_type}" --arg arch "${machine_type}" '.assets[] | select(.name | contains($system + "-" + $arch)) | .browser_download_url')"
+            curl -sLo "${section}" "${latest_release}" && \
+                cp -f "${section}" "${dir[bin]}/${section}" && \
+                chmod 755 "${dir[bin]}/${section}"
             cd "${dir[temp]}"
             ;;&
         bat | all | home | work )
