@@ -477,7 +477,7 @@ function tf-enable() {
 }
 
 function tf-init() {
-    \rm -rf "./.terraform" && \rm -f "./.terraform.lock.hcl" && tf init
+    \rm -rf "./.terraform" && \rm -f "./.terraform.lock.hcl" && tf init "$@"
 }
 
 function tf-taint-module() {
