@@ -14,6 +14,7 @@ section_profiles=(
     alacritty-terminfo
     aws aws-cli
     aws-sso aws-sso-cli
+    aws-sso-creds
     bat
     ble.sh blesh
     delta
@@ -170,6 +171,15 @@ for profile in $@; do
             section="aws-cli"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
+            prereqs_common=()
+            prereqs_deb=( unzip )
+            prereqs_rpm=()
+            prereqs=( ${prereqs_common[@]} )
+            case ${family} in
+                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
+                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
+            esac
+            ${pkg_mgr} install -y ${prereqs[@]}
             curl -sLo "awscliv2.zip" "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
             unzip awscliv2.zip
             ./aws/install --update --install-dir "${dir[opt]}/aws-cli" --bin-dir "${dir[bin]}"
@@ -187,6 +197,23 @@ for profile in $@; do
             if [[ "${machine_type}" == "x86_64" ]]; then machine_type="amd64"; fi
             latest_release="$(curl -sN "https://api.github.com/repos/${repo_name}/releases/latest" | jq -r --arg system "${system_type}" --arg arch "${machine_type}" '.assets[] | select(.name | contains($system + "-" + $arch)) | .browser_download_url')"
             curl -sLo "${section}" "${latest_release}" && \
+                cp -f "${section}" "${dir[bin]}/${section}" && \
+                chmod 755 "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        aws-sso-creds | all | home | work )
+            # install aws-sso-creds
+            section="aws-sso-creds"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            repo_name="jaxxstorm/aws-sso-creds"
+            system_type="$(uname -s)"
+            system_type="${system_type,,}"
+            machine_type="$(uname -m)"
+            if [[ "${machine_type}" == "x86_64" ]]; then machine_type="amd64"; fi
+            latest_release="$(curl -sN "https://api.github.com/repos/${repo_name}/releases/latest" | jq -r --arg system "${system_type}" --arg arch "${machine_type}" '.assets[] | select(.name | contains($system + "-" + $arch)) | .browser_download_url')"
+            curl -sLo "${section}.tar.gz" "${latest_release}" && \
+                tar -xf "${section}.tar.gz" && \
                 cp -f "${section}" "${dir[bin]}/${section}" && \
                 chmod 755 "${dir[bin]}/${section}"
             cd "${dir[temp]}"
@@ -554,7 +581,7 @@ for profile in $@; do
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             # put version to be referred to as naked name last
-            versions=( "1.8.4" )
+            versions=( "1.9.1" )
             for version in "${versions[@]}"; do
                 curl -sO "https://releases.hashicorp.com/${section}/${version}/${section}_${version}_linux_amd64.zip"
                 unzip *
