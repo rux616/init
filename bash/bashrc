@@ -171,7 +171,7 @@ if command -v packer &>/dev/null; then
     export PACKER_CACHE_DIR="${XDG_CACHE_HOME}/packer"
     export PACKER_CONFIG_DIR="${XDG_CONFIG_HOME}/packer"
     export PACKER_HOME_DIR="${XDG_DATA_HOME}/packer"
-    export PACKER_LOG_PATH="${XDG_DATA_HOME}/packer"
+    export PACKER_LOG_PATH="${XDG_DATA_HOME}/packer/packer.log"
 fi
 #bat
 if command -v bat &>/dev/null; then
