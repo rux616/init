@@ -119,18 +119,37 @@ function git-merge-from() {
 
     if git branch --no-color 2>/dev/null | grep "^* ${branch}$" >/dev/null; then
         printf "can't merge from ${branch} to ${branch}!\n"
-        return 2
+        return 1
     fi
     if [[ -z "${current_branch}" ]]; then
         printf "can't merge into non-existent branch!\n"
-        return 3
+        return 1
     fi
 
-    git fetch --tags --all --prune && \
-        git checkout "${branch}" && \
-        git pull && \
-        git checkout - && \
-        git merge "${branch}" -m "Merge branch '${branch}' into ${current_branch}"
+    if ! git fetch --tags --all --prune; then
+        return 1
+    fi
+    if ! git stash push -m "temp stash while executing 'git-merge-from ${branch}' at $(date)"; then
+        return 1
+    fi
+    if ! git checkout "${branch}"; then
+        return 1
+    fi
+    if ! git pull; then
+        git checkout "${current_branch}"
+        return 1
+    fi
+    if ! git checkout -; then
+        git checkout "${current_branch}"
+        return 1
+    fi
+    if ! git merge "${branch}" -m "Merge branch '${branch}' into ${current_branch}"; then
+        git checkout "${current_branch}"
+        return 1
+    fi
+    if ! git stash pop; then
+        return 1
+    fi
 }
 
 function git-rebase-onto() {
