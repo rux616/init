@@ -480,20 +480,6 @@ function tf-disable() {
     done
 }
 
-function tf-docs() {
-    if [[ ! -e "./backend.tf" ]]; then
-        touch "./backend.tf"
-    fi
-
-    "${1:-"${HOME}/src/github.com/descarteslabs/devops/tools/terraform-docs/update-tf-docs"}" .
-
-    if [[ -s "./backend.tf" ]]; then
-        return
-    else
-        \rm -f "./backend.tf"
-    fi
-}
-
 function tf-enable() {
     # Remove ".disabled" suffix from passed terraform files (*.tf, *.tfvars)
     for file in $@; do
