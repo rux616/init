@@ -425,9 +425,11 @@ function myupdate() {
 if ls --color -d . >/dev/null 2>&1; then  # GNU ls
     unalias ls &>/dev/null
     export COLUMNS  # Remember columns for subprocesses.
-    [[ "${TERM}" == "alacritty" ]] \
-        && eval "$(TERM=xterm dircolors "${XDG_CONFIG_HOME}/bash/dircolors")" \
-        || eval "$(dircolors "${XDG_CONFIG_HOME}/bash/dircolors")"
+    if [[ "${TERM}" == "alacritty" ]]; then
+        eval "$(TERM=xterm dircolors "${XDG_CONFIG_HOME}/bash/dircolors")"
+    else
+        eval "$(dircolors "${XDG_CONFIG_HOME}/bash/dircolors")"
+    fi
     function ls {
         command ls -F -h --color=always -v --author --time-style=long-iso -C "$@" | LESS="" less -R -X -F
     }
