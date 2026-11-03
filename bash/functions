@@ -493,11 +493,11 @@ function tf-init() {
 }
 
 function tf-taint-module() {
-    tf state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform taint '{}'
+    tf state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 tf -- taint '{}'
 }
 
 function tf-untaint-module() {
-    tf state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 terraform untaint '{}'
+    tf state list | grep -e "^module\.${1}" | grep -v "\.data\." | xargs -d '\n' -I '{}' -n 1 tf -- untaint '{}'
 }
 
 function tz_trimmed() {
