@@ -169,7 +169,7 @@ function git-rebase-onto() {
         git rebase "${branch}"
 }
 
-# grep that displays the first line (indended to be for a header) as well
+# grep that displays the first line (intended to be for a header) as well
 # https://stackoverflow.com/a/9969881
 function hgrep() {
     awk -v pattern="${1:?pattern is empty}" 'NR==1 || $0~pattern' "${2:-/dev/stdin}"
