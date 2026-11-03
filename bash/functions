@@ -13,20 +13,20 @@ function cd() {
     else
         local dir="${1}"
         # check if user wants to go up to git repo root
-        if [[ ${dir} =~ ^%(/.*|$) ]]; then
+        if [[ ${dir} =~ ^%(/.*|$) && ! -d '%' ]]; then
             dir="$(git root)${dir#\%}"
         # handle '-' special "directory"
         elif [[ "${dir}" == "-" ]]; then
             dir="${OLDPWD}"
-            printf "%s\n" "${dir}"
+            echo "${dir}"
         fi
-        # if file exists and is not a directory
+        # file exists and is not a directory
         if [[ -e ${dir} && ! -d ${dir} ]]; then
-            printf "'%s' is a file; cd-ing to parent directory\n" "${dir}"
+            echo "\"${dir}\" is a file; changing directory to parent instead"
             dir="$(dirname "${dir}")"
-        # if file does not exist but the parent directory does
+        # file does not exist but the parent directory does
         elif [[ ! -e ${dir} && -d $(dirname "${dir}") ]]; then
-            printf "'%s' does not exist; cd-ing to parent directory\n" "${dir}"
+            echo "\"${dir}\" does not exist; changing directory to parent instead"
             dir="$(dirname "${dir}")"
         fi
         builtin cd "${dir}"
