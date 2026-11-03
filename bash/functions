@@ -436,22 +436,27 @@ if ls --color -d . >/dev/null 2>&1; then  # GNU ls
 fi
 
 function tf() {
-    local tfswitch_bin
-
-    if command -v tfswitch >/dev/null; then
-        if ${IS_WSL}; then
-            tfswitch_bin="PATH=\"\" \"${HOME}/.local/bin/tfswitch\""
-        else
-            tfswitch_bin="tfswitch"
-        fi
-        if ! eval "${tfswitch_bin}" -b "${HOME}/.local/bin/terraform"; then
-            printf "\ntfswitch failed; attempting to run with existing terraform binary\n\n"
-        else
-            printf "\n"
+    if [[ $1 = "--" ]]; then
+        # remove the "--" argument and skip calling tfswitch
+        shift
+    else
+        if command -v tfswitch &>/dev/null; then
+            if ! tfswitch; then
+                printf "\ntfswitch failed; attempting to run with existing terraform/opentofu binary\n\n"
+            else
+                printf "\n"
+            fi
         fi
     fi
 
-    terraform "$@"
+    # preferentially use opentofu if the binary is found or there's a tofu file
+    if command -v tofu &>/dev/null || find . -maxdepth 1 -type f -name '*.tofu' | grep . &>/dev/null; then
+        tofu "$@"
+    elif command -v terraform &>/dev/null; then
+        terraform "$@"
+    else
+        printf "no terraform/opentofu binaries found\n"
+    fi
 }
 
 function tf-cleanse() {
