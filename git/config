@@ -6,7 +6,7 @@
 [diff]
 	wsErrorHighlight = all
 [alias]
-	root = !pwd
+	root = "rev-parse --show-toplevel"
 [init]
 	defaultBranch = main
 [core]
