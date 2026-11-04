@@ -15,6 +15,7 @@ elif [[ "$(uname)" == "Linux" ]]; then
     else
         SYSTEMLOG="/var/log/messages"
     fi
+    # shellcheck disable=SC2139  # intentionally expand variable during alias definition
     alias taillog="sudo tail -f -n 20 $SYSTEMLOG"
 elif [[ "$(uname)" == "FreeBSD" ]]; then
     # FreeBSD
@@ -30,6 +31,7 @@ fi
 #wget
 if command -v wget &>/dev/null; then
     mkdir -p "${XDG_CACHE_HOME}/wget"
+    # shellcheck disable=SC2139  # intentionally expand variable during alias definition
     alias wget="wget --hsts-file=\"${XDG_CACHE_HOME}/wget/wget-hsts\""
 fi
 #trash-cli

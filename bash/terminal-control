@@ -1,3 +1,7 @@
+#!/bin/usr/env bash
+# shellcheck disable=SC2034  # this file is meant to be sourced, so variables in here won't be used
+
+
 # Terminal output control (http://www.termsys.demon.co.uk/vtansi.htm)
 
 TC='\e['

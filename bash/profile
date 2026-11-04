@@ -1,3 +1,5 @@
+#!/bin/usr/env bash
+
 # default bare-bones 'just in case' profile
 # based off ubuntu 18.04 LTS's /etc/skel/.profile
 umask 0077
@@ -6,7 +8,8 @@ umask 0077
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
+        # shellcheck disable=SC1091  # intentionally non-constant, and may not exist
+	    . "$HOME/.bashrc"
     fi
 fi
 

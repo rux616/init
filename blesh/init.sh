@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # ble.sh manual: https://github.com/akinomyoga/ble.sh/wiki
 
 
@@ -32,7 +34,7 @@ function my/complete-load-hook {
   # https://github.com/akinomyoga/ble.sh/wiki/Manual-%C2%A77-Completion#719-readline-variable-completion-ignore-case
   bind 'set completion-ignore-case on'
 
-  # add siffixes to filename completions
+  # add suffixes to filename completions
   # https://github.com/akinomyoga/ble.sh/wiki/Manual-%C2%A77-Completion#7111-readline-variable-visible-stats
   bind 'set visible-stats on'
 }

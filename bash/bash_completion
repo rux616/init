@@ -15,8 +15,8 @@ _backup_glob='@(#*#|*@(~|.@(bak|orig|rej|swp|dpkg*|rpm@(orig|new|save))))'
 completions_dir="${BASH_COMPLETION_USER_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion}/completions"
 if [[ -d $completions_dir && -r $completions_dir && -x $completions_dir ]]; then
     for i in "$completions_dir"/*; do
-        [[ ${i##*/} != @($_backup_glob|Makefile*|$_blacklist_glob) \
-            && -f $i && -r $i ]] && . "$i"
+        # shellcheck disable=SC1090  # we want to source files dynamically, so we can't use a static path
+        [[ ${i##*/} != @($_backup_glob|Makefile*|$_blacklist_glob) && -f $i && -r $i ]] && . "$i"
     done
 fi
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034  # these are meant to be used elsewhere
 
 declare -A default
 

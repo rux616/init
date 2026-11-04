@@ -14,6 +14,7 @@ umask 0077
 # -------------------- #
 
 if [[ -f "/etc/bashrc" ]]; then
+    # shellcheck disable=SC1091  # file may or may not exist
     source "/etc/bashrc"
 fi
 
@@ -38,6 +39,7 @@ if [[ $- == *i* && -f "${XDG_DATA_HOME}/blesh/ble.sh" ]]; then
     # or ble.sh's side, but alacritty seems to work decently with the xterm-256color profile, so
     # setting that in the meantime
     [[ $TERM == alacritty ]] && export TERM=xterm-256color
+    # shellcheck disable=SC1091  # isn't guaranteed to exist
     source "${XDG_DATA_HOME}/blesh/ble.sh"
 fi
 
@@ -57,7 +59,8 @@ fi
 
 # if go is installed, add the gopath bin directory to PATH
 if command -v go &>/dev/null && [[ -e "$(go env GOPATH)" ]]; then
-    export PATH="$(go env GOPATH)/bin${PATH:+":${PATH}"}"
+    temp_var="$(go env GOPATH)/bin${PATH:+":${PATH}"}"
+    export PATH="${temp_var}"
 fi
 
 
@@ -67,6 +70,7 @@ fi
 # ------------------- #
 
 if [[ -r "${XDG_CONFIG_HOME}/bash/functions" ]]; then
+    # shellcheck source=./functions
     source "${XDG_CONFIG_HOME}/bash/functions"
 fi
 
@@ -110,13 +114,14 @@ export TERMINFO="${XDG_DATA_HOME}/terminfo"
 export TERMINFO_DIRS="${XDG_DATA_HOME}/terminfo:/usr/share/terminfo"
 #less
 if command -v less &>/dev/null; then
-    mkdir -p "${XDG_DATA_HOME}/less"
+    [[ ! -d "${XDG_DATA_HOME}/less" ]] && mkdir -p "${XDG_DATA_HOME}/less"
     export LESS="-MNR"
     export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
     export LESSHISTFILE="${XDG_DATA_HOME}/less/history"
 fi
 #gnupg
 if command -v gpg &>/dev/null; then
+    [[ ! -d "${XDG_DATA_HOME}/gnupg" ]] && mkdir -p "${XDG_DATA_HOME}/gnupg"
     export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
 fi
 #docker
@@ -124,12 +129,13 @@ if command -v docker &>/dev/null; then
     export DOCKER_CONFIG="${XDG_CONFIG_HOME}/docker"
     export DOCKER_BUILDKIT=1
     # check if running in a WSL2 environment and systemd is NOT enabled
-    if $(uname -r | grep -iq "microsoft") && ! $(grep -siq "^systemd *= *true$" "/etc/wsl.conf"); then
+    if uname -r | grep -iq "microsoft" &>/dev/null && ! grep -siq "^systemd *= *true$" "/etc/wsl.conf" &>/dev/null; then
         DOCKER_DISTRO="${WSL_DISTRO_NAME}"
         DOCKER_DIR="/mnt/wsl/shared-docker"
         DOCKER_SOCK="${DOCKER_DIR}/docker.sock"
         export DOCKER_HOST="unix://${DOCKER_SOCK}"
         if [[ ! -S "${DOCKER_SOCK}" ]]; then
+            # shellcheck disable=SC2174  # intentional
             mkdir -pm o=,ug=rwx "${DOCKER_DIR}"
             if [[ "$(stat --printf='%G' "${DOCKER_DIR}")" != "docker" ]]; then
                 sudo chgrp docker "${DOCKER_DIR}"
@@ -209,7 +215,7 @@ elif [[ "$(uname)" == "Linux" ]]; then
             git_prompt_sh_location="/dev/null/git-prompt.sh"
             ;;
     esac
-    if $(grep -q -i "microsoft" "/proc/version"); then
+    if grep -q -i "microsoft" "/proc/version" &>/dev/null; then
         export IS_WSL=true
     else
         export IS_WSL=false
@@ -264,6 +270,7 @@ fi
 # -------------- #
 
 # Source the terminal control file to make things easier in terms of colors.
+# shellcheck source=./terminal-control
 source "${XDG_CONFIG_HOME}/bash/terminal-control"
 
 # Set color of the \u@\h section of the prompt command based on whether the system is local or not
@@ -274,17 +281,24 @@ elif [[ "${SESSION_TYPE}" == "remote/ssh" ]]; then
 fi
 
 # Prepare to include the git prompt.
-if [[ -r ${git_prompt_sh_location} ]]; then
+if [[ -r "${git_prompt_sh_location}" ]]; then
     # Declare different variables that control what the git-prompt shows
+    # shellcheck disable=SC2034  # used by the git-prompt.sh script, not in this file
     GIT_PS1_SHOWDIRTYSTATE=true
+    # shellcheck disable=SC2034  # used by the git-prompt.sh script, not in this file
     GIT_PS1_SHOWSTASHSTATE=true
+    # shellcheck disable=SC2034  # used by the git-prompt.sh script, not in this file
     GIT_PS1_SHOWUNTRACKEDFILES=true
+    # shellcheck disable=SC2034  # used by the git-prompt.sh script, not in this file
     GIT_PS1_SHOWUPSTREAM="auto"
+    # shellcheck disable=SC2034  # used by the git-prompt.sh script, not in this file
     GIT_PS1_HIDE_IF_PWD_IGNORED=true
+    # shellcheck disable=SC2034  # used by the git-prompt.sh script, not in this file
     GIT_PS1_SHOWCOLORHINTS=true
 
     # Source the git-prompt helper script
-    source ${git_prompt_sh_location}
+    # shellcheck disable=SC1090  # checked earlier
+    source "${git_prompt_sh_location}"
 
     # Set the command prompt to execute __git_ps1 with it taking the custom command prompt strings as arguments.
     export PROMPT_COMMAND="__git_ps1 \"${RESET_LINE}${Rst}${IYellow}["'$(date +"%F %T") UTC$(tz_trimmed)'"]${Rst} ${SYSTEM_COLOR}\u@\h${Rst}:${Bold}${Blue}\w${Rst}\" \"\$(kcc PS1)\n\$ \""
@@ -337,6 +351,7 @@ shopt -s histappend
 
 # After each command, append to the history file and reread it
 # http://superuser.com/questions/20900/bash-history-loss
+# shellcheck disable=SC2154  # defined elsewhere, not in this file
 ((_ble_bash)) || export PROMPT_COMMAND="${PROMPT_COMMAND:+"${PROMPT_COMMAND}; "}history -a; history -c; history -r"
 
 
@@ -355,6 +370,7 @@ export EDITOR=$VISUAL
 # ------------------------ #
 
 if [[ -r "${XDG_CONFIG_HOME}/bash/local" ]]; then
+    # shellcheck disable=SC1091  # this file isn't guaranteed to exist
     source "${XDG_CONFIG_HOME}/bash/local"
 fi
 
@@ -365,6 +381,7 @@ fi
 # ----------------- #
 
 if [[ -r "${XDG_CONFIG_HOME}/bash/aliases" ]]; then
+    # shellcheck source=./aliases
     source "${XDG_CONFIG_HOME}/bash/aliases"
 fi
 

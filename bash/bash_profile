@@ -5,5 +5,6 @@
 # Load BASH RC #
 # ------------ #
 if [[ -r "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/bashrc" ]]; then
+    # shellcheck source=./bashrc
     source "${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash/bashrc"
 fi
