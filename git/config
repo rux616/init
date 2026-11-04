@@ -10,16 +10,16 @@
 [init]
 	defaultBranch = main
 [core]
-  pager = delta | less -n
+	pager = delta | less -n
 [delta]
-  plus-style = "syntax #012800"
-  minus-style = "syntax #340001"
-  syntax-theme = Monokai Extended
-  navigate = true
-  line-numbers = true
-  side-by-side = false
+	plus-style = "syntax #012800"
+	minus-style = "syntax #340001"
+	syntax-theme = Monokai Extended
+	navigate = true
+	line-numbers = true
+	side-by-side = false
 [interactive]
-  diffFilter = delta --color-only
+	diffFilter = delta --color-only
 [credential "https://github.com"]
 	helper =
 	helper = !/home/dan/.local/bin/gh auth git-credential
