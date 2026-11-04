@@ -158,6 +158,12 @@ if command -v terraform &>/dev/null || command -v tofu &>/dev/null; then
     mkdir -p "${XDG_CACHE_HOME}/terraform/plugins"
     export TF_PLUGIN_CACHE_DIR="${XDG_CACHE_HOME}/terraform/plugins"
 fi
+#tfswitch
+if command -v tfswitch &>/dev/null; then
+    mkdir -p "${XDG_CACHE_HOME}/terraform/versions"
+    export TF_INSTALL_PATH="${XDG_CACHE_HOME}/terraform/versions"
+    export TF_BINARY_PATH="${HOME}/.local/bin/tofu"
+    export TF_PRODUCT="opentofu"
 fi
 #krew
 export KREW_ROOT="${XDG_DATA_HOME}/krew"
