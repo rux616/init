@@ -159,7 +159,7 @@ set cursorline                          " highlight current line
 set scrolloff=3                         " show a few lines of context around the cursor
 set laststatus=2                        " Force statusline to show
 " Build a statusline
-let &statusline = '%#PmenuSel#%#LineNr# %F %m %= %y %{&fileencoding?&fileenciding:&encoding}|%{&fileformat} %p%% %l:%c '
+let &statusline = '%#PmenuSel#%#LineNr# %F %m %= %y %{&fileencoding?&fileencoding:&encoding}|%{&fileformat} %p%% %l:%c '
 " IndentLine
 let g:indentLine_enabled = 1
 let g:indentLine_char = '│'
@@ -282,7 +282,7 @@ augroup vimrc_yank
     autocmd!
     autocmd TextYankPost * call CopyYank()
 augroup END
-" Triger `autoread` when files changes on disk
+" Trigger `autoread` when files changes on disk
 " https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
 " https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
 set autoread
