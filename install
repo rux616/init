@@ -27,7 +27,6 @@ section_profiles=(
     jsonnet-lint
     keybase
     kubeval
-    most
     muc
     neovim
     nmap
@@ -466,39 +465,6 @@ for profile in $@; do
             curl -sLO "${latest_release}" && \
                 tar -xf "${release_file}" && \
                 mv -f "${section}" "${dir[bin]}/${section}"
-            cd "${dir[temp]}"
-            ;;&
-        most )
-            # install most
-            section="most"
-            echo "installing ${section}..."
-            mkdir "${section}" && cd "${section}"
-            prereqs_common=( make gcc )
-            prereqs_deb=( libpcre3-dev libonig-dev libpng-dev zlib1g-dev )
-            prereqs_rpm=( pcre-devel onigurama-devel libpng-devel zlib-devel )
-            prereqs=( ${prereqs_common[@]} )
-            case ${family} in
-                deb) prereqs+=( ${prereqs_deb[@]} ) ;;
-                rhel) prereqs+=( ${prereqs_rpm[@]} ) ;;
-            esac
-            ${pkg_mgr} install -y ${prereqs[@]}
-
-            git clone "git://git.jedsoft.org/git/slang.git" "./repo-slang"
-            git clone "git://git.jedsoft.org/git/most.git" "./repo-most"
-
-            slang_commit="a0f675ffdd5ac07789ee65900b4f88a9ba60e67c" # 2.3.3 (2022-08-05)
-            cd "./repo-slang"
-            git checkout "${slang_commit}"
-            ./configure --prefix="${dir[base]}"
-            make install
-            make install-static
-
-            most_commit="8fd49788d22ef3733b4a78e7c2f752c656695af8" # 5.2.0 (2022-08-04)
-            cd "../repo-most"
-            git checkout "${most_commit}"
-            ./configure --prefix="${dir[base]}"
-            make install
-
             cd "${dir[temp]}"
             ;;&
         muc )
