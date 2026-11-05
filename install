@@ -111,6 +111,24 @@ dir[temp]="$(mktemp -d)"
 chmod ugo+rx "${dir[temp]}"
 cd "${dir[temp]}"
 
+if ! command -v jq >/dev/null; then
+    # jq bootstrap
+    section="jq"
+    repo="jqlang/jq"
+    echo "installing ${section}..."
+    mkdir "${section}" && cd "${section}"
+    release_file="${section}-linux-amd64"
+    latest_release="https://github.com/${repo}/releases/latest/download/${release_file}"
+    curl -sL "${latest_release}" -o "${release_file}" && \
+        chmod 755 "${release_file}" && \
+        mv -f "${release_file}" "${dir[bin]}/${section}"
+    cd "${dir[temp]}"
+    if ! command -v jq >/dev/null; then
+        echo 'ERROR: "jq" not found on PATH. you might need to restart your shell.'
+        exit 1
+    fi
+fi
+
 for profile in $@; do
     case ${profile} in
         act | all | home | work )
