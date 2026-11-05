@@ -1,0 +1,27 @@
+# standard setup
+
+- set up configuration for bash and ble.sh: `./configure bash blesh`
+- restart shell
+- if using wsl, set up wsl configuration: `sudo ./configure wsl`
+- if using wsl, restart system
+- init submodules:
+    - `git submodule update --init tmux/tpm`
+    - `git submodule update --init tools/kubectx`
+    - `git submodule update --init tools/tmux-bash-completion`
+- install tools: `./install --install-pkgs packages util-linux act bat blesh delta fzf gh-cli keybase pre-commit ssh-config tmux trash-cli vim yank yq`
+- set up configuration for git, tmux, and vim: `./configure git-gpg tmux vim`
+- if using wsl, set up gpg for wsl: `./configure gpg-wsl`
+- set up Keybase:
+    - note: if you restart the system or something before this step, you may need to run `run_keybase -g` first
+    - `keybase login`
+    - `keybase ctl init`
+    - `systemctl --user enable keybase.service`
+    - `systemctl --user enable kbfs.service`
+    - `systemctl --user enable keybase-redirector.service`
+- restart system
+- import Keybase PGP key to GPG: `gpg --allow-secret-key-import --import /keybase/private/rux616/.keys/pgp/82be4a921d1b4c28efe1002f9686ffab2d31063e.asc`
+- tell GPG to trust the key: `gpg --edit-key 82BE4A921D1B4C28EFE1002F9686FFAB2D31063E`
+    - `trust`
+    - `5`
+    - `y`
+    - `quit`
