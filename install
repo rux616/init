@@ -12,6 +12,7 @@ section_profiles=(
     act
     alacritty
     alacritty-terminfo
+    ansible
     aws aws-cli
     aws-sso aws-sso-cli
     aws-sso-creds
@@ -184,6 +185,14 @@ for profile in $@; do
             curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
                 tar -xf "${section}.tar.gz" --strip 1 && \
                 tic -xe alacritty,alacritty-direct "extra/alacritty.info"
+            cd "${dir[temp]}"
+            ;;&
+        ansible | all )
+            # install ansible
+            section="ansible"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            pipx install --include-deps --force "${section}"
             cd "${dir[temp]}"
             ;;&
         aws | aws-cli | all | home | work )
