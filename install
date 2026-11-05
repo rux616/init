@@ -30,6 +30,7 @@ section_profiles=(
     muc
     neovim
     nmap
+    opentofu
     packages
     packer
     pre-commit
@@ -530,6 +531,16 @@ for profile in $@; do
                 cp -r "install/local/bin/"* "${dir[bin]}" && \
                 cp -r "install/local/lib/"* "${dir[lib]}" && \
                 cp -r "install/local/share/"* "${dir[share]}"
+            cd "${dir[temp]}"
+            ;;&
+        opentofu | all )
+            # install opentofu
+            section="opentofu"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            repo="opentofu/opentofu"
+            versions=( "latest" )
+
             cd "${dir[temp]}"
             ;;&
         packages | all | home | work )
