@@ -562,7 +562,7 @@ for profile in $@; do
                 deb) ${pkg_mgr} update ;;
                 rhel) ${pkg_mgr} makecache ;;
             esac
-            packages_common=( git vim curl wget python3 python3-pip unzip sysstat pkg-config htop bash-completion )
+            packages_common=( git vim curl wget python3 python3-pip unzip sysstat pkg-config htop bash-completion bind9-dnsutils )
             packages_deb=( apt-file python3-venv )
             packages_rpm=()
             packages=( ${packages_common[@]} )
