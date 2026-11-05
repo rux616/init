@@ -592,9 +592,10 @@ for profile in $@; do
             ;;&
         pre-commit | all | home | work )
             # install pre-commit
-            echo "installing pre-commit..."
-            mkdir "pre-commit" && cd "pre-commit"
-            python3 -m pip install --user pre-commit
+            section="pre-commit"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            pipx install "${section}"
             cd "${dir[temp]}"
             ;;&
         ssh-config | all | home | work )
