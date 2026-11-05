@@ -33,6 +33,7 @@ section_profiles=(
     opentofu
     packages
     packer
+    pipx
     pre-commit
     ssh-config
     ssh-keys
@@ -576,6 +577,17 @@ for profile in $@; do
                 mv ${section} "${dir[bin]}/${section}-${version}"
             done
             ln -sf "${dir[bin]}/${section}-${version}" "${dir[bin]}/${section}"
+            cd "${dir[temp]}"
+            ;;&
+        pipx | all )
+            # install pipx
+            section="pipx"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            python3 -m venv .
+            ./bin/pip install pipx
+            ./bin/pipx install pipx
+            ./bin/pipx ensurepath
             cd "${dir[temp]}"
             ;;&
         pre-commit | all | home | work )
