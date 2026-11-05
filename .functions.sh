@@ -5,6 +5,7 @@
 # syntax: chr <character_code>
 function chr() {
     [[ $1 -ge 0 && $1 -le 255 ]] || return 1
+    # shellcheck disable=SC2059  # this is a special case, lightly abusing evaluation order
     printf "\\$(printf '%03o' "$1")"
 }
 
@@ -21,7 +22,7 @@ function ord() {
 function back_up_files()
 {
     # process list of files
-    for file in $@; do
+    for file in "$@"; do
         if [[ -h "${file}" ]]; then
             # file is a symlink
             rm "${file}"
@@ -38,10 +39,12 @@ function back_up_files()
 function get_platform()
 {
     # get the uname
-    local unamestr=$(uname)
+    local unamestr
+    unamestr=$(uname)
 
     # parse the uname
-    local shell_nocasematch=$(shopt -p nocasematch)
+    local shell_nocasematch
+    shell_nocasematch=$(shopt -p nocasematch)
     shopt -s nocasematch
     case ${unamestr} in
         *bsd)       platform='bsd'      ;;
@@ -70,15 +73,15 @@ function check_prereqs()
     local to_install=()
 
     # loop through and check what's there and what's not
-    for prereq in $@; do
-        if ! command -v ${prereq} &>/dev/null; then
-            to_install+=(${prereq})
+    for prereq in "$@"; do
+        if ! command -v "${prereq}" &>/dev/null; then
+            to_install+=("${prereq}")
         fi
     done
 
     if [[ ${#to_install[@]} -ne 0 ]]; then
         # things need to be installed
-        echo "      └ needs to be installed: ${to_install[@]}"
+        echo "      └ needs to be installed: ${to_install[*]}"
         return 1
     else
         # things don't need to be installed
@@ -122,7 +125,7 @@ function parse_config_action()
     options=($(grep '^'${action_type} ${config_file} | cut -d ' ' -f '2-' | sed 's/|/\|/g'))
 
     # go through options and search and replace variables
-    for variable in ${!variables[@]}; do
+    for variable in "${!variables[@]}"; do
         options=($(sed 's|'${var_prefix}${variable}${var_suffix}'|'${variables[${variable}]}'|g' <<< ${options[@]}))
     done
 
@@ -288,7 +291,7 @@ function check_minimum_version() {
 
     if [[ ${#minimum_version_not_met[@]} -ne 0 ]]; then
         # minimum versions not met
-        echo "      └ minimum versions not met: ${minimum_version_not_met[@]}"
+        echo "      └ minimum versions not met: ${minimum_version_not_met[*]}"
         return 1
     else
         # minimum versions met
@@ -301,18 +304,20 @@ function check_minimum_version() {
 # syntax: define_action <action_name> <action_to_be_taken> <true|false>
 function define_action() {
     # define the action name
-    actions+=($1)
+    actions+=("$1")
 
     # define the action to be executed
+    # shellcheck disable=SC2034  # variable defined externally
     action_execs[$1]="$2"
 
     # define whether an error in this action is fatal
+    # shellcheck disable=SC2034  # variable defined externally
     error_is_fatal[$1]="$3"
 }
 
 # download something via curl
 #
-# syntax download <url_to_grab> <filename_to_save_as>
+# syntax: download <url_to_grab> <filename_to_save_as>
 function download() {
     url="$1"
     file="$2"

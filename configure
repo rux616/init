@@ -38,7 +38,7 @@ variables["xdg_cache_home"]="${XDG_CACHE_HOME:-"${default[XDG_CACHE_HOME]}"}"
 variables["config_dir"]=""
 
 # run through the list of configs
-for config_subdir in $@; do
+for config_subdir in "$@"; do
     # check to make sure the config exists, is readable, and isn't empty
     if [[ -d "${config_subdir}" && -r "${config_subdir}/${config_file}" && -s "${config_subdir}/${config_file}" ]]; then
         echo "configuring ${config_subdir}..."
@@ -47,9 +47,9 @@ for config_subdir in $@; do
         variables[config_dir]="${PWD}/${config_subdir}"
 
         # run through all the actions
-        for action in ${actions[@]}; do
+        for action in "${actions[@]}"; do
             # get the options for the current action
-            options="$(parse_config_action ${config_subdir}/${config_file} ${action} $(tuplify_variables))"
+            options="$(parse_config_action "${config_subdir}/${config_file}" ${action} $(tuplify_variables))"
             # only execute the action if there are options
             if [[ -n "$options" ]]; then
                 echo "    action: ${action}"
