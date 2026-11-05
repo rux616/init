@@ -757,7 +757,7 @@ EOL
             section="util-linux"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
-            prereqs_common=( autoconf bison libtool automake )
+            prereqs_common=( autoconf bison libtool automake flex )
             prereqs_deb=( autopoint gettext libncurses-dev libpam0g-dev libcap-ng-dev )
             prereqs_rpm=( gettext-devel ncurses-devel pam-devel libcap-ng-devel )
             prereqs=( ${prereqs_common[@]} )
