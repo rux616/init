@@ -35,6 +35,7 @@ section_profiles=(
     packer
     pipx
     pre-commit
+    ripgrep
     ssh-config
     ssh-keys
     terraform
@@ -596,6 +597,34 @@ for profile in $@; do
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
             pipx install "${section}"
+            cd "${dir[temp]}"
+            ;;&
+        ripgrep | all )
+            # install ripgrep
+            section="ripgrep"
+            echo "installing ${section}..."
+            mkdir "${section}" && cd "${section}"
+            curl -sSfo "rust_install.sh" "https://sh.rustup.rs"
+            chmod u+x "rust_install.sh"
+            export CARGO_HOME="${PWD}/rust/.cargo"
+            export RUSTUP_HOME="${PWD}/rust/.rustup"
+            ./rust_install.sh -q -y --no-modify-path --default-toolchain stable --profile minimal
+            prereqs_common=( )
+            prereqs_deb=( )
+            prereqs_rpm=( )
+            prereqs=( "${prereqs_common[@]}" )
+            case ${family} in
+                deb) prereqs+=( "${prereqs_deb[@]}" ) ;;
+                rhel) prereqs+=( "${prereqs_rpm[@]}" ) ;;
+            esac
+            if [[ ${#prereqs[@]} -gt 0 ]]; then
+                ${pkg_mgr} install -y "${prereqs[@]}"
+            fi
+            latest_tarball="$(curl -sN "https://api.github.com/repos/burntsushi/ripgrep/releases/latest" | grep -Pom 1 '"tarball_url": "\K.*?(?=")')"
+            curl -sLo "${section}.tar.gz" "${latest_tarball}" && \
+                tar -xf "${section}.tar.gz" --strip 1 && \
+                "${PWD}/rust/.cargo/bin/cargo" build --release --features 'pcre2' && \
+                mv -f "target/release/rg" "${dir[bin]}/rg"
             cd "${dir[temp]}"
             ;;&
         ssh-config | all | home | work )
