@@ -132,7 +132,7 @@ if ! command -v jq >/dev/null; then
     fi
 fi
 
-for profile in $@; do
+for profile in "$@"; do
     case ${profile} in
         act | all | home | work )
             # install act
@@ -192,7 +192,7 @@ for profile in $@; do
             section="ansible"
             echo "installing ${section}..."
             mkdir "${section}" && cd "${section}"
-            pipx install --include-deps --force "${section}"
+            pipx install --include-deps --force "${section}" ansible-lint
             cd "${dir[temp]}"
             ;;&
         aws | aws-cli | all | home | work )
