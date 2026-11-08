@@ -12,8 +12,8 @@ bleopt complete_auto_delay=300
 
 if command -v fzf &>/dev/null; then
     _ble_contrib_fzf_base=${XDG_DATA_HOME:-${HOME}/.local/share}/fzf/fzf
-    ble-import -d contrib/fzf-completion
-    ble-import -d contrib/fzf-key-bindings
+    ble-import -d integration/fzf-completion
+    ble-import -d integration/fzf-key-bindings
 fi
 
 function my/keymap-settings-for-emacs-mode {
