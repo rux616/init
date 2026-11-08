@@ -286,7 +286,7 @@ for profile in "$@"; do
             repo="akinomyoga/ble.sh"
             echo "installing ${section}..."
             mkdir "${section_actual}" && cd "${section_actual}"
-            prereqs_common=( git make gawk )
+            prereqs_common=( git make gawk sqlite3 )
             prereqs_deb=()
             prereqs_rpm=()
             prereqs=( ${prereqs_common[@]} )
